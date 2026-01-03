@@ -23,6 +23,7 @@ app.use(express.static(__dirname));
 // Usamos tu base de datos REAL: 'Gestion_Tutoria'
 
 // Conexión a MongoDB Atlas (Nube)
+// Conexión a MongoDB Atlas (Nube)
 mongoose.connect("mongodb+srv://210369_db_user:u2hlwE8pdoBPHPDN@cluster0.saliknv.mongodb.net/Gestion_Tutoria?appName=Cluster0")
   .then(() => console.log("✅ Conectado a la Nube (Atlas)"))
   .catch(err => console.error("❌ Error conectando a la nube:", err));

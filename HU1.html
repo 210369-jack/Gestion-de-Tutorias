@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Gestión de Usuarios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full">
+    <!-- Header -->
+    <header class="bg-green-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-2 rounded-lg">
+                        <svg class="w-6 h-6 text-green-800" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">Sistema de Tutorías</h1>
+                        <p class="text-green-200 text-sm">Panel de Administración</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-green-200">Administrador</span>
+                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-medium">A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-6">
+            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                <li><a href="#" class="hover:text-green-600">Dashboard</a></li>
+                <li class="text-gray-400">/</li>
+                <li class="text-gray-900 font-medium">Gestión de Usuarios</li>
+            </ol>
+        </nav>
+
+        <!-- Page Title -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h2>
+            <p class="text-gray-600">Registrar nuevos usuarios y administrar el acceso al sistema de tutorías</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mb-6 flex flex-wrap gap-3">
+            <button id="newUserBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span>Nuevo Usuario</span>
+            </button>
+            <button id="refreshBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <span>Actualizar</span>
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Usuarios Activos</p>
+                        <p class="text-2xl font-bold text-gray-900">247</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Estudiantes</p>
+                        <p class="text-2xl font-bold text-gray-900">189</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Tutores</p>
+                        <p class="text-2xl font-bold text-gray-900">45</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-orange-100 rounded-lg">
+                        <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Coordinadores</p>
+                        <p class="text-2xl font-bold text-gray-900">13</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Buscar usuario</label>
+                    <input type="text" id="searchInput" placeholder="Nombre, email o ID..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="md:w-48">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de usuario</label>
+                    <select id="userTypeFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Todos</option>
+                        <option value="estudiante">Estudiantes</option>
+                        <option value="tutor">Tutores</option>
+                        <option value="coordinador">Coordinadores</option>
+                    </select>
+                </div>
+                <div class="md:w-48">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                    <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Todos</option>
+                        <option value="activo">Activos</option>
+                        <option value="inactivo">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Lista de Usuarios</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Registro</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- New User Modal -->
+    <div id="newUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 fade-in">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Registrar Nuevo Usuario</h3>
+            </div>
+            <form id="newUserForm" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre completo</label>
+                    <input type="text" id="userName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="userEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de usuario</label>
+                    <select id="userType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Seleccionar tipo</option>
+                        <option value="estudiante">Estudiante</option>
+                        <option value="tutor">Tutor</option>
+                        <option value="coordinador">Coordinador</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ID/Matrícula</label>
+                    <input type="text" id="userId" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Registrar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 fade-in">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Confirmar Eliminación</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-600 mb-4">¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer.</p>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                        <p class="text-sm text-yellow-800">El usuario perderá acceso inmediatamente al sistema.</p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelDeleteBtn" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors">
+                        Cancelar
+                    </button>
+                    <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                        Eliminar Usuario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden slide-down">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+            </svg>
+            <span id="successText">Operación completada exitosamente</span>
+        </div>
+    </div>
+
+    <script>
+        // Sample users data
+        let users = [
+            { id: 'EST001', name: 'Ana García López', email: 'ana.garcia@universidad.edu', type: 'estudiante', status: 'activo', date: '2024-01-15' },
+            { id: 'TUT001', name: 'Dr. Carlos Mendoza', email: 'carlos.mendoza@universidad.edu', type: 'tutor', status: 'activo', date: '2024-01-10' },
+            { id: 'COORD001', name: 'Lic. María Rodríguez', email: 'maria.rodriguez@universidad.edu', type: 'coordinador', status: 'activo', date: '2024-01-08' },
+            { id: 'EST002', name: 'Luis Hernández', email: 'luis.hernandez@universidad.edu', type: 'estudiante', status: 'activo', date: '2024-01-20' },
+            { id: 'TUT002', name: 'Dra. Patricia Silva', email: 'patricia.silva@universidad.edu', type: 'tutor', status: 'inactivo', date: '2024-01-12' },
+            { id: 'EST003', name: 'Carmen Jiménez', email: 'carmen.jimenez@universidad.edu', type: 'estudiante', status: 'activo', date: '2024-01-25' }
+        ];
+
+        let currentDeleteId = null;
+
+        // DOM elements
+        const newUserModal = document.getElementById('newUserModal');
+        const deleteModal = document.getElementById('deleteModal');
+        const newUserBtn = document.getElementById('newUserBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const newUserForm = document.getElementById('newUserForm');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const userTypeFilter = document.getElementById('userTypeFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        // Event listeners
+        newUserBtn.addEventListener('click', () => {
+            newUserModal.classList.remove('hidden');
+            newUserModal.classList.add('flex');
+        });
+
+        cancelBtn.addEventListener('click', closeNewUserModal);
+        cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+
+        newUserModal.addEventListener('click', (e) => {
+            if (e.target === newUserModal) closeNewUserModal();
+        });
+
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) closeDeleteModal();
+        });
+
+        newUserForm.addEventListener('submit', handleNewUser);
+        confirmDeleteBtn.addEventListener('click', handleDeleteUser);
+
+        searchInput.addEventListener('input', filterUsers);
+        userTypeFilter.addEventListener('change', filterUsers);
+        statusFilter.addEventListener('change', filterUsers);
+        refreshBtn.addEventListener('click', refreshTable);
+
+        // Functions
+        function closeNewUserModal() {
+            newUserModal.classList.add('hidden');
+            newUserModal.classList.remove('flex');
+            newUserForm.reset();
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            deleteModal.classList.remove('flex');
+            currentDeleteId = null;
+        }
+
+        function handleNewUser(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            const type = document.getElementById('userType').value;
+            const id = document.getElementById('userId').value;
+
+            // Check if ID already exists
+            if (users.find(user => user.id === id)) {
+                alert('El ID/Matrícula ya existe. Por favor, use uno diferente.');
+                return;
+            }
+
+            // Check if email already exists
+            if (users.find(user => user.email === email)) {
+                alert('El email ya está registrado. Por favor, use uno diferente.');
+                return;
+            }
+
+            const newUser = {
+                id: id,
+                name: name,
+                email: email,
+                type: type,
+                status: 'activo',
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            users.unshift(newUser);
+            renderUsers();
+            closeNewUserModal();
+            showSuccessMessage('Usuario registrado exitosamente');
+        }
+
+        function handleDeleteUser() {
+            if (currentDeleteId) {
+                users = users.filter(user => user.id !== currentDeleteId);
+                renderUsers();
+                closeDeleteModal();
+                showSuccessMessage('Usuario eliminado exitosamente');
+            }
+        }
+
+        function deleteUser(id) {
+            currentDeleteId = id;
+            deleteModal.classList.remove('hidden');
+            deleteModal.classList.add('flex');
+        }
+
+        function toggleUserStatus(id) {
+            const user = users.find(u => u.id === id);
+            if (user) {
+                user.status = user.status === 'activo' ? 'inactivo' : 'activo';
+                renderUsers();
+                showSuccessMessage(`Usuario ${user.status === 'activo' ? 'activado' : 'desactivado'} exitosamente`);
+            }
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'estudiante': 'Estudiante',
+                'tutor': 'Tutor',
+                'coordinador': 'Coordinador'
+            };
+            return labels[type] || type;
+        }
+
+        function getTypeBadgeClass(type) {
+            const classes = {
+                'estudiante': 'bg-green-100 text-green-800',
+                'tutor': 'bg-purple-100 text-purple-800',
+                'coordinador': 'bg-orange-100 text-orange-800'
+            };
+            return classes[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function renderUsers() {
+            const filteredUsers = getFilteredUsers();
+            
+            usersTableBody.innerHTML = filteredUsers.map(user => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <span class="text-sm font-medium text-green-600">${user.name.charAt(0)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${user.name}</div>
+                                <div class="text-sm text-gray-500">${user.email}</div>
+                                <div class="text-xs text-gray-400">ID: ${user.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadgeClass(user.type)}">
+                            ${getTypeLabel(user.type)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.status === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${user.status === 'activo' ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(user.date).toLocaleDateString('es-ES')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="toggleUserStatus('${user.id}')" class="text-green-600 hover:text-green-900 transition-colors">
+                                ${user.status === 'activo' ? 'Desactivar' : 'Activar'}
+                            </button>
+                            <button onclick="deleteUser('${user.id}')" class="text-red-600 hover:text-red-900 transition-colors">
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getFilteredUsers() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const typeFilter = userTypeFilter.value;
+            const statusFilterValue = statusFilter.value;
+
+            return users.filter(user => {
+                const matchesSearch = user.name.toLowerCase().includes(searchTerm) || 
+                                    user.email.toLowerCase().includes(searchTerm) || 
+                                    user.id.toLowerCase().includes(searchTerm);
+                const matchesType = !typeFilter || user.type === typeFilter;
+                const matchesStatus = !statusFilterValue || user.status === statusFilterValue;
+
+                return matchesSearch && matchesType && matchesStatus;
+            });
+        }
+
+        function filterUsers() {
+            renderUsers();
+        }
+
+        function refreshTable() {
+            renderUsers();
+            showSuccessMessage('Tabla actualizada');
+        }
+
+        function showSuccessMessage(message) {
+            successText.textContent = message;
+            successMessage.classList.remove('hidden');
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Initial render
+        renderUsers();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98db8e3156d2e9a2',t:'MTc2MDMyNDA5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

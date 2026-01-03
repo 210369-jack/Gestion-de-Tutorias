@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Reportes del Sistema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .report-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .report-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full">
+    <!-- Header -->
+    <header class="bg-green-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-2 rounded-lg">
+                        <svg class="w-6 h-6 text-green-800" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">Sistema de Tutorías</h1>
+                        <p class="text-green-200 text-sm">Panel de Administración</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-green-200">Administrador</span>
+                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-medium">A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-6">
+            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                <li><a href="#" class="hover:text-green-600">Dashboard</a></li>
+                <li class="text-gray-400">/</li>
+                <li class="text-gray-900 font-medium">Reportes del Sistema</li>
+            </ol>
+        </nav>
+
+        <!-- Page Title -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Reportes y Análisis del Sistema</h2>
+            <p class="text-gray-600">Genera reportes detallados y analiza el rendimiento del sistema de tutorías</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mb-6 flex flex-wrap gap-3">
+            <button id="generateReportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>Generar Reporte</span>
+            </button>
+            <button id="exportPdfBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>Exportar PDF</span>
+            </button>
+            <button id="exportExcelBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                </svg>
+                <span>Exportar Excel</span>
+            </button>
+            <button id="refreshDataBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <span>Actualizar Datos</span>
+            </button>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Filtros de Reporte</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de inicio</label>
+                    <input type="date" id="startDate" value="2024-01-01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de fin</label>
+                    <input type="date" id="endDate" value="2024-01-31" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de usuario</label>
+                    <select id="userTypeFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Todos</option>
+                        <option value="estudiante">Estudiantes</option>
+                        <option value="tutor">Tutores</option>
+                        <option value="coordinador">Coordinadores</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                    <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Todos</option>
+                        <option value="activo">Activos</option>
+                        <option value="inactivo">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Usuarios Activos</p>
+                        <p class="text-2xl font-bold text-gray-900" id="activeUsersCount">247</p>
+                        <p class="text-sm text-green-600">+12% vs mes anterior</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-card bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Sesiones de Tutoría</p>
+                        <p class="text-2xl font-bold text-gray-900" id="sessionsCount">1,234</p>
+                        <p class="text-sm text-green-600">+8% vs mes anterior</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-card bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-purple-100 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Tasa de Éxito</p>
+                        <p class="text-2xl font-bold text-gray-900" id="successRate">87.5%</p>
+                        <p class="text-sm text-green-600">+3.2% vs mes anterior</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-card bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-orange-100 rounded-lg">
+                        <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Promedio Horas/Mes</p>
+                        <p class="text-2xl font-bold text-gray-900" id="avgHours">42.3</p>
+                        <p class="text-sm text-red-600">-2.1% vs mes anterior</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- User Activity Chart -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Actividad de Usuarios</h3>
+                    <select id="activityPeriod" class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="7">Últimos 7 días</option>
+                        <option value="30" selected>Últimos 30 días</option>
+                        <option value="90">Últimos 90 días</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="userActivityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sessions Distribution Chart -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Distribución de Sesiones</h3>
+                    <div class="flex space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Total: 1,234
+                        </span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sessionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Types Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-6">Tipos de Reportes Disponibles</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="report-card border border-gray-200 rounded-lg p-4 hover:border-green-300" onclick="generateReport('users')">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                            </svg>
+                        </div>
+                        <h4 class="ml-3 text-sm font-medium text-gray-900">Reporte de Usuarios</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">Estadísticas detalladas de usuarios activos, roles y actividad</p>
+                </div>
+
+                <div class="report-card border border-gray-200 rounded-lg p-4 hover:border-green-300" onclick="generateReport('sessions')">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                            </svg>
+                        </div>
+                        <h4 class="ml-3 text-sm font-medium text-gray-900">Reporte de Sesiones</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">Análisis de sesiones de tutoría, duración y efectividad</p>
+                </div>
+
+                <div class="report-card border border-gray-200 rounded-lg p-4 hover:border-green-300" onclick="generateReport('performance')">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"/>
+                            </svg>
+                        </div>
+                        <h4 class="ml-3 text-sm font-medium text-gray-900">Reporte de Rendimiento</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">Métricas de rendimiento del sistema y KPIs principales</p>
+                </div>
+
+                <div class="report-card border border-gray-200 rounded-lg p-4 hover:border-green-300" onclick="generateReport('tutors')">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-orange-100 rounded-lg">
+                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"/>
+                            </svg>
+                        </div>
+                        <h4 class="ml-3 text-sm font-medium text-gray-900">Reporte de Tutores</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">Actividad y desempeño de tutores en el sistema</p>
+                </div>
+
+                <div class="report-card border border-gray-200 rounded-lg p-4 hover:border-green-300" onclick="generateReport('students')">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-indigo-100 rounded-lg">
+                            <svg class="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                            </svg>
+                        </div>
+                        <h4 class="ml-3 text-sm font-medium text-gray-900">Reporte de Estudiantes</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">Progreso y participación de estudiantes en tutorías</p>
+                </div>
+
+                <div class="report-card border border-gray-200 rounded-lg p-4 hover:border-green-300" onclick="generateReport('system')">
+                    <div class="flex items-center mb-3">
+                        <div class="p-2 bg-gray-100 rounded-lg">
+                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/>
+                            </svg>
+                        </div>
+                        <h4 class="ml-3 text-sm font-medium text-gray-900">Reporte del Sistema</h4>
+                    </div>
+                    <p class="text-sm text-gray-600">Estado general del sistema y métricas técnicas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Reports Table -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Reportes Recientes</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo de Reporte</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Generación</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Período</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Reports will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Report Modal -->
+    <div id="generateReportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 fade-in">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Generar Nuevo Reporte</h3>
+            </div>
+            <form id="generateReportForm" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de reporte</label>
+                    <select id="reportType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Seleccionar tipo</option>
+                        <option value="users">Reporte de Usuarios</option>
+                        <option value="sessions">Reporte de Sesiones</option>
+                        <option value="performance">Reporte de Rendimiento</option>
+                        <option value="tutors">Reporte de Tutores</option>
+                        <option value="students">Reporte de Estudiantes</option>
+                        <option value="system">Reporte del Sistema</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Período del reporte</label>
+                    <select id="reportPeriod" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">Seleccionar período</option>
+                        <option value="week">Última semana</option>
+                        <option value="month">Último mes</option>
+                        <option value="quarter">Último trimestre</option>
+                        <option value="year">Último año</option>
+                        <option value="custom">Período personalizado</option>
+                    </select>
+                </div>
+                <div id="customDateRange" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de inicio</label>
+                        <input type="date" id="customStartDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de fin</label>
+                        <input type="date" id="customEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Formato de salida</label>
+                    <select id="outputFormat" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelGenerateBtn" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Generar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden slide-down">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+            </svg>
+            <span id="successText">Operación completada exitosamente</span>
+        </div>
+    </div>
+
+    <script>
+        // Sample reports data
+        let recentReports = [
+            { id: 1, type: 'Reporte de Usuarios', date: '2024-01-29', period: 'Enero 2024', status: 'Completado', format: 'PDF' },
+            { id: 2, type: 'Reporte de Sesiones', date: '2024-01-28', period: 'Última semana', status: 'Completado', format: 'Excel' },
+            { id: 3, type: 'Reporte de Rendimiento', date: '2024-01-27', period: 'Último mes', status: 'Completado', format: 'PDF' },
+            { id: 4, type: 'Reporte de Tutores', date: '2024-01-26', period: 'Último trimestre', status: 'En proceso', format: 'CSV' },
+            { id: 5, type: 'Reporte del Sistema', date: '2024-01-25', period: 'Último año', status: 'Completado', format: 'Excel' }
+        ];
+
+        // DOM elements
+        const generateReportModal = document.getElementById('generateReportModal');
+        const generateReportBtn = document.getElementById('generateReportBtn');
+        const cancelGenerateBtn = document.getElementById('cancelGenerateBtn');
+        const generateReportForm = document.getElementById('generateReportForm');
+        const reportPeriod = document.getElementById('reportPeriod');
+        const customDateRange = document.getElementById('customDateRange');
+        const reportsTableBody = document.getElementById('reportsTableBody');
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        const refreshDataBtn = document.getElementById('refreshDataBtn');
+
+        // Charts
+        let userActivityChart;
+        let sessionsChart;
+
+        // Event listeners
+        generateReportBtn.addEventListener('click', () => {
+            generateReportModal.classList.remove('hidden');
+            generateReportModal.classList.add('flex');
+        });
+
+        cancelGenerateBtn.addEventListener('click', closeGenerateModal);
+
+        generateReportModal.addEventListener('click', (e) => {
+            if (e.target === generateReportModal) closeGenerateModal();
+        });
+
+        generateReportForm.addEventListener('submit', handleGenerateReport);
+
+        reportPeriod.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customDateRange.classList.remove('hidden');
+            } else {
+                customDateRange.classList.add('hidden');
+            }
+        });
+
+        exportPdfBtn.addEventListener('click', () => exportReport('pdf'));
+        exportExcelBtn.addEventListener('click', () => exportReport('excel'));
+        refreshDataBtn.addEventListener('click', refreshData);
+
+        // Functions
+        function closeGenerateModal() {
+            generateReportModal.classList.add('hidden');
+            generateReportModal.classList.remove('flex');
+            generateReportForm.reset();
+            customDateRange.classList.add('hidden');
+        }
+
+        function handleGenerateReport(e) {
+            e.preventDefault();
+            
+            const reportType = document.getElementById('reportType').value;
+            const period = document.getElementById('reportPeriod').value;
+            const format = document.getElementById('outputFormat').value;
+
+            // Simulate report generation
+            const newReport = {
+                id: recentReports.length + 1,
+                type: getReportTypeLabel(reportType),
+                date: new Date().toISOString().split('T')[0],
+                period: getPeriodLabel(period),
+                status: 'En proceso',
+                format: format.toUpperCase()
+            };
+
+            recentReports.unshift(newReport);
+            renderReportsTable();
+            closeGenerateModal();
+            showSuccessMessage('Reporte generado exitosamente');
+
+            // Simulate completion after 3 seconds
+            setTimeout(() => {
+                newReport.status = 'Completado';
+                renderReportsTable();
+                showSuccessMessage('Reporte completado y listo para descargar');
+            }, 3000);
+        }
+
+        function generateReport(type) {
+            document.getElementById('reportType').value = type;
+            generateReportModal.classList.remove('hidden');
+            generateReportModal.classList.add('flex');
+        }
+
+        function exportReport(format) {
+            showSuccessMessage(`Exportando datos en formato ${format.toUpperCase()}...`);
+            
+            // Simulate export process
+            setTimeout(() => {
+                showSuccessMessage(`Archivo ${format.toUpperCase()} descargado exitosamente`);
+            }, 2000);
+        }
+
+        function refreshData() {
+            showSuccessMessage('Actualizando datos del sistema...');
+            
+            // Simulate data refresh
+            setTimeout(() => {
+                updateMetrics();
+                updateCharts();
+                showSuccessMessage('Datos actualizados correctamente');
+            }, 1500);
+        }
+
+        function updateMetrics() {
+            // Simulate metric updates with random variations
+            const activeUsers = 247 + Math.floor(Math.random() * 20) - 10;
+            const sessions = 1234 + Math.floor(Math.random() * 100) - 50;
+            const successRate = (87.5 + (Math.random() * 4) - 2).toFixed(1);
+            const avgHours = (42.3 + (Math.random() * 6) - 3).toFixed(1);
+
+            document.getElementById('activeUsersCount').textContent = activeUsers;
+            document.getElementById('sessionsCount').textContent = sessions.toLocaleString();
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('avgHours').textContent = avgHours;
+        }
+
+        function getReportTypeLabel(type) {
+            const labels = {
+                'users': 'Reporte de Usuarios',
+                'sessions': 'Reporte de Sesiones',
+                'performance': 'Reporte de Rendimiento',
+                'tutors': 'Reporte de Tutores',
+                'students': 'Reporte de Estudiantes',
+                'system': 'Reporte del Sistema'
+            };
+            return labels[type] || type;
+        }
+
+        function getPeriodLabel(period) {
+            const labels = {
+                'week': 'Última semana',
+                'month': 'Último mes',
+                'quarter': 'Último trimestre',
+                'year': 'Último año',
+                'custom': 'Período personalizado'
+            };
+            return labels[period] || period;
+        }
+
+        function renderReportsTable() {
+            reportsTableBody.innerHTML = recentReports.map(report => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${report.type}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(report.date).toLocaleDateString('es-ES')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${report.period}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${report.status === 'Completado' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${report.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        ${report.status === 'Completado' ? 
+                            `<button onclick="downloadReport(${report.id})" class="text-green-600 hover:text-green-900 transition-colors mr-3">Descargar</button>` : 
+                            '<span class="text-gray-400">Procesando...</span>'
+                        }
+                        <button onclick="deleteReport(${report.id})" class="text-red-600 hover:text-red-900 transition-colors">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function downloadReport(id) {
+            const report = recentReports.find(r => r.id === id);
+            if (report) {
+                showSuccessMessage(`Descargando ${report.type} (${report.format})`);
+            }
+        }
+
+        function deleteReport(id) {
+            recentReports = recentReports.filter(r => r.id !== id);
+            renderReportsTable();
+            showSuccessMessage('Reporte eliminado exitosamente');
+        }
+
+        function initializeCharts() {
+            // User Activity Chart
+            const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+            userActivityChart = new Chart(userActivityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                    datasets: [{
+                        label: 'Usuarios Activos',
+                        data: [180, 210, 235, 247],
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Nuevos Registros',
+                        data: [25, 35, 28, 42],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Sessions Distribution Chart
+            const sessionsCtx = document.getElementById('sessionsChart').getContext('2d');
+            sessionsChart = new Chart(sessionsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Matemáticas', 'Física', 'Química', 'Programación', 'Otros'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(168, 85, 247)',
+                            'rgb(249, 115, 22)',
+                            'rgb(107, 114, 128)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts() {
+            // Update charts with new data (simulated)
+            if (userActivityChart) {
+                userActivityChart.data.datasets[0].data = [180, 210, 235, 247 + Math.floor(Math.random() * 20) - 10];
+                userActivityChart.update();
+            }
+
+            if (sessionsChart) {
+                const total = 100;
+                const newData = [
+                    35 + Math.floor(Math.random() * 10) - 5,
+                    25 + Math.floor(Math.random() * 8) - 4,
+                    20 + Math.floor(Math.random() * 6) - 3,
+                    15 + Math.floor(Math.random() * 4) - 2,
+                    5 + Math.floor(Math.random() * 2) - 1
+                ];
+                sessionsChart.data.datasets[0].data = newData;
+                sessionsChart.update();
+            }
+        }
+
+        function showSuccessMessage(message) {
+            successText.textContent = message;
+            successMessage.classList.remove('hidden');
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Initialize
+        renderReportsTable();
+        initializeCharts();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98db99ac4541e9a2',t:'MTc2MDMyNDU2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -21,10 +21,11 @@ app.use(express.static(__dirname));
 // CONEXIÓN A MONGODB (CORREGIDO)
 // ============================
 // Usamos tu base de datos REAL: 'Gestion_Tutoria'
-mongoose.connect("mongodb://127.0.0.1:27017/Gestion_Tutoria")
-  .then(() => console.log("✅ MongoDB conectado a Gestion_Tutoria"))
-  .catch(err => console.log("❌ Error de conexión:", err));
 
+// Conexión a MongoDB Atlas (Nube)
+mongoose.connect("mongodb+srv://210369_db_user:u2hlwE8pdoBPHPDN@cluster0.saliknv.mongodb.net/Gestion_Tutoria?appName=Cluster0")
+  .then(() => console.log("✅ Conectado a la Nube (Atlas)"))
+  .catch(err => console.error("❌ Error conectando a la nube:", err));
 // ============================
 // MODELO DE USUARIO (CORREGIDO)
 // ============================
@@ -75,6 +76,8 @@ app.post("/login", async (req, res) => {
 // ============================
 // SERVIDOR
 // ============================
-app.listen(3000, () => {
-  console.log("🚀 Servidor activo en http://localhost:3000");
+// Usar el puerto de la nube (si existe) o el 3000 (si estás en tu PC)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor activo en el puerto ${PORT}`);
 });

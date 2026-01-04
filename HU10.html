@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Tutorías</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .verde-institucional {
+            background-color: #2d5016;
+        }
+        .verde-claro {
+            background-color: #4a7c59;
+        }
+        .hover-verde:hover {
+            background-color: #1e3a0f;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Menú Lateral -->
+    <div class="fixed left-0 top-0 h-full w-64 verde-institucional text-white shadow-lg z-10">
+        <div class="p-6">
+            <h2 class="text-xl font-bold mb-8">Sistema de Tutorías</h2>
+            <nav class="space-y-4">
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover-verde transition-colors duration-200 bg-green-700">
+                    <i class="fas fa-users text-lg"></i>
+                    <span>Ver Tutorados</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover-verde transition-colors duration-200">
+                    <i class="fas fa-file-pdf text-lg"></i>
+                    <span>Generar Constancia</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="ml-64 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b-2 border-green-600">
+            <div class="px-8 py-6">
+                <h1 class="text-3xl font-bold text-gray-800">Gestión de Constancias y Tutorados</h1>
+                <p class="text-gray-600 mt-2">Sistema Universitario de Tutorías</p>
+            </div>
+        </header>
+
+        <!-- Contenido -->
+        <main class="p-8">
+            <!-- Botón Imprimir Lista Completa -->
+            <div class="mb-6">
+                <button class="verde-institucional text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover-verde transition-colors duration-200 flex items-center space-x-3">
+                    <i class="fas fa-print text-xl"></i>
+                    <span>Imprimir Lista Completa</span>
+                </button>
+            </div>
+
+            <!-- Tabla de Tutorados -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-4 verde-claro text-white">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fas fa-users mr-3"></i>
+                        Lista de Tutorados
+                    </h2>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 border-b">No.</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 border-b">Nombre del Estudiante</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 border-b">Fecha de Última Tutoría</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 border-b">Estado</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 border-b">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEstudiantes">
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b">001</td>
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b font-medium">Ana García Rodríguez</td>
+                                <td class="px-6 py-4 text-sm text-gray-600 border-b">15/11/2024</td>
+                                <td class="px-6 py-4 border-b">
+                                    <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Activo</span>
+                                </td>
+                                <td class="px-6 py-4 text-center border-b">
+                                    <button class="verde-institucional text-white px-4 py-2 rounded-md text-sm font-medium hover-verde transition-colors duration-200 flex items-center space-x-2 mx-auto">
+                                        <i class="fas fa-print"></i>
+                                        <span>Imprimir Constancia</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b">002</td>
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b font-medium">Carlos Mendoza López</td>
+                                <td class="px-6 py-4 text-sm text-gray-600 border-b">12/11/2024</td>
+                                <td class="px-6 py-4 border-b">
+                                    <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Activo</span>
+                                </td>
+                                <td class="px-6 py-4 text-center border-b">
+                                    <button class="verde-institucional text-white px-4 py-2 rounded-md text-sm font-medium hover-verde transition-colors duration-200 flex items-center space-x-2 mx-auto">
+                                        <i class="fas fa-print"></i>
+                                        <span>Imprimir Constancia</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b">003</td>
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b font-medium">María Fernández Silva</td>
+                                <td class="px-6 py-4 text-sm text-gray-600 border-b">08/11/2024</td>
+                                <td class="px-6 py-4 border-b">
+                                    <span class="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Pendiente</span>
+                                </td>
+                                <td class="px-6 py-4 text-center border-b">
+                                    <button class="verde-institucional text-white px-4 py-2 rounded-md text-sm font-medium hover-verde transition-colors duration-200 flex items-center space-x-2 mx-auto">
+                                        <i class="fas fa-print"></i>
+                                        <span>Imprimir Constancia</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b">004</td>
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b font-medium">José Antonio Ruiz</td>
+                                <td class="px-6 py-4 text-sm text-gray-600 border-b">05/11/2024</td>
+                                <td class="px-6 py-4 border-b">
+                                    <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Activo</span>
+                                </td>
+                                <td class="px-6 py-4 text-center border-b">
+                                    <button class="verde-institucional text-white px-4 py-2 rounded-md text-sm font-medium hover-verde transition-colors duration-200 flex items-center space-x-2 mx-auto">
+                                        <i class="fas fa-print"></i>
+                                        <span>Imprimir Constancia</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b">005</td>
+                                <td class="px-6 py-4 text-sm text-gray-800 border-b font-medium">Laura Jiménez Torres</td>
+                                <td class="px-6 py-4 text-sm text-gray-600 border-b">02/11/2024</td>
+                                <td class="px-6 py-4 border-b">
+                                    <span class="px-3 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">Inactivo</span>
+                                </td>
+                                <td class="px-6 py-4 text-center border-b">
+                                    <button class="verde-institucional text-white px-4 py-2 rounded-md text-sm font-medium hover-verde transition-colors duration-200 flex items-center space-x-2 mx-auto">
+                                        <i class="fas fa-print"></i>
+                                        <span>Imprimir Constancia</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Footer de la tabla -->
+                <div class="px-6 py-4 bg-gray-50 border-t">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">
+                            Mostrando 5 de 5 estudiantes
+                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Total de tutorados activos:</span>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-md text-sm font-semibold">4</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Funcionalidad para los botones de imprimir constancia
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('Imprimir Constancia')) {
+                button.addEventListener('click', function() {
+                    const fila = this.closest('tr');
+                    const nombre = fila.querySelector('td:nth-child(2)').textContent;
+                    
+                    // Crear ventana de confirmación personalizada
+                    const modal = document.createElement('div');
+                    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                    modal.innerHTML = `
+                        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-file-pdf text-green-600 text-2xl mr-3"></i>
+                                <h3 class="text-lg font-semibold">Generar Constancia</h3>
+                            </div>
+                            <p class="text-gray-600 mb-6">¿Deseas generar la constancia de tutoría para <strong>${nombre}</strong>?</p>
+                            <div class="flex space-x-3 justify-end">
+                                <button class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors" onclick="this.closest('.fixed').remove()">
+                                    Cancelar
+                                </button>
+                                <button class="px-4 py-2 verde-institucional text-white rounded-md hover-verde transition-colors" onclick="generarConstancia('${nombre}')">
+                                    <i class="fas fa-print mr-2"></i>Generar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                });
+            } else if (button.textContent.includes('Imprimir Lista Completa')) {
+                button.addEventListener('click', function() {
+                    // Crear ventana de confirmación para lista completa
+                    const modal = document.createElement('div');
+                    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                    modal.innerHTML = `
+                        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-print text-green-600 text-2xl mr-3"></i>
+                                <h3 class="text-lg font-semibold">Imprimir Lista Completa</h3>
+                            </div>
+                            <p class="text-gray-600 mb-6">¿Deseas imprimir la lista completa de todos los tutorados?</p>
+                            <div class="flex space-x-3 justify-end">
+                                <button class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors" onclick="this.closest('.fixed').remove()">
+                                    Cancelar
+                                </button>
+                                <button class="px-4 py-2 verde-institucional text-white rounded-md hover-verde transition-colors" onclick="imprimirListaCompleta()">
+                                    <i class="fas fa-print mr-2"></i>Imprimir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                });
+            }
+        });
+
+        // Funcionalidad del menú lateral
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remover clase activa de todos los enlaces
+                document.querySelectorAll('nav a').forEach(l => {
+                    l.classList.remove('bg-green-700');
+                });
+                
+                // Agregar clase activa al enlace clickeado
+                this.classList.add('bg-green-700');
+                
+                const texto = this.textContent.trim();
+                mostrarNotificacion(`Navegando a: ${texto}`);
+            });
+        });
+
+        function generarConstancia(nombre) {
+            // Cerrar modal
+            document.querySelector('.fixed').remove();
+            
+            // Simular generación de constancia
+            mostrarNotificacion(`Constancia generada exitosamente para ${nombre}`, 'success');
+        }
+
+        function imprimirListaCompleta() {
+            // Cerrar modal
+            document.querySelector('.fixed').remove();
+            
+            // Simular impresión
+            mostrarNotificacion('Lista completa enviada a impresión', 'success');
+        }
+
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            const notificacion = document.createElement('div');
+            const colorClass = tipo === 'success' ? 'bg-green-500' : 'bg-blue-500';
+            
+            notificacion.className = `fixed top-4 right-4 ${colorClass} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            notificacion.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            // Animar entrada
+            setTimeout(() => {
+                notificacion.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notificacion.classList.add('translate-x-full');
+                setTimeout(() => {
+                    notificacion.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f3dc61354de7ad',t:'MTc2MDU3ODk1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

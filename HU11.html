@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Verificador Académico</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8faf9;
+      color: #2d3748;
+      height: 100%;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+      min-height: 100%;
+    }
+    
+    .header {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
+      border-left: 5px solid #2e7d32;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .title-icon {
+      width: 40px;
+      height: 40px;
+      color: #2e7d32;
+    }
+    
+    .filters-section {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
+    }
+    
+    .filters-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 20px;
+      align-items: end;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .filter-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 5px;
+    }
+    
+    .filter-input {
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #ffffff;
+      transition: all 0.3s ease;
+      color: #2d3748;
+    }
+    
+    .filter-input:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+    
+    .btn-search {
+      padding: 12px 24px;
+      background: #3182ce;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);
+    }
+    
+    .btn-search:hover {
+      background: #2c5282;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+    }
+    
+    .results-section {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    
+    .results-header {
+      padding: 25px 30px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f7fafc;
+    }
+    
+    .results-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .export-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-export {
+      padding: 10px 20px;
+      border: 2px solid #2e7d32;
+      background: #ffffff;
+      color: #2e7d32;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-export:hover {
+      background: #2e7d32;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-export.pdf {
+      border-color: #dc2626;
+      color: #dc2626;
+    }
+    
+    .btn-export.pdf:hover {
+      background: #dc2626;
+      color: white;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    thead {
+      background: #2e7d32;
+      color: white;
+    }
+    
+    th {
+      padding: 18px 20px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+      transition: background 0.2s ease;
+    }
+    
+    tbody tr:hover {
+      background: #f7fafc;
+    }
+    
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+    
+    td {
+      padding: 18px 20px;
+      color: #2d3748;
+      font-size: 15px;
+      vertical-align: top;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-completed {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+    
+    .status-pending {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+    
+    .status-in-progress {
+      background: #bee3f8;
+      color: #2a4365;
+    }
+    
+    .tutoring-type {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .type-academic {
+      background: #e6fffa;
+      color: #234e52;
+    }
+    
+    .type-personal {
+      background: #fef5e7;
+      color: #744210;
+    }
+    
+    .type-professional {
+      background: #f0f4ff;
+      color: #3730a3;
+    }
+    
+    .icon {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 60px 30px;
+      color: #718096;
+    }
+    
+    .no-results-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      color: #cbd5e0;
+    }
+    
+    @media (max-width: 1024px) {
+      .filters-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      
+      .btn-search {
+        grid-column: span 2;
+        justify-self: center;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 20px;
+      }
+      
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .btn-search {
+        grid-column: span 1;
+      }
+      
+      .results-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+      }
+      
+      .export-buttons {
+        justify-content: center;
+      }
+      
+      table {
+        min-width: 700px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="dashboard-container">
+   <div class="header">
+    <h1 class="page-title" id="page-title">
+     <svg class="title-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4m-4 0V9a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v2m-4 0h4"></path>
+     </svg> Consulta de Tutorías por Fecha</h1>
+   </div>
+   <div class="filters-section">
+    <h2 class="filters-title">
+     <svg class="icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+     </svg> Filtros de Búsqueda</h2>
+    <div class="filters-grid">
+     <div class="filter-group"><label class="filter-label" id="date-label">Seleccionar Fecha</label> <input type="date" class="filter-input" id="date-filter" value="2024-12-15">
+     </div>
+     <div class="filter-group"><label class="filter-label" id="type-label">Tipo de Tutoría</label> <select class="filter-input" id="type-filter"> <option value="">Todos los tipos</option> <option value="academic">Académica</option> <option value="personal">Personal</option> <option value="professional">Profesional</option> </select>
+     </div>
+     <div class="filter-group"><label class="filter-label">Estado</label> <select class="filter-input" id="status-filter"> <option value="">Todos los estados</option> <option value="completed">Completada</option> <option value="pending">Pendiente</option> <option value="in-progress">En Progreso</option> </select>
+     </div><button class="btn-search" onclick="handleSearch()">
+      <svg class="icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle> <path d="m21 21-4.35-4.35"></path>
+      </svg><span id="search-button">Buscar</span> </button>
+    </div>
+   </div>
+   <div class="results-section">
+    <div class="results-header">
+     <h3 class="results-title">
+      <svg class="icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18l-2 13H5L3 6z"></path> <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      </svg> Resultados de la Consulta</h3>
+     <div class="export-buttons"><button class="btn-export pdf" onclick="handleExportPDF()">
+       <svg class="icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path> <polyline points="14 2 14 8 20 8"></polyline>
+       </svg><span id="export-pdf-button">Exportar PDF</span> </button> <button class="btn-export excel" onclick="handleExportExcel()">
+       <svg class="icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path> <polyline points="14 2 14 8 20 8"></polyline> <line x1="9" y1="15" x2="15" y2="9"></line> <line x1="15" y1="15" x2="9" y2="9"></line>
+       </svg><span id="export-excel-button">Descargar Excel</span> </button>
+     </div>
+    </div>
+    <div class="table-container">
+     <table id="results-table">
+      <thead>
+       <tr>
+        <th>N°</th>
+        <th>Estudiante</th>
+        <th>Tutor</th>
+        <th>Tipo de Tutoría</th>
+        <th>Observaciones</th>
+        <th>Estado</th>
+       </tr>
+      </thead>
+      <tbody id="table-body">
+       <tr>
+        <td>1</td>
+        <td>María González Pérez</td>
+        <td>Dr. Carlos Mendoza</td>
+        <td><span class="tutoring-type type-academic">Académica</span></td>
+        <td>Revisión de proyecto de tesis. Avance del 75% completado.</td>
+        <td><span class="status-badge status-completed">Completada</span></td>
+       </tr>
+       <tr>
+        <td>2</td>
+        <td>Luis Hernández Torres</td>
+        <td>Dra. Ana Martínez</td>
+        <td><span class="tutoring-type type-personal">Personal</span></td>
+        <td>Orientación vocacional y planificación académica.</td>
+        <td><span class="status-badge status-in-progress">En Progreso</span></td>
+       </tr>
+       <tr>
+        <td>3</td>
+        <td>Patricia Sánchez Ruiz</td>
+        <td>Mg. Roberto Silva</td>
+        <td><span class="tutoring-type type-professional">Profesional</span></td>
+        <td>Preparación para entrevistas laborales y CV.</td>
+        <td><span class="status-badge status-completed">Completada</span></td>
+       </tr>
+       <tr>
+        <td>4</td>
+        <td>Carlos Ramírez López</td>
+        <td>Dr. Elena Vargas</td>
+        <td><span class="tutoring-type type-academic">Académica</span></td>
+        <td>Dificultades en matemáticas avanzadas. Requiere seguimiento.</td>
+        <td><span class="status-badge status-pending">Pendiente</span></td>
+       </tr>
+       <tr>
+        <td>5</td>
+        <td>Ana Martínez Silva</td>
+        <td>Dra. José Rodríguez</td>
+        <td><span class="tutoring-type type-personal">Personal</span></td>
+        <td>Manejo de estrés académico y técnicas de estudio.</td>
+        <td><span class="status-badge status-completed">Completada</span></td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      page_title: "Consulta de Tutorías por Fecha",
+      date_label: "Seleccionar Fecha",
+      type_label: "Tipo de Tutoría",
+      search_button: "Buscar",
+      export_pdf_button: "Exportar PDF",
+      export_excel_button: "Descargar Excel",
+      background_color: "#f8faf9",
+      primary_color: "#2e7d32",
+      surface_color: "#ffffff",
+      text_color: "#1a202c",
+      accent_color: "#3182ce"
+    };
+    
+    async function onConfigChange(config) {
+      document.getElementById('page-title').innerHTML = `
+        <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4m-4 0V9a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v2m-4 0h4"></path>
+        </svg>
+        ${config.page_title || defaultConfig.page_title}
+      `;
+      
+      document.getElementById('date-label').textContent = config.date_label || defaultConfig.date_label;
+      document.getElementById('type-label').textContent = config.type_label || defaultConfig.type_label;
+      document.getElementById('search-button').textContent = config.search_button || defaultConfig.search_button;
+      document.getElementById('export-pdf-button').textContent = config.export_pdf_button || defaultConfig.export_pdf_button;
+      document.getElementById('export-excel-button').textContent = config.export_excel_button || defaultConfig.export_excel_button;
+      
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      
+      document.body.style.background = backgroundColor;
+      document.querySelector('.page-title').style.color = textColor;
+      
+      document.querySelectorAll('.header, .filters-section, .results-section').forEach(el => {
+        el.style.background = surfaceColor;
+      });
+      
+      document.querySelectorAll('thead').forEach(el => {
+        el.style.background = primaryColor;
+      });
+      
+      document.querySelectorAll('.btn-search').forEach(el => {
+        el.style.background = accentColor;
+      });
+      
+      document.querySelectorAll('.btn-export.excel').forEach(el => {
+        el.style.color = primaryColor;
+        el.style.borderColor = primaryColor;
+      });
+      
+      const customFont = config.font_family || defaultConfig.font_family;
+      if (customFont) {
+        const baseFontStack = "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      }
+      
+      const baseSize = config.font_size || 16;
+      document.querySelector('.page-title').style.fontSize = `${baseSize * 2}px`;
+      document.querySelectorAll('.filters-title, .results-title').forEach(el => {
+        el.style.fontSize = `${baseSize * 1.25}px`;
+      });
+      document.querySelectorAll('.filter-label').forEach(el => {
+        el.style.fontSize = `${baseSize * 0.875}px`;
+      });
+      document.querySelectorAll('th').forEach(el => {
+        el.style.fontSize = `${baseSize * 0.875}px`;
+      });
+      document.querySelectorAll('td').forEach(el => {
+        el.style.fontSize = `${baseSize * 0.9375}px`;
+      });
+    }
+    
+    function handleSearch() {
+      const dateValue = document.getElementById('date-filter').value;
+      const typeValue = document.getElementById('type-filter').value;
+      const statusValue = document.getElementById('status-filter').value;
+      
+      showNotification(`🔍 Buscando tutorías para ${dateValue || 'todas las fechas'}...`, '#3182ce');
+      
+      setTimeout(() => {
+        showNotification('✓ Búsqueda completada. Se encontraron 5 registros.', '#2e7d32');
+      }, 1500);
+    }
+    
+    function handleExportPDF() {
+      showNotification('📄 Generando archivo PDF...', '#dc2626');
+      
+      setTimeout(() => {
+        showNotification('✓ PDF generado exitosamente.', '#2e7d32');
+      }, 2000);
+    }
+    
+    function handleExportExcel() {
+      showNotification('📊 Generando archivo Excel...', '#2e7d32');
+      
+      setTimeout(() => {
+        showNotification('✓ Archivo Excel descargado exitosamente.', '#2e7d32');
+      }, 2000);
+    }
+    
+    function showNotification(message, color) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${color};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-weight: 600;
+        max-width: 300px;
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+    
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                config.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => {
+                config.accent_color = value;
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || 16,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["page_title", config.page_title || defaultConfig.page_title],
+          ["date_label", config.date_label || defaultConfig.date_label],
+          ["type_label", config.type_label || defaultConfig.type_label],
+          ["search_button", config.search_button || defaultConfig.search_button],
+          ["export_pdf_button", config.export_pdf_button || defaultConfig.export_pdf_button],
+          ["export_excel_button", config.export_excel_button || defaultConfig.export_excel_button]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'996dd94ac7acb4df',t:'MTc2MTg1ODA5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

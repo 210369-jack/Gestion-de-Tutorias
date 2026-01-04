@@ -184,6 +184,47 @@ app.post("/registrar-usuario", async (req, res) => {
   }
 });
 
+// ==========================================
+// RUTA PARA GUARDAR TUTORÍA
+// ==========================================
+app.post("/guardar-tutoria", async (req, res) => {
+  try {
+    const nuevaTutoria = new RegistroTutoria({
+      bienestar: {
+        estadoAnimo: req.body.estado_animo,
+        nivelEstres: req.body.nivel_estres,
+        observaciones: req.body.obs_bienestar
+      },
+      participacion: {
+        clase: req.body.participacion_clase,
+        asistencia: req.body.asistencia_tutorias,
+        // Si vienen varios checkboxes con el mismo name, Express los convierte en array
+        actividades: req.body.actividades || [] 
+      },
+      situacionPersonal: {
+        familiar: req.body.sit_familiar,
+        economica: req.body.sit_economica,
+        factoresRendimiento: req.body.factores_rendimiento
+      },
+      seguimiento: {
+        observacionesGenerales: req.body.obs_generales,
+        derivaciones: req.body.derivaciones || [],
+        seguimientoRequerido: req.body.seguimiento_req
+      }
+    });
+
+    await nuevaTutoria.save();
+    console.log("✅ Registro de tutoría guardado correctamente");
+    
+    // Redirección con mensaje de éxito
+    res.send("<script>alert('Registro guardado con éxito en la nube'); window.location.href='/HU7.html';</script>");
+
+  } catch (error) {
+    console.error("❌ Error al guardar tutoría:", error);
+    res.status(500).send("Error interno al procesar el registro");
+  }
+});
+
 // ============================
 // 5. ENCENDER SERVIDOR
 // ============================

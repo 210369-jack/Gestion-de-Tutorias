@@ -65,12 +65,14 @@ const RegistroTutoriaSchema = new mongoose.Schema({
 
 const RegistroTutoria = mongoose.model("RegistroTutoria", RegistroTutoriaSchema);
 
-// MODELO PARA GESTIÓN DE USUARIOS (HU1 - Tu trabajo)
+// MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3 - Tu trabajo)
+// *** CAMBIO AQUÍ: Se agregó tutorActual ***
 const NuevoUsuarioSchema = new mongoose.Schema({
   nombreCompleto: String,
   email: String,
   tipoUsuario: String,  
   matricula: String,
+  tutorActual: { type: String, default: "Sin Asignar" }, // <--- NUEVO CAMPO PARA HU3
   fechaRegistro: { type: Date, default: Date.now } 
 }, { collection: 'Usuarios_Sistema' });
 
@@ -131,7 +133,8 @@ app.post("/registrar-usuario", async (req, res) => {
       nombreCompleto: req.body.nombre,      
       email: req.body.email,
       tipoUsuario: req.body.tipo,
-      matricula: req.body.matricula
+      matricula: req.body.matricula,
+      tutorActual: "Sin Asignar" // Inicializamos como sin asignar
     });
     await usuario.save();
     console.log("✅ Usuario registrado:", usuario);
@@ -160,6 +163,31 @@ app.delete("/eliminar-usuario/:id", async (req, res) => {
     res.json({ success: true, message: "Usuario eliminado" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error al eliminar" });
+  }
+});
+
+// ==========================================
+// RUTA PARA ACTUALIZAR USUARIO (PUT) - HU3
+// ==========================================
+// Esta es la ruta nueva que permite "Reasignar" y "Modificar"
+app.put("/actualizar-usuario/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const datosActualizados = req.body; 
+
+    // Busca por ID y actualiza
+    const usuarioActualizado = await NuevoUsuario.findByIdAndUpdate(id, datosActualizados, { new: true });
+
+    if (!usuarioActualizado) {
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    console.log("✅ Usuario actualizado (HU3):", usuarioActualizado);
+    res.json({ success: true, message: "Actualización exitosa" });
+
+  } catch (error) {
+    console.error("❌ Error al actualizar:", error);
+    res.status(500).json({ success: false, message: "Error interno" });
   }
 });
 

@@ -152,6 +152,31 @@ app.post("/registrar-usuario", async (req, res) => {
   }
 });
 
+// ==========================================
+// 3. RUTA PARA OBTENER TODOS LOS USUARIOS (GET)
+// ==========================================
+app.get("/obtener-usuarios", async (req, res) => {
+  try {
+    const usuarios = await NuevoUsuario.find(); // Busca todos en MongoDB
+    res.json(usuarios); // Los envía al navegador
+  } catch (error) {
+    res.status(500).send("Error al obtener usuarios");
+  }
+});
+
+// ==========================================
+// 4. RUTA PARA ELIMINAR USUARIO (DELETE)
+// ==========================================
+app.delete("/eliminar-usuario/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await NuevoUsuario.findByIdAndDelete(id); // Borra de MongoDB usando el ID único
+    res.json({ success: true, message: "Usuario eliminado" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error al eliminar" });
+  }
+});
+
 // ============================
 // 5. ENCENDER SERVIDOR
 // ============================

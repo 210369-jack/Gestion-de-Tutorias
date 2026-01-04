@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tutorías - Modificar y Actualizar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-white min-h-full">
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6 border-l-4 border-green-500">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Gestión de Tutorías</h1>
+                    <p class="text-gray-600">Modificar y actualizar registros de seguimiento académico</p>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span class="text-sm text-gray-500">Estado del semestre:</span>
+                        <span id="semesterStatus" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            Activo
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-500">Semestre 2024-1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Buscar Tutorías</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estudiante</label>
+                    <input type="text" id="searchStudent" placeholder="Nombre o código del estudiante" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+                    <input type="date" id="searchDate" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Tutoría</label>
+                    <select id="searchType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <option value="">Todos los tipos</option>
+                        <option value="academica">Académica</option>
+                        <option value="personal">Personal</option>
+                        <option value="profesional">Profesional</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button onclick="searchTutorials()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors duration-200">
+                    Buscar Tutorías
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorials List -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Tutorías Registradas</h2>
+            <div id="tutorialsList" class="space-y-4">
+                <!-- Tutorial cards will be populated here -->
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="flex items-center justify-center min-h-full p-4">
+                <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-full overflow-y-auto">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">Editar Tutoría</h3>
+                            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                        </div>
+                        
+                        <form id="editForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Estudiante</label>
+                                    <input type="text" id="editStudent" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Código Estudiantil</label>
+                                    <input type="text" id="editStudentCode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+                                    <input type="date" id="editDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Hora</label>
+                                    <input type="time" id="editTime" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Tutoría</label>
+                                    <select id="editType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <option value="academica">Académica</option>
+                                        <option value="personal">Personal</option>
+                                        <option value="profesional">Profesional</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Modalidad</label>
+                                    <select id="editModality" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <option value="presencial">Presencial</option>
+                                        <option value="virtual">Virtual</option>
+                                        <option value="hibrida">Híbrida</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tema Principal</label>
+                                <input type="text" id="editTopic" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones</label>
+                                <textarea id="editObservations" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Documentación Complementaria</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                    <input type="file" id="editFiles" multiple class="hidden" accept=".pdf,.doc,.docx,.jpg,.png">
+                                    <button type="button" onclick="document.getElementById('editFiles').click()" class="text-green-600 hover:text-green-700">
+                                        Adjuntar archivos adicionales
+                                    </button>
+                                    <p class="text-sm text-gray-500 mt-2">PDF, DOC, DOCX, JPG, PNG</p>
+                                </div>
+                                <div id="fileList" class="mt-2 space-y-1"></div>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-4 pt-6 border-t">
+                                <button type="button" onclick="closeEditModal()" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors duration-200">
+                                    Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="flex items-center justify-center min-h-full p-4">
+                <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-full overflow-y-auto">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">Historial de Modificaciones</h3>
+                            <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                        </div>
+                        <div id="historyContent" class="space-y-4">
+                            <!-- History entries will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg hidden">
+            <div class="flex items-center">
+                <span class="mr-2">✓</span>
+                <span>Tutoría actualizada exitosamente</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let tutorials = [
+            {
+                id: 1,
+                student: "María González",
+                studentCode: "2021001",
+                date: "2024-03-15",
+                time: "10:00",
+                type: "academica",
+                modality: "presencial",
+                topic: "Dificultades en Cálculo I",
+                observations: "Estudiante presenta dificultades en límites y derivadas. Se recomienda práctica adicional.",
+                files: ["calculo_ejercicios.pdf"],
+                history: [
+                    { date: "2024-03-15 10:30", user: "Prof. García", action: "Creación inicial" },
+                    { date: "2024-03-16 14:20", user: "Prof. García", action: "Actualización de observaciones" }
+                ]
+            },
+            {
+                id: 2,
+                student: "Carlos Rodríguez",
+                studentCode: "2020045",
+                date: "2024-03-14",
+                time: "14:30",
+                type: "personal",
+                modality: "virtual",
+                topic: "Manejo del estrés académico",
+                observations: "Estudiante reporta ansiedad por carga académica. Se proporcionaron técnicas de relajación.",
+                files: [],
+                history: [
+                    { date: "2024-03-14 15:00", user: "Prof. García", action: "Creación inicial" }
+                ]
+            },
+            {
+                id: 3,
+                student: "Ana Martínez",
+                studentCode: "2021078",
+                date: "2024-03-13",
+                time: "09:00",
+                type: "profesional",
+                modality: "presencial",
+                topic: "Orientación vocacional",
+                observations: "Discusión sobre opciones de especialización y oportunidades laborales en el área.",
+                files: ["guia_especializaciones.pdf"],
+                history: [
+                    { date: "2024-03-13 09:45", user: "Prof. García", action: "Creación inicial" }
+                ]
+            }
+        ];
+
+        let currentEditingId = null;
+        let semesterActive = true;
+
+        function renderTutorials(tutorialsToRender = tutorials) {
+            const container = document.getElementById('tutorialsList');
+            
+            if (tutorialsToRender.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No se encontraron tutorías que coincidan con los criterios de búsqueda.</p>';
+                return;
+            }
+
+            container.innerHTML = tutorialsToRender.map(tutorial => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 fade-in">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <h3 class="text-lg font-semibold text-gray-800">${tutorial.student}</h3>
+                                <span class="text-sm text-gray-500">Código: ${tutorial.studentCode}</span>
+                                <span class="px-2 py-1 text-xs rounded-full ${getTypeColor(tutorial.type)}">${getTypeLabel(tutorial.type)}</span>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
+                                <div><strong>Fecha:</strong> ${formatDate(tutorial.date)}</div>
+                                <div><strong>Hora:</strong> ${tutorial.time}</div>
+                                <div><strong>Modalidad:</strong> ${tutorial.modality}</div>
+                                <div><strong>Tema:</strong> ${tutorial.topic}</div>
+                            </div>
+                            <p class="text-gray-700 mb-2"><strong>Observaciones:</strong> ${tutorial.observations}</p>
+                            ${tutorial.files.length > 0 ? `
+                                <div class="text-sm text-gray-600">
+                                    <strong>Archivos:</strong> ${tutorial.files.join(', ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex space-x-2 ml-4">
+                            ${semesterActive ? `
+                                <button onclick="editTutorial(${tutorial.id})" class="bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded text-sm transition-colors duration-200">
+                                    Editar
+                                </button>
+                            ` : `
+                                <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded text-sm">Bloqueado</span>
+                            `}
+                            <button onclick="viewHistory(${tutorial.id})" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm transition-colors duration-200">
+                                Historial
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTypeColor(type) {
+            const colors = {
+                'academica': 'bg-blue-100 text-blue-800',
+                'personal': 'bg-purple-100 text-purple-800',
+                'profesional': 'bg-orange-100 text-orange-800'
+            };
+            return colors[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'academica': 'Académica',
+                'personal': 'Personal',
+                'profesional': 'Profesional'
+            };
+            return labels[type] || type;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES');
+        }
+
+        function searchTutorials() {
+            const studentSearch = document.getElementById('searchStudent').value.toLowerCase();
+            const dateSearch = document.getElementById('searchDate').value;
+            const typeSearch = document.getElementById('searchType').value;
+
+            const filtered = tutorials.filter(tutorial => {
+                const matchesStudent = !studentSearch || 
+                    tutorial.student.toLowerCase().includes(studentSearch) || 
+                    tutorial.studentCode.includes(studentSearch);
+                const matchesDate = !dateSearch || tutorial.date === dateSearch;
+                const matchesType = !typeSearch || tutorial.type === typeSearch;
+
+                return matchesStudent && matchesDate && matchesType;
+            });
+
+            renderTutorials(filtered);
+        }
+
+        function editTutorial(id) {
+            if (!semesterActive) {
+                alert('No se pueden editar tutorías cuando el semestre está cerrado.');
+                return;
+            }
+
+            const tutorial = tutorials.find(t => t.id === id);
+            if (!tutorial) return;
+
+            currentEditingId = id;
+
+            // Populate form
+            document.getElementById('editStudent').value = tutorial.student;
+            document.getElementById('editStudentCode').value = tutorial.studentCode;
+            document.getElementById('editDate').value = tutorial.date;
+            document.getElementById('editTime').value = tutorial.time;
+            document.getElementById('editType').value = tutorial.type;
+            document.getElementById('editModality').value = tutorial.modality;
+            document.getElementById('editTopic').value = tutorial.topic;
+            document.getElementById('editObservations').value = tutorial.observations;
+
+            // Show modal
+            document.getElementById('editModal').classList.remove('hidden');
+            document.getElementById('editModal').classList.add('fade-in');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            currentEditingId = null;
+        }
+
+        function viewHistory(id) {
+            const tutorial = tutorials.find(t => t.id === id);
+            if (!tutorial) return;
+
+            const historyContent = document.getElementById('historyContent');
+            historyContent.innerHTML = `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Tutoría: ${tutorial.student} - ${tutorial.topic}</h4>
+                </div>
+                <div class="space-y-3">
+                    ${tutorial.history.map(entry => `
+                        <div class="border-l-4 border-green-500 pl-4 py-2 bg-green-50 rounded-r">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-medium text-gray-800">${entry.action}</p>
+                                    <p class="text-sm text-gray-600">Por: ${entry.user}</p>
+                                </div>
+                                <span class="text-sm text-gray-500">${entry.date}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('historyModal').classList.remove('hidden');
+            document.getElementById('historyModal').classList.add('fade-in');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.classList.remove('hidden');
+            message.classList.add('slide-down');
+            setTimeout(() => {
+                message.classList.add('hidden');
+                message.classList.remove('slide-down');
+            }, 3000);
+        }
+
+        // Form submission
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentEditingId) return;
+
+            const tutorial = tutorials.find(t => t.id === currentEditingId);
+            if (!tutorial) return;
+
+            // Update tutorial data
+            tutorial.student = document.getElementById('editStudent').value;
+            tutorial.studentCode = document.getElementById('editStudentCode').value;
+            tutorial.date = document.getElementById('editDate').value;
+            tutorial.time = document.getElementById('editTime').value;
+            tutorial.type = document.getElementById('editType').value;
+            tutorial.modality = document.getElementById('editModality').value;
+            tutorial.topic = document.getElementById('editTopic').value;
+            tutorial.observations = document.getElementById('editObservations').value;
+
+            // Add to history
+            const now = new Date();
+            tutorial.history.push({
+                date: now.toLocaleString('es-ES'),
+                user: 'Prof. García',
+                action: 'Actualización de información'
+            });
+
+            // Handle file uploads (simulation)
+            const fileInput = document.getElementById('editFiles');
+            if (fileInput.files.length > 0) {
+                for (let file of fileInput.files) {
+                    tutorial.files.push(file.name);
+                }
+                tutorial.history.push({
+                    date: now.toLocaleString('es-ES'),
+                    user: 'Prof. García',
+                    action: 'Documentación complementaria agregada'
+                });
+            }
+
+            closeEditModal();
+            renderTutorials();
+            showSuccessMessage();
+        });
+
+        // File input handler
+        document.getElementById('editFiles').addEventListener('change', function(e) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            for (let file of e.target.files) {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'text-sm text-green-600';
+                fileDiv.textContent = `📎 ${file.name}`;
+                fileList.appendChild(fileDiv);
+            }
+        });
+
+        // Simulate semester closure (for demonstration)
+        function toggleSemester() {
+            semesterActive = !semesterActive;
+            const statusElement = document.getElementById('semesterStatus');
+            if (semesterActive) {
+                statusElement.textContent = 'Activo';
+                statusElement.className = 'px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium';
+            } else {
+                statusElement.textContent = 'Cerrado';
+                statusElement.className = 'px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium';
+            }
+            renderTutorials();
+        }
+
+        // Add semester toggle button (for demonstration)
+        document.querySelector('.container').insertAdjacentHTML('beforeend', `
+            <div class="fixed bottom-4 right-4">
+                <button onclick="toggleSemester()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg text-sm">
+                    Alternar Estado Semestre (Demo)
+                </button>
+            </div>
+        `);
+
+        // Initialize
+        renderTutorials();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f23afae5b9b507',t:'MTc2MDU2MTg2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

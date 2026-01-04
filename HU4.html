@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Reportes de Tutorías Universitarias</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+      min-height: 100%;
+      height: 100%;
+    }
+    
+    html {
+      height: 100%;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+    }
+    
+    .header h1 {
+      margin: 0 0 8px 0;
+      font-size: 32px;
+      font-weight: 600;
+    }
+    
+    .header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+    
+    .controls-section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .control-group label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2e7d32;
+      margin-bottom: 6px;
+    }
+    
+    .control-group select,
+    .control-group input {
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .control-group select:focus,
+    .control-group input:focus {
+      outline: none;
+      border-color: #43a047;
+      box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: #2e7d32;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1b5e20;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #2e7d32;
+      border: 2px solid #2e7d32;
+    }
+    
+    .btn-secondary:hover {
+      background: #f1f8e9;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 4px solid #43a047;
+    }
+    
+    .stat-card h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .stat-card p {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      color: #2e7d32;
+    }
+    
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    
+    .table-header {
+      padding: 20px 24px;
+      background: #f1f8e9;
+      border-bottom: 2px solid #c5e1a5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .table-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #2e7d32;
+    }
+    
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    thead {
+      background: #2e7d32;
+      color: white;
+    }
+    
+    th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    td {
+      padding: 16px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 14px;
+    }
+    
+    tbody tr:hover {
+      background: #f1f8e9;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-excelente {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .badge-bueno {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .badge-regular {
+      background: #fff9c4;
+      color: #f57f17;
+    }
+    
+    .badge-deficiente {
+      background: #ffcdd2;
+      color: #d32f2f;
+    }
+    
+    .badge-completada {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .badge-pendiente {
+      background: #fff9c4;
+      color: #f57f17;
+    }
+    
+    .badge-programada {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #2e7d32;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      max-width: 800px;
+      width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+    }
+    
+    .modal-small {
+      max-width: 400px;
+    }
+    
+    .modal-header {
+      padding: 24px 24px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      color: #2e7d32;
+      font-size: 20px;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-close:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+    
+    .modal-body {
+      padding: 24px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .form-group label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2e7d32;
+      margin-bottom: 6px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #43a047;
+      box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
+    }
+    
+    .file-upload {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .file-upload input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-upload-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      border: 2px dashed #c5e1a5;
+      border-radius: 8px;
+      background: #f1f8e9;
+      color: #2e7d32;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .file-upload:hover .file-upload-label {
+      border-color: #43a047;
+      background: #e8f5e9;
+    }
+    
+    .file-info {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+    
+    .btn-danger {
+      background: #d32f2f;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #b71c1c;
+    }
+    
+    .btn-warning {
+      background: #f57c00;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: #e65100;
+    }
+    
+    .session-details {
+      background: #f1f8e9;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .session-details h4 {
+      margin: 0 0 12px 0;
+      color: #2e7d32;
+      font-size: 16px;
+    }
+    
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .detail-item label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .detail-item span {
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .attachment-link {
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .attachment-link:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .table-wrapper {
+        overflow-x: scroll;
+      }
+      
+      table {
+        min-width: 1200px;
+      }
+      
+      .modal {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-actions {
+        flex-direction: column;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="header">
+    <h1 id="system-title">Sistema de Reportes de Tutorías Universitarias</h1>
+    <p id="institution-name">Escuela Profesional de Ingeniería Informática y de Sistemas</p>
+   </div>
+   <div class="controls-section">
+    <div class="controls-grid">
+     <div class="control-group"><label for="filter-fecha">Fecha</label> <input type="date" id="filter-fecha">
+     </div>
+     <div class="control-group"><label for="filter-grupo">Grupo</label> <select id="filter-grupo"> <option value="">Todos los grupos</option> <option value="A">Grupo A</option> <option value="B">Grupo B</option> <option value="C">Grupo C</option> <option value="D">Grupo D</option> </select>
+     </div>
+     <div class="control-group"><label for="filter-curso">Curso</label> <select id="filter-curso"> <option value="">Todos los cursos</option> <option value="Programación I">Programación I</option> <option value="Programación II">Programación II</option> <option value="Base de Datos">Base de Datos</option> <option value="Redes">Redes</option> <option value="Ingeniería de Software">Ingeniería de Software</option> <option value="Inteligencia Artificial">Inteligencia Artificial</option> </select>
+     </div>
+     <div class="control-group"><label for="filter-desempeno">Desempeño</label> <select id="filter-desempeno"> <option value="">Todos los niveles</option> <option value="Excelente">Excelente</option> <option value="Bueno">Bueno</option> <option value="Regular">Regular</option> <option value="Deficiente">Deficiente</option> </select>
+     </div>
+     <div class="control-group"><label for="search-estudiante">Buscar Estudiante</label> <input type="text" id="search-estudiante" placeholder="Código o nombre...">
+     </div>
+    </div>
+    <div class="button-group"><button class="btn btn-primary" id="btn-nueva-sesion"> <span>📝</span> <span id="register-button">Registrar Nueva Sesión</span> </button> <button class="btn btn-secondary" id="btn-aplicar-filtros"> <span>🔍</span> Aplicar Filtros </button> <button class="btn btn-secondary" id="btn-limpiar-filtros"> <span>🔄</span> Limpiar Filtros </button> <button class="btn btn-secondary" id="btn-generar-reporte"> <span>📊</span> Generar Reporte </button>
+    </div>
+   </div>
+   <div class="stats-grid">
+    <div class="stat-card">
+     <h3>Total de Sesiones</h3>
+     <p id="stat-total">0</p>
+    </div>
+    <div class="stat-card">
+     <h3>Sesiones Esta Semana</h3>
+     <p id="stat-semana">0</p>
+    </div>
+    <div class="stat-card">
+     <h3>Estudiantes Atendidos</h3>
+     <p id="stat-estudiantes">0</p>
+    </div>
+    <div class="stat-card">
+     <h3>Dificultades Detectadas</h3>
+     <p id="stat-dificultades">0</p>
+    </div>
+   </div>
+   <div class="table-container">
+    <div class="table-header">
+     <h2 id="sessions-title">Registro de Sesiones Académicas</h2>
+    </div>
+    <div class="loading" id="loading">
+     <p>⏳ Cargando sesiones...</p>
+    </div>
+    <div class="table-wrapper" id="table-wrapper">
+     <table id="sesiones-table">
+      <thead>
+       <tr>
+        <th>Fecha</th>
+        <th>Estudiante</th>
+        <th>Grupo</th>
+        <th>Curso</th>
+        <th>Temas Tratados</th>
+        <th>Desempeño</th>
+        <th>Estado</th>
+        <th>Archivos</th>
+        <th>Acciones</th>
+       </tr>
+      </thead>
+      <tbody id="sesiones-tbody">
+      </tbody>
+     </table>
+    </div>
+    <div class="empty-state" id="empty-state" style="display: none;">
+     <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14,2 14,8 20,8" /> <line x1="16" y1="13" x2="8" y2="13" /> <line x1="16" y1="17" x2="8" y2="17" /> <polyline points="10,9 9,9 8,9" />
+     </svg>
+     <h3>No hay sesiones registradas</h3>
+     <p>Comienza registrando la primera sesión académica con un estudiante.</p>
+    </div>
+   </div><!-- Modal para registrar/editar sesión -->
+   <div class="modal-overlay" id="modal-overlay" style="display: none;">
+    <div class="modal">
+     <div class="modal-header">
+      <h3 id="modal-title">Registrar Nueva Sesión</h3><button class="modal-close" id="modal-close">×</button>
+     </div>
+     <form class="modal-body" id="sesion-form">
+      <div class="form-grid">
+       <div class="form-group"><label for="sesion-fecha">Fecha de la Sesión *</label> <input type="date" id="sesion-fecha" required>
+       </div>
+       <div class="form-group"><label for="sesion-tutor">Tutor *</label> <input type="text" id="sesion-tutor" required placeholder="Nombre del tutor">
+       </div>
+       <div class="form-group"><label for="sesion-estudiante-codigo">Código del Estudiante *</label> <input type="text" id="sesion-estudiante-codigo" required placeholder="Ej: 2021001234">
+       </div>
+       <div class="form-group"><label for="sesion-estudiante-nombre">Nombre del Estudiante *</label> <input type="text" id="sesion-estudiante-nombre" required placeholder="Nombre completo">
+       </div>
+       <div class="form-group"><label for="sesion-grupo">Grupo *</label> <select id="sesion-grupo" required> <option value="">Seleccionar grupo</option> <option value="A">Grupo A</option> <option value="B">Grupo B</option> <option value="C">Grupo C</option> <option value="D">Grupo D</option> </select>
+       </div>
+       <div class="form-group"><label for="sesion-curso">Curso *</label> <select id="sesion-curso" required> <option value="">Seleccionar curso</option> <option value="Programación I">Programación I</option> <option value="Programación II">Programación II</option> <option value="Base de Datos">Base de Datos</option> <option value="Redes">Redes</option> <option value="Ingeniería de Software">Ingeniería de Software</option> <option value="Inteligencia Artificial">Inteligencia Artificial</option> </select>
+       </div>
+       <div class="form-group full-width"><label for="sesion-temas">Temas Tratados *</label> <textarea id="sesion-temas" required placeholder="Describe los temas abordados en la sesión..."></textarea>
+       </div>
+       <div class="form-group full-width"><label for="sesion-observaciones">Observaciones</label> <textarea id="sesion-observaciones" placeholder="Observaciones generales sobre el estudiante..."></textarea>
+       </div>
+       <div class="form-group full-width"><label for="sesion-recomendaciones">Recomendaciones</label> <textarea id="sesion-recomendaciones" placeholder="Recomendaciones para mejorar el desempeño..."></textarea>
+       </div>
+       <div class="form-group full-width"><label for="sesion-dificultades">Dificultades Detectadas</label> <textarea id="sesion-dificultades" placeholder="Describe las dificultades identificadas..."></textarea>
+       </div>
+       <div class="form-group"><label for="sesion-desempeno">Nivel de Desempeño *</label> <select id="sesion-desempeno" required> <option value="">Evaluar desempeño</option> <option value="Excelente">Excelente</option> <option value="Bueno">Bueno</option> <option value="Regular">Regular</option> <option value="Deficiente">Deficiente</option> </select>
+       </div>
+       <div class="form-group"><label for="sesion-proxima">Próxima Sesión</label> <input type="date" id="sesion-proxima">
+       </div>
+       <div class="form-group full-width"><label for="sesion-archivo">Archivo Adjunto</label>
+        <div class="file-upload"><input type="file" id="sesion-archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+         <div class="file-upload-label"><span>📎</span> <span>Seleccionar archivo (PDF, DOC, JPG, PNG)</span>
+         </div>
+        </div>
+        <div class="file-info" id="file-info"></div>
+       </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button> <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar Sesión</button>
+      </div>
+     </form>
+    </div>
+   </div><!-- Modal de detalles de sesión -->
+   <div class="modal-overlay" id="details-modal" style="display: none;">
+    <div class="modal">
+     <div class="modal-header">
+      <h3>Detalles de la Sesión</h3><button class="modal-close" id="details-close">×</button>
+     </div>
+     <div class="modal-body" id="details-content"><!-- Contenido dinámico -->
+     </div>
+    </div>
+   </div><!-- Modal de confirmación -->
+   <div class="modal-overlay" id="confirm-modal" style="display: none;">
+    <div class="modal modal-small">
+     <div class="modal-header">
+      <h3>Confirmar Acción</h3>
+     </div>
+     <div class="modal-body">
+      <p id="confirm-message">¿Está seguro de realizar esta acción?</p>
+      <div class="modal-actions"><button type="button" class="btn btn-secondary" id="btn-cancelar-confirm">Cancelar</button> <button type="button" class="btn btn-primary" id="btn-confirmar">Confirmar</button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      background_color: "#e8f5e9",
+      primary_color: "#2e7d32",
+      secondary_color: "#43a047",
+      text_color: "#333333",
+      surface_color: "#ffffff",
+      font_family: "Segoe UI",
+      font_size: 16,
+      system_title: "Sistema de Reportes de Tutorías Universitarias",
+      institution_name: "Escuela Profesional de Ingeniería Informática y de Sistemas",
+      register_button: "Registrar Nueva Sesión",
+      sessions_title: "Registro de Sesiones Académicas"
+    };
+
+    let allSesiones = [];
+    let filteredSesiones = [];
+    let editingSesion = null;
+    let pendingAction = null;
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allSesiones = data;
+        applyFilters();
+      }
+    };
+
+    async function initializeApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        console.error("Error al inicializar Data SDK");
+      }
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'Tahoma, Geneva, Verdana, sans-serif';
+            const baseSize = config.font_size || defaultConfig.font_size;
+            
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+            document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 100%)`;
+            
+            const header = document.querySelector('.header');
+            if (header) {
+              header.style.background = `linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, ${config.secondary_color || defaultConfig.secondary_color} 100%)`;
+            }
+            
+            const systemTitle = document.getElementById('system-title');
+            if (systemTitle) {
+              systemTitle.textContent = config.system_title || defaultConfig.system_title;
+              systemTitle.style.fontSize = `${baseSize * 2}px`;
+            }
+            
+            const institutionName = document.getElementById('institution-name');
+            if (institutionName) {
+              institutionName.textContent = config.institution_name || defaultConfig.institution_name;
+              institutionName.style.fontSize = `${baseSize}px`;
+            }
+            
+            const registerButton = document.getElementById('register-button');
+            if (registerButton) {
+              registerButton.textContent = config.register_button || defaultConfig.register_button;
+            }
+            
+            const sessionsTitle = document.getElementById('sessions-title');
+            if (sessionsTitle) {
+              sessionsTitle.textContent = config.sessions_title || defaultConfig.sessions_title;
+              sessionsTitle.style.fontSize = `${baseSize * 1.25}px`;
+            }
+            
+            const labels = document.querySelectorAll('.control-group label, .stat-card h3, th, .form-group label');
+            labels.forEach(label => {
+              label.style.color = config.primary_color || defaultConfig.primary_color;
+              label.style.fontSize = `${baseSize * 0.875}px`;
+            });
+            
+            const primaryButtons = document.querySelectorAll('.btn-primary');
+            primaryButtons.forEach(btn => {
+              btn.style.background = config.primary_color || defaultConfig.primary_color;
+              btn.style.fontSize = `${baseSize * 0.875}px`;
+            });
+            
+            const secondaryButtons = document.querySelectorAll('.btn-secondary');
+            secondaryButtons.forEach(btn => {
+              btn.style.color = config.primary_color || defaultConfig.primary_color;
+              btn.style.borderColor = config.primary_color || defaultConfig.primary_color;
+              btn.style.fontSize = `${baseSize * 0.875}px`;
+            });
+            
+            const statValues = document.querySelectorAll('.stat-card p');
+            statValues.forEach(val => {
+              val.style.color = config.primary_color || defaultConfig.primary_color;
+              val.style.fontSize = `${baseSize * 2}px`;
+            });
+            
+            const tableHeader = document.querySelector('.table-header h2');
+            if (tableHeader) {
+              tableHeader.style.color = config.primary_color || defaultConfig.primary_color;
+              tableHeader.style.fontSize = `${baseSize * 1.25}px`;
+            }
+            
+            const thead = document.querySelector('thead');
+            if (thead) {
+              thead.style.background = config.primary_color || defaultConfig.primary_color;
+            }
+            
+            const tableCells = document.querySelectorAll('td');
+            tableCells.forEach(cell => {
+              cell.style.fontSize = `${baseSize * 0.875}px`;
+            });
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  config.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => config.secondary_color || defaultConfig.secondary_color,
+                set: (value) => {
+                  config.secondary_color = value;
+                  window.elementSdk.setConfig({ secondary_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["system_title", config.system_title || defaultConfig.system_title],
+            ["institution_name", config.institution_name || defaultConfig.institution_name],
+            ["register_button", config.register_button || defaultConfig.register_button],
+            ["sessions_title", config.sessions_title || defaultConfig.sessions_title]
+          ])
+        });
+      }
+      
+      setupEventListeners();
+      setDefaultDate();
+    }
+
+    function setupEventListeners() {
+      document.getElementById('btn-nueva-sesion').addEventListener('click', () => openSesionModal());
+      document.getElementById('btn-aplicar-filtros').addEventListener('click', applyFilters);
+      document.getElementById('btn-limpiar-filtros').addEventListener('click', clearFilters);
+      document.getElementById('btn-generar-reporte').addEventListener('click', generateReport);
+      document.getElementById('search-estudiante').addEventListener('input', applyFilters);
+      
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.getElementById('btn-cancelar').addEventListener('click', closeModal);
+      document.getElementById('sesion-form').addEventListener('submit', handleSesionSubmit);
+      
+      document.getElementById('details-close').addEventListener('click', closeDetailsModal);
+      
+      document.getElementById('btn-cancelar-confirm').addEventListener('click', closeConfirmModal);
+      document.getElementById('btn-confirmar').addEventListener('click', executeAction);
+      
+      document.getElementById('sesion-archivo').addEventListener('change', handleFileSelect);
+      
+      document.getElementById('modal-overlay').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('modal-overlay')) {
+          closeModal();
+        }
+      });
+      
+      document.getElementById('details-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('details-modal')) {
+          closeDetailsModal();
+        }
+      });
+    }
+
+    function setDefaultDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('sesion-fecha').value = today;
+    }
+
+    function applyFilters() {
+      const fecha = document.getElementById('filter-fecha').value;
+      const grupo = document.getElementById('filter-grupo').value;
+      const curso = document.getElementById('filter-curso').value;
+      const desempeno = document.getElementById('filter-desempeno').value;
+      const search = document.getElementById('search-estudiante').value.toLowerCase();
+      
+      filteredSesiones = allSesiones.filter(sesion => {
+        if (fecha && sesion.fecha !== fecha) return false;
+        if (grupo && sesion.grupo !== grupo) return false;
+        if (curso && sesion.curso !== curso) return false;
+        if (desempeno && sesion.nivel_desempeno !== desempeno) return false;
+        if (search && !sesion.estudiante_codigo.toLowerCase().includes(search) && 
+            !sesion.estudiante_nombre.toLowerCase().includes(search)) return false;
+        return true;
+      });
+      
+      renderTable();
+      updateStats();
+    }
+
+    function clearFilters() {
+      document.getElementById('filter-fecha').value = '';
+      document.getElementById('filter-grupo').value = '';
+      document.getElementById('filter-curso').value = '';
+      document.getElementById('filter-desempeno').value = '';
+      document.getElementById('search-estudiante').value = '';
+      applyFilters();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('sesiones-tbody');
+      const emptyState = document.getElementById('empty-state');
+      const tableWrapper = document.getElementById('table-wrapper');
+      
+      if (filteredSesiones.length === 0) {
+        tableWrapper.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      tableWrapper.style.display = 'block';
+      emptyState.style.display = 'none';
+      
+      tbody.innerHTML = filteredSesiones.map(sesion => {
+        const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
+        const temasCortos = sesion.temas_tratados.length > 50 ? 
+          sesion.temas_tratados.substring(0, 50) + '...' : sesion.temas_tratados;
+        
+        return `
+          <tr>
+            <td>${fecha}</td>
+            <td>
+              <div>
+                <strong>${sesion.estudiante_nombre}</strong><br>
+                <small style="color: #666;">${sesion.estudiante_codigo}</small>
+              </div>
+            </td>
+            <td>${sesion.grupo}</td>
+            <td>${sesion.curso}</td>
+            <td>${temasCortos}</td>
+            <td><span class="badge badge-${sesion.nivel_desempeno.toLowerCase()}">${sesion.nivel_desempeno}</span></td>
+            <td><span class="badge badge-${sesion.estado.toLowerCase()}">${sesion.estado}</span></td>
+            <td>
+              ${sesion.archivo_adjunto ? 
+                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.__backendId}')">📎 ${sesion.tipo_archivo}</a>` : 
+                '<span style="color: #999;">Sin archivos</span>'
+              }
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-small btn-secondary" onclick="viewDetails('${sesion.__backendId}')">
+                  👁️ Ver
+                </button>
+                <button class="btn btn-small btn-secondary" onclick="editSesion('${sesion.__backendId}')">
+                  ✏️ Editar
+                </button>
+                <button class="btn btn-small btn-danger" onclick="deleteSesion('${sesion.__backendId}')">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateStats() {
+      const total = filteredSesiones.length;
+      
+      // Sesiones de esta semana
+      const today = new Date();
+      const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+      const semana = filteredSesiones.filter(s => new Date(s.fecha) >= startOfWeek).length;
+      
+      // Estudiantes únicos
+      const estudiantes = new Set(filteredSesiones.map(s => s.estudiante_codigo)).size;
+      
+      // Dificultades detectadas
+      const dificultades = filteredSesiones.filter(s => s.dificultades_detectadas && s.dificultades_detectadas.trim()).length;
+      
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-semana').textContent = semana;
+      document.getElementById('stat-estudiantes').textContent = estudiantes;
+      document.getElementById('stat-dificultades').textContent = dificultades;
+    }
+
+    function openSesionModal(sesion = null) {
+      editingSesion = sesion;
+      const modal = document.getElementById('modal-overlay');
+      const title = document.getElementById('modal-title');
+      const form = document.getElementById('sesion-form');
+      
+      if (sesion) {
+        title.textContent = 'Editar Sesión';
+        fillForm(sesion);
+      } else {
+        title.textContent = 'Registrar Nueva Sesión';
+        form.reset();
+        setDefaultDate();
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    function fillForm(sesion) {
+      document.getElementById('sesion-fecha').value = sesion.fecha;
+      document.getElementById('sesion-tutor').value = sesion.tutor;
+      document.getElementById('sesion-estudiante-codigo').value = sesion.estudiante_codigo;
+      document.getElementById('sesion-estudiante-nombre').value = sesion.estudiante_nombre;
+      document.getElementById('sesion-grupo').value = sesion.grupo;
+      document.getElementById('sesion-curso').value = sesion.curso;
+      document.getElementById('sesion-temas').value = sesion.temas_tratados;
+      document.getElementById('sesion-observaciones').value = sesion.observaciones || '';
+      document.getElementById('sesion-recomendaciones').value = sesion.recomendaciones || '';
+      document.getElementById('sesion-dificultades').value = sesion.dificultades_detectadas || '';
+      document.getElementById('sesion-desempeno').value = sesion.nivel_desempeno;
+      document.getElementById('sesion-proxima').value = sesion.proxima_sesion || '';
+      
+      if (sesion.archivo_adjunto) {
+        document.getElementById('file-info').textContent = `Archivo actual: ${sesion.tipo_archivo}`;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').style.display = 'none';
+      document.getElementById('file-info').textContent = '';
+      editingSesion = null;
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      const fileInfo = document.getElementById('file-info');
+      
+      if (file) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          fileInfo.textContent = 'Error: El archivo debe ser menor a 5MB';
+          fileInfo.style.color = '#d32f2f';
+          e.target.value = '';
+          return;
+        }
+        
+        fileInfo.textContent = `Archivo seleccionado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+        fileInfo.style.color = '#2e7d32';
+      } else {
+        fileInfo.textContent = '';
+      }
+    }
+
+    async function handleSesionSubmit(e) {
+      e.preventDefault();
+      
+      if (allSesiones.length >= 999 && !editingSesion) {
+        showMessage('Límite máximo de 999 sesiones alcanzado. Elimine algunas sesiones primero.');
+        return;
+      }
+      
+      const file = document.getElementById('sesion-archivo').files[0];
+      let archivoData = '';
+      let tipoArchivo = '';
+      
+      if (file) {
+        // Simular carga de archivo (en un sistema real se subiría a un servidor)
+        archivoData = `archivo_${Date.now()}_${file.name}`;
+        tipoArchivo = file.name.split('.').pop().toUpperCase();
+      } else if (editingSesion) {
+        archivoData = editingSesion.archivo_adjunto || '';
+        tipoArchivo = editingSesion.tipo_archivo || '';
+      }
+      
+      const sesionData = {
+        fecha: document.getElementById('sesion-fecha').value,
+        tutor: document.getElementById('sesion-tutor').value,
+        estudiante_codigo: document.getElementById('sesion-estudiante-codigo').value,
+        estudiante_nombre: document.getElementById('sesion-estudiante-nombre').value,
+        grupo: document.getElementById('sesion-grupo').value,
+        curso: document.getElementById('sesion-curso').value,
+        temas_tratados: document.getElementById('sesion-temas').value,
+        observaciones: document.getElementById('sesion-observaciones').value,
+        recomendaciones: document.getElementById('sesion-recomendaciones').value,
+        dificultades_detectadas: document.getElementById('sesion-dificultades').value,
+        nivel_desempeno: document.getElementById('sesion-desempeno').value,
+        proxima_sesion: document.getElementById('sesion-proxima').value,
+        archivo_adjunto: archivoData,
+        tipo_archivo: tipoArchivo,
+        estado: 'Completada',
+        fecha_creacion: editingSesion ? editingSesion.fecha_creacion : new Date().toISOString(),
+        id: editingSesion ? editingSesion.id : `sesion_${Date.now()}`
+      };
+      
+      showLoading(true);
+      
+      try {
+        let result;
+        if (editingSesion) {
+          result = await window.dataSdk.update({ ...sesionData, __backendId: editingSesion.__backendId });
+        } else {
+          result = await window.dataSdk.create(sesionData);
+        }
+        
+        if (result.isOk) {
+          closeModal();
+          showMessage(editingSesion ? 'Sesión actualizada correctamente' : 'Sesión registrada correctamente');
+        } else {
+          showMessage('Error al guardar la sesión. Inténtelo nuevamente.');
+        }
+      } catch (error) {
+        showMessage('Error al procesar la solicitud.');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function viewDetails(sesionId) {
+      const sesion = allSesiones.find(s => s.__backendId === sesionId);
+      if (!sesion) return;
+      
+      const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
+      const proximaSesion = sesion.proxima_sesion ? 
+        new Date(sesion.proxima_sesion).toLocaleDateString('es-ES') : 'No programada';
+      
+      const content = `
+        <div class="session-details">
+          <h4>Información General</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Fecha</label>
+              <span>${fecha}</span>
+            </div>
+            <div class="detail-item">
+              <label>Tutor</label>
+              <span>${sesion.tutor}</span>
+            </div>
+            <div class="detail-item">
+              <label>Estudiante</label>
+              <span>${sesion.estudiante_nombre} (${sesion.estudiante_codigo})</span>
+            </div>
+            <div class="detail-item">
+              <label>Grupo</label>
+              <span>${sesion.grupo}</span>
+            </div>
+            <div class="detail-item">
+              <label>Curso</label>
+              <span>${sesion.curso}</span>
+            </div>
+            <div class="detail-item">
+              <label>Desempeño</label>
+              <span class="badge badge-${sesion.nivel_desempeno.toLowerCase()}">${sesion.nivel_desempeno}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="session-details">
+          <h4>Contenido de la Sesión</h4>
+          <div class="detail-item">
+            <label>Temas Tratados</label>
+            <span>${sesion.temas_tratados}</span>
+          </div>
+        </div>
+        
+        ${sesion.observaciones ? `
+        <div class="session-details">
+          <h4>Observaciones</h4>
+          <div class="detail-item">
+            <span>${sesion.observaciones}</span>
+          </div>
+        </div>
+        ` : ''}
+        
+        ${sesion.recomendaciones ? `
+        <div class="session-details">
+          <h4>Recomendaciones</h4>
+          <div class="detail-item">
+            <span>${sesion.recomendaciones}</span>
+          </div>
+        </div>
+        ` : ''}
+        
+        ${sesion.dificultades_detectadas ? `
+        <div class="session-details">
+          <h4>Dificultades Detectadas</h4>
+          <div class="detail-item">
+            <span>${sesion.dificultades_detectadas}</span>
+          </div>
+        </div>
+        ` : ''}
+        
+        <div class="session-details">
+          <h4>Información Adicional</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Próxima Sesión</label>
+              <span>${proximaSesion}</span>
+            </div>
+            <div class="detail-item">
+              <label>Archivo Adjunto</label>
+              <span>${sesion.archivo_adjunto ? 
+                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.__backendId}')">📎 ${sesion.tipo_archivo}</a>` : 
+                'Sin archivos'
+              }</span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('details-content').innerHTML = content;
+      document.getElementById('details-modal').style.display = 'flex';
+    }
+
+    function closeDetailsModal() {
+      document.getElementById('details-modal').style.display = 'none';
+    }
+
+    function editSesion(sesionId) {
+      const sesion = allSesiones.find(s => s.__backendId === sesionId);
+      if (sesion) {
+        openSesionModal(sesion);
+      }
+    }
+
+    function deleteSesion(sesionId) {
+      const sesion = allSesiones.find(s => s.__backendId === sesionId);
+      if (sesion) {
+        showConfirmModal(
+          `¿Está seguro de eliminar la sesión del ${new Date(sesion.fecha).toLocaleDateString('es-ES')} con ${sesion.estudiante_nombre}? Esta acción no se puede deshacer.`,
+          async () => {
+            showLoading(true);
+            const result = await window.dataSdk.delete(sesion);
+            
+            if (result.isOk) {
+              showMessage('Sesión eliminada correctamente');
+            } else {
+              showMessage('Error al eliminar la sesión');
+            }
+            showLoading(false);
+          }
+        );
+      }
+    }
+
+    function downloadFile(sesionId) {
+      const sesion = allSesiones.find(s => s.__backendId === sesionId);
+      if (sesion && sesion.archivo_adjunto) {
+        // En un sistema real, esto descargaría el archivo del servidor
+        showMessage(`Descargando archivo: ${sesion.tipo_archivo}`);
+      }
+    }
+
+    function generateReport() {
+      if (filteredSesiones.length === 0) {
+        showMessage('No hay sesiones para generar el reporte');
+        return;
+      }
+      
+      // Simular generación de reporte
+      showMessage(`Generando reporte con ${filteredSesiones.length} sesiones...`);
+      
+      setTimeout(() => {
+        showMessage('Reporte generado correctamente');
+      }, 2000);
+    }
+
+    function showConfirmModal(message, action) {
+      document.getElementById('confirm-message').textContent = message;
+      document.getElementById('confirm-modal').style.display = 'flex';
+      pendingAction = action;
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirm-modal').style.display = 'none';
+      pendingAction = null;
+    }
+
+    function executeAction() {
+      if (pendingAction) {
+        pendingAction();
+        closeConfirmModal();
+      }
+    }
+
+    function showLoading(show) {
+      const loading = document.getElementById('loading');
+      if (show) {
+        loading.classList.add('active');
+      } else {
+        loading.classList.remove('active');
+      }
+    }
+
+    function showMessage(message) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #2e7d32;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 2000;
+        font-size: 14px;
+        max-width: 300px;
+      `;
+      messageDiv.textContent = message;
+      document.body.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 4000);
+    }
+
+    initializeApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'996b4b8b77b66d61',t:'MTc2MTgzMTMxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

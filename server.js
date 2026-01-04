@@ -30,7 +30,39 @@ const UsuarioSchema = new mongoose.Schema({
 }, { collection: 'Coordinador' }); // Asegúrate de que esta colección exista en Atlas
 
 const Usuario = mongoose.model("Usuario", UsuarioSchema, "Coordinador");
+// ==========================================
+// MODELO PARA REGISTROS DE TUTORÍA (HU7)
+// ==========================================
+const RegistroTutoriaSchema = new mongoose.Schema({
+  estudiante: {
+    nombre: { type: String, default: "Ana Patricia Rodríguez López" },
+    matricula: { type: String, default: "2021-0456789" },
+    carrera: { type: String, default: "Ingeniería en Sistemas" }
+  },
+  bienestar: {
+    estadoAnimo: String,
+    nivelEstres: String,
+    observaciones: String
+  },
+  participacion: {
+    clase: String,
+    asistencia: String,
+    actividades: [String] // Array para múltiples checkboxes
+  },
+  situacionPersonal: {
+    familiar: String,
+    economica: String,
+    factoresRendimiento: String
+  },
+  seguimiento: {
+    observacionesGenerales: String,
+    derivaciones: [String], // Array para múltiples checkboxes
+    seguimientoRequerido: String
+  },
+  fechaRegistro: { type: Date, default: Date.now }
+}, { collection: 'Registros_Tutorias' });
 
+const RegistroTutoria = mongoose.model("RegistroTutoria", RegistroTutoriaSchema);
 // ============================
 // 3. CONEXIÓN A MONGODB ATLAS
 // ============================
@@ -153,6 +185,7 @@ app.post("/registrar-usuario", async (req, res) => {
 });
 
 // ==========================================
+<<<<<<< HEAD
 // 3. RUTA PARA OBTENER TODOS LOS USUARIOS (GET)
 // ==========================================
 app.get("/obtener-usuarios", async (req, res) => {
@@ -174,6 +207,45 @@ app.delete("/eliminar-usuario/:id", async (req, res) => {
     res.json({ success: true, message: "Usuario eliminado" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error al eliminar" });
+=======
+// RUTA PARA GUARDAR TUTORÍA
+// ==========================================
+app.post("/guardar-tutoria", async (req, res) => {
+  try {
+    const nuevaTutoria = new RegistroTutoria({
+      bienestar: {
+        estadoAnimo: req.body.estado_animo,
+        nivelEstres: req.body.nivel_estres,
+        observaciones: req.body.obs_bienestar
+      },
+      participacion: {
+        clase: req.body.participacion_clase,
+        asistencia: req.body.asistencia_tutorias,
+        // Si vienen varios checkboxes con el mismo name, Express los convierte en array
+        actividades: req.body.actividades || [] 
+      },
+      situacionPersonal: {
+        familiar: req.body.sit_familiar,
+        economica: req.body.sit_economica,
+        factoresRendimiento: req.body.factores_rendimiento
+      },
+      seguimiento: {
+        observacionesGenerales: req.body.obs_generales,
+        derivaciones: req.body.derivaciones || [],
+        seguimientoRequerido: req.body.seguimiento_req
+      }
+    });
+
+    await nuevaTutoria.save();
+    console.log("✅ Registro de tutoría guardado correctamente");
+    
+    // Redirección con mensaje de éxito
+    res.send("<script>alert('Registro guardado con éxito en la nube'); window.location.href='/HU7.html';</script>");
+
+  } catch (error) {
+    console.error("❌ Error al guardar tutoría:", error);
+    res.status(500).send("Error interno al procesar el registro");
+>>>>>>> 3a346a8dca39b64b7c32c10bbcc646097c5af51b
   }
 });
 

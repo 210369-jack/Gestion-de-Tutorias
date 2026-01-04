@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Registro de Tutoría Profesional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'verde-institucional': '#2d5a27',
+                        'verde-claro': '#4ade80',
+                        'verde-hover': '#22c55e'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full">
+    <!-- Header -->
+    <header class="bg-verde-institucional text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Sistema de Tutoría Profesional</h1>
+                    <p class="text-green-200 mt-1">Escuela Profesional de Ingeniería Informática y de Sistemas</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-green-200">Tutor: Dr. María González</p>
+                    <p class="text-xs text-green-300">Sesión activa</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Información del Estudiante -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-verde-institucional">Información del Estudiante</h2>
+                <span class="bg-green-100 text-verde-institucional px-3 py-1 rounded-full text-sm font-medium">Activo</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <p class="text-sm text-gray-600">Nombre Completo</p>
+                    <p class="font-medium">Carlos Alberto Mendoza Ruiz</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Código Estudiantil</p>
+                    <p class="font-medium">2021001234</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Ciclo Académico</p>
+                    <p class="font-medium">VIII Ciclo</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Formulario de Registro -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-verde-institucional mb-6">Registrar Nueva Actividad Profesional</h3>
+                
+                <form id="registroForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Actividad *</label>
+                        <select id="tipoActividad" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="curso">Curso de Capacitación</option>
+                            <option value="practica">Práctica Preprofesional</option>
+                            <option value="empleo">Experiencia Laboral</option>
+                            <option value="certificacion">Certificación Profesional</option>
+                            <option value="proyecto">Proyecto Académico</option>
+                            <option value="otro">Otra Actividad</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Descripción de la Actividad *</label>
+                        <textarea id="descripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Describe detalladamente la actividad realizada..." required></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Institución/Empresa *</label>
+                        <input type="text" id="institucion" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Nombre de la institución o empresa" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio *</label>
+                            <input type="date" id="fechaInicio" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
+                            <input type="date" id="fechaFin" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Documentación de Respaldo</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center hover:border-verde-claro transition-colors">
+                            <input type="file" id="documento" class="hidden" accept=".pdf,.doc,.docx,.jpg,.png" multiple>
+                            <button type="button" onclick="document.getElementById('documento').click()" class="text-verde-institucional hover:text-verde-hover font-medium">
+                                📎 Subir Documento
+                            </button>
+                            <p class="text-xs text-gray-500 mt-1">PDF, DOC, DOCX, JPG, PNG (máx. 5MB)</p>
+                            <div id="archivosSeleccionados" class="mt-2 text-sm text-gray-600"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones Adicionales</label>
+                        <textarea id="observaciones" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Comentarios adicionales, logros destacados, etc."></textarea>
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit" class="flex-1 bg-verde-institucional text-white py-2 px-4 rounded-md hover:bg-verde-hover transition-colors font-medium">
+                            💾 Guardar Registro
+                        </button>
+                        <button type="button" onclick="limpiarFormulario()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+                            🔄 Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Historial de Registros -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-verde-institucional">Historial de Actividades</h3>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium" id="contadorRegistros">3 registros</span>
+                </div>
+
+                <div class="space-y-4" id="listaRegistros">
+                    <!-- Registro 1 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="bg-green-100 text-verde-institucional px-2 py-1 rounded text-xs font-medium">Práctica</span>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">Completado</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900 mb-1">Desarrollo de Sistema Web</h4>
+                                <p class="text-sm text-gray-600 mb-2">TechSolutions S.A.C.</p>
+                                <p class="text-xs text-gray-500">15/01/2024 - 15/06/2024</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editarRegistro(1)" class="text-blue-600 hover:text-blue-800 text-sm font-medium">✏️ Editar</button>
+                                <button onclick="verDocumentos(1)" class="text-verde-institucional hover:text-verde-hover text-sm font-medium">📄 Docs</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registro 2 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">Certificación</span>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">Completado</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900 mb-1">AWS Cloud Practitioner</h4>
+                                <p class="text-sm text-gray-600 mb-2">Amazon Web Services</p>
+                                <p class="text-xs text-gray-500">10/03/2024</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editarRegistro(2)" class="text-blue-600 hover:text-blue-800 text-sm font-medium">✏️ Editar</button>
+                                <button onclick="verDocumentos(2)" class="text-verde-institucional hover:text-verde-hover text-sm font-medium">📄 Docs</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registro 3 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium">Curso</span>
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded text-xs">En Progreso</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900 mb-1">Machine Learning Avanzado</h4>
+                                <p class="text-sm text-gray-600 mb-2">Universidad Nacional de Ingeniería</p>
+                                <p class="text-xs text-gray-500">01/07/2024 - 30/08/2024</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editarRegistro(3)" class="text-blue-600 hover:text-blue-800 text-sm font-medium">✏️ Editar</button>
+                                <button onclick="verDocumentos(3)" class="text-verde-institucional hover:text-verde-hover text-sm font-medium">📄 Docs</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="modalConfirmacion" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 fade-in">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <span class="text-2xl">✅</span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Registro Guardado</h3>
+                <p class="text-sm text-gray-500 mb-4">La actividad profesional ha sido registrada exitosamente en el sistema.</p>
+                <button onclick="cerrarModal()" class="w-full bg-verde-institucional text-white py-2 px-4 rounded-md hover:bg-verde-hover transition-colors">
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let registros = [
+            {
+                id: 1,
+                tipo: 'practica',
+                descripcion: 'Desarrollo de Sistema Web',
+                institucion: 'TechSolutions S.A.C.',
+                fechaInicio: '2024-01-15',
+                fechaFin: '2024-06-15',
+                estado: 'Completado'
+            },
+            {
+                id: 2,
+                tipo: 'certificacion',
+                descripcion: 'AWS Cloud Practitioner',
+                institucion: 'Amazon Web Services',
+                fechaInicio: '2024-03-10',
+                fechaFin: '2024-03-10',
+                estado: 'Completado'
+            },
+            {
+                id: 3,
+                tipo: 'curso',
+                descripcion: 'Machine Learning Avanzado',
+                institucion: 'Universidad Nacional de Ingeniería',
+                fechaInicio: '2024-07-01',
+                fechaFin: '2024-08-30',
+                estado: 'En Progreso'
+            }
+        ];
+
+        // Manejar selección de archivos
+        document.getElementById('documento').addEventListener('change', function(e) {
+            const archivos = Array.from(e.target.files);
+            const contenedor = document.getElementById('archivosSeleccionados');
+            
+            if (archivos.length > 0) {
+                contenedor.innerHTML = archivos.map(archivo => 
+                    `<span class="inline-block bg-gray-100 px-2 py-1 rounded text-xs mr-1 mb-1">${archivo.name}</span>`
+                ).join('');
+            } else {
+                contenedor.innerHTML = '';
+            }
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('registroForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nuevoRegistro = {
+                id: registros.length + 1,
+                tipo: document.getElementById('tipoActividad').value,
+                descripcion: document.getElementById('descripcion').value,
+                institucion: document.getElementById('institucion').value,
+                fechaInicio: document.getElementById('fechaInicio').value,
+                fechaFin: document.getElementById('fechaFin').value || null,
+                estado: 'En Progreso'
+            };
+
+            registros.push(nuevoRegistro);
+            actualizarListaRegistros();
+            mostrarModal();
+            limpiarFormulario();
+        });
+
+        function limpiarFormulario() {
+            document.getElementById('registroForm').reset();
+            document.getElementById('archivosSeleccionados').innerHTML = '';
+        }
+
+        function mostrarModal() {
+            document.getElementById('modalConfirmacion').classList.remove('hidden');
+            document.getElementById('modalConfirmacion').classList.add('flex');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalConfirmacion').classList.add('hidden');
+            document.getElementById('modalConfirmacion').classList.remove('flex');
+        }
+
+        function actualizarListaRegistros() {
+            document.getElementById('contadorRegistros').textContent = `${registros.length} registros`;
+        }
+
+        function editarRegistro(id) {
+            const registro = registros.find(r => r.id === id);
+            if (registro) {
+                // Llenar el formulario con los datos del registro
+                document.getElementById('tipoActividad').value = registro.tipo;
+                document.getElementById('descripcion').value = registro.descripcion;
+                document.getElementById('institucion').value = registro.institucion;
+                document.getElementById('fechaInicio').value = registro.fechaInicio;
+                document.getElementById('fechaFin').value = registro.fechaFin || '';
+                
+                // Scroll al formulario
+                document.querySelector('.bg-white').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function verDocumentos(id) {
+            alert(`Visualizando documentos del registro #${id}. En una implementación real, aquí se abriría un visor de documentos.`);
+        }
+
+        // Inicializar contador
+        actualizarListaRegistros();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f23278f5d8b4ef',t:'MTc2MDU2MTUxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

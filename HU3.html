@@ -8,15 +8,36 @@
     <style>
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Estilo para el link activo del menú */
         .nav-item.active { background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid #4ade80; }
+        
+        /* Clase para mostrar el menú en móvil */
+        .sidebar-open { transform: translateX(0) !important; }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex overflow-hidden">
+<body class="bg-gray-50 h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <aside class="w-64 bg-green-900 text-white flex flex-col shadow-xl z-20">
-        <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950">
+    <div id="mobileOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity"></div>
+
+    <div class="bg-green-900 text-white p-4 flex justify-between items-center md:hidden z-20 shadow-md">
+        <span class="font-bold text-lg">TUTORÍAS</span>
+        <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-green-800">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-green-900 text-white flex flex-col shadow-xl transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static">
+        
+        <div class="flex justify-end p-2 md:hidden">
+            <button onclick="toggleSidebar()" class="text-white p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950 hidden md:flex">
             <h1 class="text-xl font-bold tracking-wider">TUTORÍAS</h1>
         </div>
+
         <nav class="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
             <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -45,12 +66,12 @@
         </nav>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex-1 flex flex-col overflow-hidden w-full">
         <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 z-10">
-            <h2 class="text-2xl font-bold text-gray-800">Modificar y Reasignar (HU3)</h2>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 truncate">Modificar y Reasignar (HU3)</h2>
         </header>
 
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6">
             
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <div class="flex flex-col md:flex-row gap-4">
@@ -138,23 +159,33 @@
     </div>
 
     <script>
-        let students = [];
-        let currentId = null; // ID del usuario que estamos editando
+        // --- LOGICA DEL MENÚ RESPONSIVE ---
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
 
-        // 1. Cargar Estudiantes Reales
+        function toggleSidebar() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- LÓGICA DE NEGOCIO (HU3) ---
+        let students = [];
+        let currentId = null;
+
         async function loadStudents() {
             try {
                 const res = await fetch('/obtener-usuarios');
                 const data = await res.json();
-                // Filtramos solo los que sean 'Estudiante' (Opcional, si quieres ver todos quita el filter)
                 students = data.filter(u => u.tipoUsuario === 'Estudiante'); 
                 renderTable();
-            } catch (error) {
-                console.error("Error cargando:", error);
-            }
+            } catch (error) { console.error("Error cargando:", error); }
         }
 
-        // 2. Dibujar Tabla
         function renderTable() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const tableBody = document.getElementById('assignTableBody');
@@ -184,46 +215,32 @@
             `).join('');
         }
 
-        // --- LÓGICA REASIGNAR (HU3) ---
+        // Modals
         const reassignModal = document.getElementById('reassignModal');
+        const editModal = document.getElementById('editModal');
         
         function openReassignModal(id, name) {
             currentId = id;
             document.getElementById('reassignStudentName').textContent = name;
-            reassignModal.classList.remove('hidden');
-            reassignModal.classList.add('flex');
+            reassignModal.classList.remove('hidden'); reassignModal.classList.add('flex');
         }
-
-        function closeReassignModal() {
-            reassignModal.classList.add('hidden');
-            reassignModal.classList.remove('flex');
-        }
-
-        async function saveReassignment() {
-            const newTutor = document.getElementById('newTutorSelect').value;
-            await updateOnServer(currentId, { tutorActual: newTutor });
-            closeReassignModal();
-        }
-
-        // --- LÓGICA MODIFICAR DATOS (General) ---
-        const editModal = document.getElementById('editModal');
+        function closeReassignModal() { reassignModal.classList.add('hidden'); reassignModal.classList.remove('flex'); }
 
         function openEditModal(id) {
             currentId = id;
             const user = students.find(s => s._id === id);
-            
-            // Llenar campos
             document.getElementById('editName').value = user.nombreCompleto;
             document.getElementById('editEmail').value = user.email;
             document.getElementById('editMatricula').value = user.matricula;
-
-            editModal.classList.remove('hidden');
-            editModal.classList.add('flex');
+            editModal.classList.remove('hidden'); editModal.classList.add('flex');
         }
+        function closeEditModal() { editModal.classList.add('hidden'); editModal.classList.remove('flex'); }
 
-        function closeEditModal() {
-            editModal.classList.add('hidden');
-            editModal.classList.remove('flex');
+        // Acciones Servidor
+        async function saveReassignment() {
+            const newTutor = document.getElementById('newTutorSelect').value;
+            await updateOnServer(currentId, { tutorActual: newTutor });
+            closeReassignModal();
         }
 
         async function saveEdit() {
@@ -236,7 +253,6 @@
             closeEditModal();
         }
 
-        // --- FUNCIÓN CENTRAL PARA HABLAR CON EL SERVIDOR ---
         async function updateOnServer(id, dataToSend) {
             try {
                 const res = await fetch(`/actualizar-usuario/${id}`, {
@@ -244,20 +260,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataToSend)
                 });
-
                 if (res.ok) {
-                    alert("✅ Cambios guardados en la Base de Datos");
-                    loadStudents(); // Recargar tabla
-                } else {
-                    alert("❌ Error al guardar");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("Error de conexión");
-            }
+                    alert("✅ Cambios guardados");
+                    loadStudents();
+                } else { alert("❌ Error al guardar"); }
+            } catch (error) { console.error(error); }
         }
 
-        // Eventos
         document.addEventListener('DOMContentLoaded', loadStudents);
         document.getElementById('searchInput').addEventListener('input', renderTable);
     </script>

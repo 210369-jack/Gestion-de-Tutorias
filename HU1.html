@@ -10,12 +10,31 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         /* Estilo para el link activo del menú */
         .nav-item.active { background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid #4ade80; }
+        
+        /* Clase para mostrar el menú en móvil */
+        .sidebar-open { transform: translateX(0) !important; }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex overflow-hidden">
+<body class="bg-gray-50 h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <aside class="w-64 bg-green-900 text-white flex flex-col shadow-xl z-20">
-        <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950">
+    <div id="mobileOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity"></div>
+
+    <div class="bg-green-900 text-white p-4 flex justify-between items-center md:hidden z-20 shadow-md">
+        <span class="font-bold text-lg">TUTORÍAS</span>
+        <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-green-800">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-green-900 text-white flex flex-col shadow-xl transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static">
+        
+        <div class="flex justify-end p-2 md:hidden">
+            <button onclick="toggleSidebar()" class="text-white p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950 hidden md:flex">
             <h1 class="text-xl font-bold tracking-wider">TUTORÍAS</h1>
         </div>
 
@@ -48,6 +67,7 @@
                     </a>
                 </div>
             </div>
+
             <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 Cursos y Materias
@@ -64,7 +84,7 @@
             </a>
         </nav>
 
-        <div class="p-4 bg-green-950 border-t border-green-800">
+        <div class="p-4 bg-green-950 border-t border-green-800 hidden md:block">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">A</div>
                 <div>
@@ -75,16 +95,16 @@
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex-1 flex flex-col overflow-hidden w-full">
         
         <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 z-10">
-            <h2 class="text-2xl font-bold text-gray-800">Gestión de Usuarios</h2>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 truncate">Gestión de Usuarios</h2>
             <button class="text-gray-500 hover:text-green-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             </button>
         </header>
 
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6">
             
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -215,10 +235,21 @@
     </div>
 
     <script>
-        // PEGA AQUÍ EXACTAMENTE EL MISMO SCRIPT QUE TENÍAS EN EL PASO ANTERIOR
-        // (El que tiene loadUsers, updateStats, deleteUser, etc.)
-        
-        // --- 1. VARIABLES ---
+        // --- NUEVA LÓGICA DEL MENÚ RESPONSIVE ---
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+
+        function toggleSidebar() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // --- LÓGICA DE USUARIOS (Mantenida intacta) ---
         let users = [];
         let currentDeleteId = null;
         
@@ -230,9 +261,7 @@
         
         const deleteModal = document.getElementById('deleteModal');
         const newUserModal = document.getElementById('newUserModal');
-        // ... RESTO DE TU SCRIPT ...
         
-        // --- 2. CARGAR DATOS ---
         async function loadUsers() {
              try {
                 const response = await fetch('/obtener-usuarios');
@@ -245,7 +274,6 @@
             } catch (error) { console.error(error); }
         }
 
-        // --- 3. RENDERIZAR Y OTROS ---
         function updateStats() {
             statTotal.textContent = users.length;
             statEstudiantes.textContent = users.filter(u => u.type === 'Estudiante').length;
@@ -280,7 +308,6 @@
             loadUsers(); deleteModal.classList.add('hidden'); deleteModal.classList.remove('flex');
         }
 
-        // LISTENERS
         document.addEventListener('DOMContentLoaded', loadUsers);
         document.getElementById('refreshBtn').addEventListener('click', loadUsers);
         document.getElementById('newUserBtn').addEventListener('click', () => { newUserModal.classList.remove('hidden'); newUserModal.classList.add('flex'); });

@@ -246,6 +246,271 @@ app.post("/guardar-tutoria", async (req, res) => {
 });
 
 // ============================
+// MODELO PARA SESIONES DE TUTORÍA (Nuevo para Reportes)
+// ============================
+const SesionTutoriaSchema = new mongoose.Schema({
+  fecha: { type: Date, required: true },
+  tutor: { type: String, required: true },
+  estudiante_codigo: { type: String, required: true },
+  estudiante_nombre: { type: String, required: true },
+  grupo: { type: String, required: true },
+  curso: { type: String, required: true },
+  temas_tratados: { type: String, required: true },
+  observaciones: String,
+  recomendaciones: String,
+  dificultades_detectadas: String,
+  nivel_desempeno: { 
+    type: String, 
+    enum: ['Excelente', 'Bueno', 'Regular', 'Deficiente'],
+    required: true 
+  },
+  proxima_sesion: Date,
+  archivo_adjunto: String,
+  tipo_archivo: String,
+  estado: { 
+    type: String, 
+    enum: ['Completada', 'Pendiente', 'Programada'],
+    default: 'Completada'
+  },
+  fecha_creacion: { type: Date, default: Date.now }
+}, { collection: 'Sesiones_Tutoria' });
+
+const SesionTutoria = mongoose.model("SesionTutoria", SesionTutoriaSchema);
+
+// ============================
+// RUTAS PARA SESIONES DE TUTORÍA (Reportes)
+// ============================
+
+// RUTA PARA OBTENER TODAS LAS SESIONES
+app.get("/sesiones", async (req, res) => {
+  try {
+    const sesiones = await SesionTutoria.find().sort({ fecha: -1 });
+    // Agregar el ID del backend para compatibilidad con dataSdk
+    const sesionesConId = sesiones.map(sesion => ({
+      ...sesion.toObject(),
+      __backendId: sesion._id.toString()
+    }));
+    res.json(sesionesConId);
+  } catch (error) {
+    console.error("❌ Error al obtener sesiones:", error);
+    res.status(500).json({ error: "Error al obtener sesiones" });
+  }
+});
+
+// RUTA PARA OBTENER ESTADÍSTICAS
+app.get("/sesiones/estadisticas", async (req, res) => {
+  try {
+    const totalSesiones = await SesionTutoria.countDocuments();
+    
+    // Sesiones de esta semana
+    const startOfWeek = new Date();
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const sesionesSemana = await SesionTutoria.countDocuments({
+      fecha: { $gte: startOfWeek }
+    });
+    
+    // Estudiantes únicos atendidos
+    const estudiantesAtendidos = await SesionTutoria.distinct('estudiante_codigo');
+    
+    // Dificultades detectadas (sesiones con dificultades)
+    const dificultadesDetectadas = await SesionTutoria.countDocuments({
+      dificultades_detectadas: { $exists: true, $ne: "" }
+    });
+    
+    res.json({
+      total: totalSesiones,
+      semana: sesionesSemana,
+      estudiantes: estudiantesAtendidos.length,
+      dificultades: dificultadesDetectadas
+    });
+  } catch (error) {
+    console.error("❌ Error al obtener estadísticas:", error);
+    res.status(500).json({ error: "Error al obtener estadísticas" });
+  }
+});
+
+// RUTA PARA CREAR NUEVA SESIÓN
+app.post("/sesiones", async (req, res) => {
+  try {
+    const nuevaSesion = new SesionTutoria(req.body);
+    await nuevaSesion.save();
+    
+    res.json({
+      isOk: true,
+      value: {
+        ...nuevaSesion.toObject(),
+        __backendId: nuevaSesion._id.toString()
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error al crear sesión:", error);
+    res.status(500).json({ 
+      isOk: false, 
+      error: "Error al crear sesión" 
+    });
+  }
+});
+
+// RUTA PARA ACTUALIZAR SESIÓN
+app.put("/sesiones/:id", async (req, res) => {
+  try {
+    const sesionActualizada = await SesionTutoria.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    
+    if (!sesionActualizada) {
+      return res.status(404).json({ 
+        isOk: false, 
+        error: "Sesión no encontrada" 
+      });
+    }
+    
+    res.json({
+      isOk: true,
+      value: {
+        ...sesionActualizada.toObject(),
+        __backendId: sesionActualizada._id.toString()
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error al actualizar sesión:", error);
+    res.status(500).json({ 
+      isOk: false, 
+      error: "Error al actualizar sesión" 
+    });
+  }
+});
+
+// RUTA PARA ELIMINAR SESIÓN
+app.delete("/sesiones/:id", async (req, res) => {
+  try {
+    const sesionEliminada = await SesionTutoria.findByIdAndDelete(req.params.id);
+    
+    if (!sesionEliminada) {
+      return res.status(404).json({ 
+        isOk: false, 
+        error: "Sesión no encontrada" 
+      });
+    }
+    
+    res.json({
+      isOk: true,
+      value: {
+        ...sesionEliminada.toObject(),
+        __backendId: sesionEliminada._id.toString()
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error al eliminar sesión:", error);
+    res.status(500).json({ 
+      isOk: false, 
+      error: "Error al eliminar sesión" 
+    });
+  }
+});
+
+// ============================
+// CONFIGURACIÓN PARA dataSdk (SDK de Your Virtual Butler)
+// ============================
+
+app.use("/_sdk", express.static(path.join(__dirname, "_sdk")));
+
+// Endpoint para dataSdk
+app.all("/_sdk/api", async (req, res) => {
+  const { method, params } = req.body || req.query;
+  
+  try {
+    switch (method) {
+      case "init":
+        // Simular inicialización
+        const sesiones = await SesionTutoria.find().sort({ fecha: -1 });
+        const sesionesConId = sesiones.map(sesion => ({
+          ...sesion.toObject(),
+          __backendId: sesion._id.toString()
+        }));
+        
+        res.json({
+          isOk: true,
+          value: sesionesConId
+        });
+        break;
+        
+      case "create":
+        const nuevaSesion = new SesionTutoria(params);
+        await nuevaSesion.save();
+        
+        res.json({
+          isOk: true,
+          value: {
+            ...nuevaSesion.toObject(),
+            __backendId: nuevaSesion._id.toString()
+          }
+        });
+        break;
+        
+      case "update":
+        const { __backendId, ...datosActualizar } = params;
+        const sesionActualizada = await SesionTutoria.findByIdAndUpdate(
+          __backendId,
+          datosActualizar,
+          { new: true }
+        );
+        
+        if (!sesionActualizada) {
+          return res.json({
+            isOk: false,
+            error: "Sesión no encontrada"
+          });
+        }
+        
+        res.json({
+          isOk: true,
+          value: {
+            ...sesionActualizada.toObject(),
+            __backendId: sesionActualizada._id.toString()
+          }
+        });
+        break;
+        
+      case "delete":
+        const sesionEliminada = await SesionTutoria.findByIdAndDelete(params.__backendId);
+        
+        if (!sesionEliminada) {
+          return res.json({
+            isOk: false,
+            error: "Sesión no encontrada"
+          });
+        }
+        
+        res.json({
+          isOk: true,
+          value: {
+            ...sesionEliminada.toObject(),
+            __backendId: sesionEliminada._id.toString()
+          }
+        });
+        break;
+        
+      default:
+        res.json({
+          isOk: false,
+          error: "Método no soportado"
+        });
+    }
+  } catch (error) {
+    console.error("❌ Error en API dataSdk:", error);
+    res.json({
+      isOk: false,
+      error: error.message
+    });
+  }
+});
+
+// ============================
 // 5. ENCENDER SERVIDOR
 // ============================
 const PORT = process.env.PORT || 3000;

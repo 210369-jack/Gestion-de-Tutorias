@@ -166,6 +166,24 @@ app.delete("/eliminar-usuario/:id", async (req, res) => {
   }
 });
 
+app.put("/actualizar-usuario/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const datosActualizados = req.body; 
+    const usuarioActualizado = await NuevoUsuario.findByIdAndUpdate(id, datosActualizados, { new: true });
+    
+    if (!usuarioActualizado) {
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+    
+    console.log("✅ Usuario actualizado:", usuarioActualizado);
+    res.json({ success: true, message: "Actualización exitosa" });
+  } catch (error) {
+    console.error("❌ Error al actualizar:", error);
+    res.status(500).json({ success: false, message: "Error interno" });
+  }
+});
+
 // ==========================================
 // RUTA PARA ACTUALIZAR USUARIO (PUT) - HU3
 // ==========================================

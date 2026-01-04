@@ -30,7 +30,39 @@ const UsuarioSchema = new mongoose.Schema({
 }, { collection: 'Coordinador' }); // Asegúrate de que esta colección exista en Atlas
 
 const Usuario = mongoose.model("Usuario", UsuarioSchema, "Coordinador");
+// ==========================================
+// MODELO PARA REGISTROS DE TUTORÍA (HU7)
+// ==========================================
+const RegistroTutoriaSchema = new mongoose.Schema({
+  estudiante: {
+    nombre: { type: String, default: "Ana Patricia Rodríguez López" },
+    matricula: { type: String, default: "2021-0456789" },
+    carrera: { type: String, default: "Ingeniería en Sistemas" }
+  },
+  bienestar: {
+    estadoAnimo: String,
+    nivelEstres: String,
+    observaciones: String
+  },
+  participacion: {
+    clase: String,
+    asistencia: String,
+    actividades: [String] // Array para múltiples checkboxes
+  },
+  situacionPersonal: {
+    familiar: String,
+    economica: String,
+    factoresRendimiento: String
+  },
+  seguimiento: {
+    observacionesGenerales: String,
+    derivaciones: [String], // Array para múltiples checkboxes
+    seguimientoRequerido: String
+  },
+  fechaRegistro: { type: Date, default: Date.now }
+}, { collection: 'Registros_Tutorias' });
 
+const RegistroTutoria = mongoose.model("RegistroTutoria", RegistroTutoriaSchema);
 // ============================
 // 3. CONEXIÓN A MONGODB ATLAS
 // ============================

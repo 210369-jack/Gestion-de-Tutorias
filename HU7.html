@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Tutorías - Registro Personal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .success-message {
+            animation: slideDown 0.4s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-full font-sans">
+    <!-- Header -->
+    <header class="bg-green-700 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">Sistema de Tutorías Universitarias</h1>
+                        <p class="text-green-100 text-sm">Registro de Acompañamiento Personal</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-green-100">Dr. María González</p>
+                    <p class="text-xs text-green-200">Tutor Académico</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Aviso de Confidencialidad -->
+    <div class="bg-green-50 border-l-4 border-green-400 p-4 mx-6 mt-6 rounded-r-lg">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+                <h3 class="text-green-800 font-semibold text-sm">Información Confidencial</h3>
+                <p class="text-green-700 text-xs mt-1">Esta información es estrictamente confidencial y está protegida por las políticas de privacidad institucional. Solo personal autorizado puede acceder a estos datos.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="max-w-6xl mx-auto px-6 py-6">
+        <!-- Información del Estudiante -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Información del Estudiante</h2>
+                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Activo</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-600">Nombre:</p>
+                    <p class="font-medium">Ana Patricia Rodríguez López</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Matrícula:</p>
+                    <p class="font-medium">2021-0456789</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Carrera:</p>
+                    <p class="font-medium">Ingeniería en Sistemas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <form id="tutoriaForm" class="space-y-6">
+            <!-- Sección: Estado Emocional -->
+            <div class="bg-white rounded-lg shadow-md p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                    </svg>
+                    Estado Emocional y Bienestar
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Estado de Ánimo General</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            <option value="excelente">Excelente</option>
+                            <option value="bueno">Bueno</option>
+                            <option value="regular">Regular</option>
+                            <option value="preocupante">Preocupante</option>
+                            <option value="critico">Crítico</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nivel de Estrés</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            <option value="bajo">Bajo</option>
+                            <option value="moderado">Moderado</option>
+                            <option value="alto">Alto</option>
+                            <option value="muy-alto">Muy Alto</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones sobre Bienestar Emocional</label>
+                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe cualquier situación emocional relevante..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Participación y Actividades -->
+            <div class="bg-white rounded-lg shadow-md p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                    </svg>
+                    Participación y Actividades Extracurriculares
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Participación en Clase</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            <option value="muy-activa">Muy Activa</option>
+                            <option value="activa">Activa</option>
+                            <option value="moderada">Moderada</option>
+                            <option value="pasiva">Pasiva</option>
+                            <option value="ausente">Ausente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Asistencia a Tutorías</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            <option value="excelente">Excelente (90-100%)</option>
+                            <option value="buena">Buena (75-89%)</option>
+                            <option value="regular">Regular (60-74%)</option>
+                            <option value="deficiente">Deficiente (<60%)</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Actividades Extracurriculares</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Deportes</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Grupos estudiantiles</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Voluntariado</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Actividades culturales</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Situaciones Personales -->
+            <div class="bg-white rounded-lg shadow-md p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    Situaciones Personales Relevantes
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Situación Familiar</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            <option value="estable">Estable</option>
+                            <option value="cambios-menores">Cambios menores</option>
+                            <option value="dificultades">Dificultades</option>
+                            <option value="crisis">Crisis familiar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Situación Económica</label>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            <option value="estable">Estable</option>
+                            <option value="ajustada">Ajustada</option>
+                            <option value="dificil">Difícil</option>
+                            <option value="critica">Crítica</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Factores que Afectan el Rendimiento Académico</label>
+                        <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe situaciones personales, familiares, laborales o de salud que puedan estar influyendo en el desempeño académico del estudiante..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Observaciones y Derivaciones -->
+            <div class="bg-white rounded-lg shadow-md p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    Observaciones y Derivaciones
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones Generales</label>
+                        <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Registra observaciones importantes sobre el progreso, comportamiento o necesidades del estudiante..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Derivaciones Recomendadas</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Psicología estudiantil</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Trabajo social</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Servicios médicos</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Apoyo académico especializado</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <span class="ml-2 text-sm text-gray-700">Becas y apoyo financiero</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Seguimiento Requerido</label>
+                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Especifica el tipo de seguimiento necesario y la frecuencia recomendada..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                    <button type="button" id="cancelarBtn" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button" id="editarBtn" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        Editar Registro
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                        Guardar Registro
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Mensaje de Éxito -->
+    <div id="successMessage" class="hidden fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-lg success-message z-50">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-medium">Registro guardado exitosamente</span>
+        </div>
+    </div>
+
+    <script>
+        // Manejo del formulario
+        document.getElementById('tutoriaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simular guardado
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.remove('hidden');
+            
+            // Ocultar mensaje después de 3 segundos
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+            
+            // Scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Botón cancelar
+        document.getElementById('cancelarBtn').addEventListener('click', function() {
+            if (confirm('¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.')) {
+                document.getElementById('tutoriaForm').reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Botón editar
+        document.getElementById('editarBtn').addEventListener('click', function() {
+            // Simular carga de datos existentes
+            document.querySelector('select[name="estado-animo"]').value = 'bueno';
+            document.querySelector('select[name="nivel-estres"]').value = 'moderado';
+            
+            // Scroll al primer campo
+            document.querySelector('select').focus();
+        });
+
+        // Animación de entrada para las secciones
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f2214e43b3b4ef',t:'MTc2MDU2MDgxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

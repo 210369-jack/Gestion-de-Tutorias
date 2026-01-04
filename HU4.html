@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Reportes de Tutorías Universitarias</title>
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -997,204 +995,95 @@
             }
         }
 
-        // Configuración y lógica del sistema de reportes
-        const defaultConfig = {
-            background_color: "#e8f5e9",
-            primary_color: "#2e7d32",
-            secondary_color: "#43a047",
-            text_color: "#333333",
-            surface_color: "#ffffff",
-            font_family: "Segoe UI",
-            font_size: 16,
-            system_title: "Sistema de Reportes de Tutorías Universitarias",
-            institution_name: "Escuela Profesional de Ingeniería Informática y de Sistemas",
-            register_button: "Registrar Nueva Sesión",
-            sessions_title: "Registro de Sesiones Académicas"
-        };
-
+        // ===== LÓGICA DEL SISTEMA DE REPORTES =====
         let allSesiones = [];
         let filteredSesiones = [];
         let editingSesion = null;
         let pendingAction = null;
 
-        const dataHandler = {
-            onDataChanged(data) {
-                allSesiones = data;
-                applyFilters();
+        // Datos de ejemplo
+        const initialData = [
+            {
+                id: "sesion_1",
+                fecha: "2024-01-15",
+                tutor: "Prof. Ana García",
+                estudiante_codigo: "20210001",
+                estudiante_nombre: "Juan Pérez",
+                grupo: "A",
+                curso: "Programación I",
+                temas_tratados: "Introducción a Python, variables y tipos de datos",
+                observaciones: "Estudiante motivado, comprende rápido",
+                recomendaciones: "Practicar ejercicios de lógica",
+                dificultades_detectadas: "Dificultad con listas anidadas",
+                nivel_desempeno: "Bueno",
+                proxima_sesion: "2024-01-22",
+                archivo_adjunto: "",
+                tipo_archivo: "",
+                estado: "Completada",
+                fecha_creacion: "2024-01-15T10:00:00"
+            },
+            {
+                id: "sesion_2",
+                fecha: "2024-01-16",
+                tutor: "Prof. Carlos López",
+                estudiante_codigo: "20210002",
+                estudiante_nombre: "María Rodríguez",
+                grupo: "B",
+                curso: "Base de Datos",
+                temas_tratados: "Modelado ER, normalización",
+                observaciones: "Necesita reforzar conceptos de normalización",
+                recomendaciones: "Revisar ejemplos prácticos",
+                dificultades_detectadas: "Confusión en formas normales",
+                nivel_desempeno: "Regular",
+                proxima_sesion: "2024-01-23",
+                archivo_adjunto: "archivo_123.pdf",
+                tipo_archivo: "PDF",
+                estado: "Completada",
+                fecha_creacion: "2024-01-16T14:30:00"
             }
-        };
+        ];
 
         async function initializeApp() {
-            const initResult = await window.dataSdk.init(dataHandler);
-            if (!initResult.isOk) {
-                console.error("Error al inicializar Data SDK");
-            }
-            
-            if (window.elementSdk) {
-                window.elementSdk.init({
-                    defaultConfig,
-                    onConfigChange: async (config) => {
-                        const customFont = config.font_family || defaultConfig.font_family;
-                        const baseFontStack = 'Tahoma, Geneva, Verdana, sans-serif';
-                        const baseSize = config.font_size || defaultConfig.font_size;
-                        
-                        document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
-                        document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 100%)`;
-                        
-                        const header = document.querySelector('.header');
-                        if (header) {
-                            header.style.background = `linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, ${config.secondary_color || defaultConfig.secondary_color} 100%)`;
-                        }
-                        
-                        const systemTitle = document.getElementById('system-title');
-                        if (systemTitle) {
-                            systemTitle.textContent = config.system_title || defaultConfig.system_title;
-                            systemTitle.style.fontSize = `${baseSize * 2}px`;
-                        }
-                        
-                        const institutionName = document.getElementById('institution-name');
-                        if (institutionName) {
-                            institutionName.textContent = config.institution_name || defaultConfig.institution_name;
-                            institutionName.style.fontSize = `${baseSize}px`;
-                        }
-                        
-                        const registerButton = document.getElementById('register-button');
-                        if (registerButton) {
-                            registerButton.textContent = config.register_button || defaultConfig.register_button;
-                        }
-                        
-                        const sessionsTitle = document.getElementById('sessions-title');
-                        if (sessionsTitle) {
-                            sessionsTitle.textContent = config.sessions_title || defaultConfig.sessions_title;
-                            sessionsTitle.style.fontSize = `${baseSize * 1.25}px`;
-                        }
-                        
-                        const labels = document.querySelectorAll('.control-group label, .stat-card h3, th, .form-group label');
-                        labels.forEach(label => {
-                            label.style.color = config.primary_color || defaultConfig.primary_color;
-                            label.style.fontSize = `${baseSize * 0.875}px`;
-                        });
-                        
-                        const primaryButtons = document.querySelectorAll('.btn-primary');
-                        primaryButtons.forEach(btn => {
-                            btn.style.background = config.primary_color || defaultConfig.primary_color;
-                            btn.style.fontSize = `${baseSize * 0.875}px`;
-                        });
-                        
-                        const secondaryButtons = document.querySelectorAll('.btn-secondary');
-                        secondaryButtons.forEach(btn => {
-                            btn.style.color = config.primary_color || defaultConfig.primary_color;
-                            btn.style.borderColor = config.primary_color || defaultConfig.primary_color;
-                            btn.style.fontSize = `${baseSize * 0.875}px`;
-                        });
-                        
-                        const statValues = document.querySelectorAll('.stat-card p');
-                        statValues.forEach(val => {
-                            val.style.color = config.primary_color || defaultConfig.primary_color;
-                            val.style.fontSize = `${baseSize * 2}px`;
-                        });
-                        
-                        const tableHeader = document.querySelector('.table-header h2');
-                        if (tableHeader) {
-                            tableHeader.style.color = config.primary_color || defaultConfig.primary_color;
-                            tableHeader.style.fontSize = `${baseSize * 1.25}px`;
-                        }
-                        
-                        const thead = document.querySelector('thead');
-                        if (thead) {
-                            thead.style.background = config.primary_color || defaultConfig.primary_color;
-                        }
-                        
-                        const tableCells = document.querySelectorAll('td');
-                        tableCells.forEach(cell => {
-                            cell.style.fontSize = `${baseSize * 0.875}px`;
-                        });
-                    },
-                    mapToCapabilities: (config) => ({
-                        recolorables: [
-                            {
-                                get: () => config.background_color || defaultConfig.background_color,
-                                set: (value) => {
-                                    config.background_color = value;
-                                    window.elementSdk.setConfig({ background_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.surface_color || defaultConfig.surface_color,
-                                set: (value) => {
-                                    config.surface_color = value;
-                                    window.elementSdk.setConfig({ surface_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.text_color || defaultConfig.text_color,
-                                set: (value) => {
-                                    config.text_color = value;
-                                    window.elementSdk.setConfig({ text_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.primary_color || defaultConfig.primary_color,
-                                set: (value) => {
-                                    config.primary_color = value;
-                                    window.elementSdk.setConfig({ primary_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.secondary_color || defaultConfig.secondary_color,
-                                set: (value) => {
-                                    config.secondary_color = value;
-                                    window.elementSdk.setConfig({ secondary_color: value });
-                                }
-                            }
-                        ],
-                        borderables: [],
-                        fontEditable: {
-                            get: () => config.font_family || defaultConfig.font_family,
-                            set: (value) => {
-                                config.font_family = value;
-                                window.elementSdk.setConfig({ font_family: value });
-                            }
-                        },
-                        fontSizeable: {
-                            get: () => config.font_size || defaultConfig.font_size,
-                            set: (value) => {
-                                config.font_size = value;
-                                window.elementSdk.setConfig({ font_size: value });
-                            }
-                        }
-                    }),
-                    mapToEditPanelValues: (config) => new Map([
-                        ["system_title", config.system_title || defaultConfig.system_title],
-                        ["institution_name", config.institution_name || defaultConfig.institution_name],
-                        ["register_button", config.register_button || defaultConfig.register_button],
-                        ["sessions_title", config.sessions_title || defaultConfig.sessions_title]
-                    ])
-                });
+            // Cargar datos del localStorage o usar datos iniciales
+            const storedData = localStorage.getItem('tutoring_sessions');
+            if (storedData) {
+                allSesiones = JSON.parse(storedData);
+            } else {
+                allSesiones = initialData;
+                saveToLocalStorage();
             }
             
             setupEventListeners();
             setDefaultDate();
+            applyFilters();
         }
 
         function setupEventListeners() {
+            // Botón principal para nueva sesión
             document.getElementById('btn-nueva-sesion').addEventListener('click', () => openSesionModal());
+            
+            // Filtros
             document.getElementById('btn-aplicar-filtros').addEventListener('click', applyFilters);
             document.getElementById('btn-limpiar-filtros').addEventListener('click', clearFilters);
             document.getElementById('btn-generar-reporte').addEventListener('click', generateReport);
             document.getElementById('search-estudiante').addEventListener('input', applyFilters);
             
+            // Modal
             document.getElementById('modal-close').addEventListener('click', closeModal);
             document.getElementById('btn-cancelar').addEventListener('click', closeModal);
             document.getElementById('sesion-form').addEventListener('submit', handleSesionSubmit);
             
+            // Modal detalles
             document.getElementById('details-close').addEventListener('click', closeDetailsModal);
             
+            // Modal confirmación
             document.getElementById('btn-cancelar-confirm').addEventListener('click', closeConfirmModal);
             document.getElementById('btn-confirmar').addEventListener('click', executeAction);
             
+            // Archivo
             document.getElementById('sesion-archivo').addEventListener('change', handleFileSelect);
             
+            // Cerrar modales al hacer clic fuera
             document.getElementById('modal-overlay').addEventListener('click', (e) => {
                 if (e.target === document.getElementById('modal-overlay')) {
                     closeModal();
@@ -1211,6 +1100,10 @@
         function setDefaultDate() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('sesion-fecha').value = today;
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('tutoring_sessions', JSON.stringify(allSesiones));
         }
 
         function applyFilters() {
@@ -1278,19 +1171,19 @@
                         <td><span class="badge badge-${sesion.estado.toLowerCase()}">${sesion.estado}</span></td>
                         <td>
                             ${sesion.archivo_adjunto ? 
-                                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.__backendId}')">📎 ${sesion.tipo_archivo}</a>` : 
+                                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.id}')">📎 ${sesion.tipo_archivo}</a>` : 
                                 '<span style="color: #999;">Sin archivos</span>'
                             }
                         </td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-small btn-secondary" onclick="viewDetails('${sesion.__backendId}')">
+                                <button class="btn btn-small btn-secondary" onclick="viewDetails('${sesion.id}')">
                                     👁️ Ver
                                 </button>
-                                <button class="btn btn-small btn-secondary" onclick="editSesion('${sesion.__backendId}')">
+                                <button class="btn btn-small btn-secondary" onclick="editSesion('${sesion.id}')">
                                     ✏️ Editar
                                 </button>
-                                <button class="btn btn-small btn-danger" onclick="deleteSesion('${sesion.__backendId}')">
+                                <button class="btn btn-small btn-danger" onclick="deleteSesion('${sesion.id}')">
                                     🗑️ Eliminar
                                 </button>
                             </div>
@@ -1383,7 +1276,7 @@
             }
         }
 
-        async function handleSesionSubmit(e) {
+        function handleSesionSubmit(e) {
             e.preventDefault();
             
             if (allSesiones.length >= 999 && !editingSesion) {
@@ -1396,7 +1289,7 @@
             let tipoArchivo = '';
             
             if (file) {
-                // Simular carga de archivo (en un sistema real se subiría a un servidor)
+                // Simular nombre de archivo
                 archivoData = `archivo_${Date.now()}_${file.name}`;
                 tipoArchivo = file.name.split('.').pop().toUpperCase();
             } else if (editingSesion) {
@@ -1427,28 +1320,32 @@
             showLoading(true);
             
             try {
-                let result;
                 if (editingSesion) {
-                    result = await window.dataSdk.update({ ...sesionData, __backendId: editingSesion.__backendId });
+                    // Actualizar sesión existente
+                    const index = allSesiones.findIndex(s => s.id === editingSesion.id);
+                    if (index !== -1) {
+                        allSesiones[index] = sesionData;
+                    }
                 } else {
-                    result = await window.dataSdk.create(sesionData);
+                    // Crear nueva sesión
+                    allSesiones.push(sesionData);
                 }
                 
-                if (result.isOk) {
-                    closeModal();
-                    showMessage(editingSesion ? 'Sesión actualizada correctamente' : 'Sesión registrada correctamente');
-                } else {
-                    showMessage('Error al guardar la sesión. Inténtelo nuevamente.');
-                }
+                saveToLocalStorage();
+                closeModal();
+                showMessage(editingSesion ? 'Sesión actualizada correctamente' : 'Sesión registrada correctamente');
+                applyFilters();
+                
             } catch (error) {
-                showMessage('Error al procesar la solicitud.');
+                showMessage('Error al guardar la sesión. Inténtelo nuevamente.');
+                console.error(error);
             } finally {
                 showLoading(false);
             }
         }
 
         function viewDetails(sesionId) {
-            const sesion = allSesiones.find(s => s.__backendId === sesionId);
+            const sesion = allSesiones.find(s => s.id === sesionId);
             if (!sesion) return;
             
             const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
@@ -1531,7 +1428,7 @@
                         <div class="detail-item">
                             <label>Archivo Adjunto</label>
                             <span>${sesion.archivo_adjunto ? 
-                                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.__backendId}')">📎 ${sesion.tipo_archivo}</a>` : 
+                                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.id}')">📎 ${sesion.tipo_archivo}</a>` : 
                                 'Sin archivos'
                             }</span>
                         </div>
@@ -1548,37 +1445,40 @@
         }
 
         function editSesion(sesionId) {
-            const sesion = allSesiones.find(s => s.__backendId === sesionId);
+            const sesion = allSesiones.find(s => s.id === sesionId);
             if (sesion) {
                 openSesionModal(sesion);
             }
         }
 
         function deleteSesion(sesionId) {
-            const sesion = allSesiones.find(s => s.__backendId === sesionId);
+            const sesion = allSesiones.find(s => s.id === sesionId);
             if (sesion) {
                 showConfirmModal(
                     `¿Está seguro de eliminar la sesión del ${new Date(sesion.fecha).toLocaleDateString('es-ES')} con ${sesion.estudiante_nombre}? Esta acción no se puede deshacer.`,
-                    async () => {
+                    () => {
                         showLoading(true);
-                        const result = await window.dataSdk.delete(sesion);
                         
-                        if (result.isOk) {
+                        try {
+                            allSesiones = allSesiones.filter(s => s.id !== sesionId);
+                            saveToLocalStorage();
                             showMessage('Sesión eliminada correctamente');
-                        } else {
+                            applyFilters();
+                        } catch (error) {
                             showMessage('Error al eliminar la sesión');
+                            console.error(error);
+                        } finally {
+                            showLoading(false);
                         }
-                        showLoading(false);
                     }
                 );
             }
         }
 
         function downloadFile(sesionId) {
-            const sesion = allSesiones.find(s => s.__backendId === sesionId);
+            const sesion = allSesiones.find(s => s.id === sesionId);
             if (sesion && sesion.archivo_adjunto) {
-                // En un sistema real, esto descargaría el archivo del servidor
-                showMessage(`Descargando archivo: ${sesion.tipo_archivo}`);
+                showMessage(`Simulación: Descargando archivo: ${sesion.tipo_archivo}`);
             }
         }
 
@@ -1588,12 +1488,35 @@
                 return;
             }
             
-            // Simular generación de reporte
-            showMessage(`Generando reporte con ${filteredSesiones.length} sesiones...`);
+            // Crear contenido del reporte
+            let reportContent = `Reporte de Tutorías - ${new Date().toLocaleDateString('es-ES')}\n\n`;
+            reportContent += `Total de sesiones: ${filteredSesiones.length}\n`;
+            reportContent += `Estudiantes únicos: ${new Set(filteredSesiones.map(s => s.estudiante_codigo)).size}\n\n`;
+            reportContent += `Detalle por curso:\n`;
             
-            setTimeout(() => {
-                showMessage('Reporte generado correctamente');
-            }, 2000);
+            // Agrupar por curso
+            const porCurso = {};
+            filteredSesiones.forEach(sesion => {
+                if (!porCurso[sesion.curso]) porCurso[sesion.curso] = 0;
+                porCurso[sesion.curso]++;
+            });
+            
+            for (const [curso, cantidad] of Object.entries(porCurso)) {
+                reportContent += `  ${curso}: ${cantidad} sesiones\n`;
+            }
+            
+            // Crear y descargar el archivo
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte_tutorias_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showMessage('Reporte generado y descargado correctamente');
         }
 
         function showConfirmModal(message, action) {

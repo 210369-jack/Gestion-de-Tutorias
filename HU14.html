@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>HU14 - Seguimiento de Derivaciones Psicológicas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8f6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #2e7d32;
+      text-align: center;
+    }
+
+    .resumen {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: white;
+      border-left: 6px solid #2e7d32;
+      padding: 15px 25px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .card h2 {
+      margin: 0;
+      color: #2e7d32;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    tr:hover {
+      background-color: #f1f8f4;
+    }
+
+    .estado {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>HU14 – Seguimiento de Derivaciones Psicológicas</h1>
+
+  <!-- RESUMEN -->
+  <div class="resumen">
+    <div class="card">
+      <h2 id="totalDerivados">0</h2>
+      <p>Total Derivaciones</p>
+    </div>
+    <div class="card">
+      <h2 id="enSeguimiento">0</h2>
+      <p>En Seguimiento</p>
+    </div>
+    <div class="card">
+      <h2 id="cerrados">0</h2>
+      <p>Cerrados</p>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Alumno</th>
+        <th>Tutor</th>
+        <th>Fecha Derivación</th>
+        <th>Estado</th>
+        <th>Motivo</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDerivados"></tbody>
+  </table>
+
+  <script>
+    fetch('/derivados')
+      .then(res => res.json())
+      .then(data => {
+        const tabla = document.getElementById('tablaDerivados');
+
+        let total = data.length;
+        let seguimiento = 0;
+        let cerrados = 0;
+
+        data.forEach(d => {
+          if (d.estado === "En seguimiento") seguimiento++;
+          if (d.estado === "Cerrado") cerrados++;
+
+          const fecha = new Date(d.fechaDerivacion).toLocaleDateString();
+
+          tabla.innerHTML += `
+            <tr>
+              <td>${d.id}</td>
+              <td>${d.alumno}</td>
+              <td>${d.tutor}</td>
+              <td>${fecha}</td>
+              <td class="estado">${d.estado}</td>
+              <td>${d.motivo}</td>
+            </tr>
+          `;
+        });
+
+        document.getElementById('totalDerivados').innerText = total;
+        document.getElementById('enSeguimiento').innerText = seguimiento;
+        document.getElementById('cerrados').innerText = cerrados;
+      })
+      .catch(err => console.error("Error cargando derivados:", err));
+  </script>
+
+</body>
+</html>
+

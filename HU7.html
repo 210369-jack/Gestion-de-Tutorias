@@ -87,7 +87,7 @@
         </div>
 
         <!-- Formulario de Registro -->
-        <form id="tutoriaForm" class="space-y-6">
+        <form id="tutoriaForm" action="/guardar-tutoria" method="POST" class="space-y-6">
             <!-- Sección: Estado Emocional -->
             <div class="bg-white rounded-lg shadow-md p-6 fade-in">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -99,7 +99,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Estado de Ánimo General</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <select name="estado_animo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Seleccionar...</option>
                             <option value="excelente">Excelente</option>
                             <option value="bueno">Bueno</option>
@@ -110,7 +110,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Nivel de Estrés</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <select name="nivel_estres" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Seleccionar...</option>
                             <option value="bajo">Bajo</option>
                             <option value="moderado">Moderado</option>
@@ -120,7 +120,7 @@
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones sobre Bienestar Emocional</label>
-                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe cualquier situación emocional relevante..."></textarea>
+                        <textarea name="obs_bienestar" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe cualquier situación emocional relevante..."></textarea>
                     </div>
                 </div>
             </div>
@@ -136,7 +136,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Participación en Clase</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <select name="participacion_clase"   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Seleccionar...</option>
                             <option value="muy-activa">Muy Activa</option>
                             <option value="activa">Activa</option>
@@ -147,7 +147,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Asistencia a Tutorías</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <select name="asistencia_tutorias" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Seleccionar...</option>
                             <option value="excelente">Excelente (90-100%)</option>
                             <option value="buena">Buena (75-89%)</option>
@@ -159,19 +159,19 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Actividades Extracurriculares</label>
                         <div class="space-y-2">
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="actividades" value="Deportes" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Deportes</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="actividades" value="Grupos estudiantiles"class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Grupos estudiantiles</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="actividades" value="Voluntariado" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Voluntariado</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="actividades" value="Actividades culturales" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Actividades culturales</span>
                             </label>
                         </div>
@@ -190,7 +190,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Situación Familiar</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <select name="sit_familiar" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Seleccionar...</option>
                             <option value="estable">Estable</option>
                             <option value="cambios-menores">Cambios menores</option>
@@ -200,7 +200,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Situación Económica</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <select name="sit_economica" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="">Seleccionar...</option>
                             <option value="estable">Estable</option>
                             <option value="ajustada">Ajustada</option>
@@ -210,7 +210,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Factores que Afectan el Rendimiento Académico</label>
-                        <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe situaciones personales, familiares, laborales o de salud que puedan estar influyendo en el desempeño académico del estudiante..."></textarea>
+                        <textarea name="factores_rendimiento" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Describe situaciones personales, familiares, laborales o de salud que puedan estar influyendo en el desempeño académico del estudiante..."></textarea>
                     </div>
                 </div>
             </div>
@@ -226,36 +226,36 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones Generales</label>
-                        <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Registra observaciones importantes sobre el progreso, comportamiento o necesidades del estudiante..."></textarea>
+                        <textarea name="obs_generales" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Registra observaciones importantes sobre el progreso, comportamiento o necesidades del estudiante..."></textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Derivaciones Recomendadas</label>
                         <div class="space-y-2">
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="derivaciones" value="Psicología estudiantil" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Psicología estudiantil</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="derivaciones" value="Trabajo social" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Trabajo social</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="derivaciones" value="Servicios médicos" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Servicios médicos</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="derivaciones" value="Apoyo académico especializado" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Apoyo académico especializado</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" name="derivaciones" value="Becas y apoyo financiero" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                 <span class="ml-2 text-sm text-gray-700">Becas y apoyo financiero</span>
                             </label>
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Seguimiento Requerido</label>
-                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Especifica el tipo de seguimiento necesario y la frecuencia recomendada..."></textarea>
+                        <textarea name="seguimiento_req" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Especifica el tipo de seguimiento necesario y la frecuencia recomendada..."></textarea>
                     </div>
                 </div>
             </div>
@@ -288,57 +288,54 @@
     </div>
 
     <script>
-        // Manejo del formulario
-        document.getElementById('tutoriaForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Simular guardado
-            const successMessage = document.getElementById('successMessage');
-            successMessage.classList.remove('hidden');
-            
-            // Ocultar mensaje después de 3 segundos
-            setTimeout(() => {
-                successMessage.classList.add('hidden');
-            }, 3000);
-            
-            // Scroll al inicio
+        document.getElementById('tutoriaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    
+    // Construimos la estructura exacta que pide tu RegistroTutoriaSchema
+    const data = {
+        bienestar: {
+            estadoAnimo: formData.get('estado_animo'),
+            nivelEstres: formData.get('nivel_estres'),
+            observaciones: formData.get('obs_bienestar')
+        },
+        participacion: {
+            clase: formData.get('participacion_clase'),
+            asistencia: formData.get('asistencia_tutorias'),
+            actividades: formData.getAll('actividades') // getAll captura todos los checks marcados
+        },
+        situacionPersonal: {
+            familiar: formData.get('sit_familiar'),
+            economica: formData.get('sit_economica'),
+            factoresRendimiento: formData.get('factores_rendimiento')
+        },
+        seguimiento: {
+            observacionesGenerales: formData.get('obs_generales'),
+            derivaciones: formData.getAll('derivaciones'), // getAll es clave para que no salga empty
+            seguimientoRequerido: formData.get('seguimiento_req')
+        }
+    };
+
+    try {
+        const response = await fetch('/guardar-tutoria', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert("✅ Registro guardado con éxito en la base de datos.");
+            this.reset();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // Botón cancelar
-        document.getElementById('cancelarBtn').addEventListener('click', function() {
-            if (confirm('¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.')) {
-                document.getElementById('tutoriaForm').reset();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        });
-
-        // Botón editar
-        document.getElementById('editarBtn').addEventListener('click', function() {
-            // Simular carga de datos existentes
-            document.querySelector('select[name="estado-animo"]').value = 'bueno';
-            document.querySelector('select[name="nivel-estres"]').value = 'moderado';
-            
-            // Scroll al primer campo
-            document.querySelector('select').focus();
-        });
-
-        // Animación de entrada para las secciones
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        });
-
-        document.querySelectorAll('.fade-in').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
+        } else {
+            alert("❌ Error al guardar: el servidor no respondió correctamente.");
+        }
+    } catch (error) {
+        console.error("Error de red:", error);
+        alert("❌ No se pudo conectar con el servidor.");
+    }
+});
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f2214e43b3b4ef',t:'MTc2MDU2MDgxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

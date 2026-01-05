@@ -48,7 +48,7 @@ const RegistroTutoriaSchema = new mongoose.Schema({
   participacion: {
     clase: String,
     asistencia: String,
-    actividades: [String] 
+    actividades: [String] // Array para múltiples checkboxes
   },
   situacionPersonal: {
     familiar: String,
@@ -57,13 +57,25 @@ const RegistroTutoriaSchema = new mongoose.Schema({
   },
   seguimiento: {
     observacionesGenerales: String,
-    derivaciones: [String], 
+    derivaciones: [String], // Array para múltiples checkboxes
     seguimientoRequerido: String
   },
   fechaRegistro: { type: Date, default: Date.now }
 }, { collection: 'Registros_Tutorias' });
 
 const RegistroTutoria = mongoose.model("RegistroTutoria", RegistroTutoriaSchema);
+const ActividadProfesionalSchema = new mongoose.Schema({
+    estudianteId: { type: String, default: "2021001234" },
+    tipoActividad: String,
+    descripcion: String,
+    institucion: String,
+    fechaInicio: Date,
+    fechaFin: Date,
+    observaciones: String,
+    fechaRegistro: { type: Date, default: Date.now }
+}, { collection: 'Actividades_Profesionales' });
+
+const ActividadProfesional = mongoose.model("ActividadProfesional", ActividadProfesionalSchema);
 
 // MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3 - Tu trabajo)
 // *** CAMBIO AQUÍ: Se agregó tutorActual ***
@@ -209,40 +221,62 @@ app.put("/actualizar-usuario/:id", async (req, res) => {
   }
 });
 
-// RUTA PARA GUARDAR TUTORÍA (HU7 - COMPAÑEROS)
+// ==========================================
+// RUTA PARA GUARDAR TUTORÍA
+// ==========================================
 app.post("/guardar-tutoria", async (req, res) => {
-  try {
-    const nuevaTutoria = new RegistroTutoria({
-      bienestar: {
-        estadoAnimo: req.body.estado_animo,
-        nivelEstres: req.body.nivel_estres,
-        observaciones: req.body.obs_bienestar
-      },
-      participacion: {
-        clase: req.body.participacion_clase,
-        asistencia: req.body.asistencia_tutorias,
-        actividades: req.body.actividades || [] 
-      },
-      situacionPersonal: {
-        familiar: req.body.sit_familiar,
-        economica: req.body.sit_economica,
-        factoresRendimiento: req.body.factores_rendimiento
-      },
-      seguimiento: {
-        observacionesGenerales: req.body.obs_generales,
-        derivaciones: req.body.derivaciones || [],
-        seguimientoRequerido: req.body.seguimiento_req
-      }
-    });
+    try {
+        console.log("Datos recibidos:", req.body);
 
-    await nuevaTutoria.save();
-    console.log("✅ Registro de tutoría guardado correctamente");
-    res.send("<script>alert('Registro guardado con éxito en la nube'); window.location.href='/HU7.html';</script>");
+        // Creamos el registro con el esquema que definiste
+        const nuevaTutoria = new RegistroTutoria(req.body);
 
-  } catch (error) {
-    console.error("❌ Error al guardar tutoría:", error);
-    res.status(500).send("Error interno al procesar el registro");
-  }
+        // GUARDADO: Esta es la línea clave
+        const resultado = await nuevaTutoria.save(); 
+        
+        console.log("✅ Guardado en MongoDB con ID:", resultado._id);
+        res.status(200).json({ mensaje: "Registro guardado exitosamente" });
+    } catch (error) {
+        console.error("❌ Error al guardar:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+app.post("/guardar-actividad", async (req, res) => {
+    try {
+        const nuevaActividad = new ActividadProfesional(req.body);
+        await nuevaActividad.save();
+        console.log("✅ Actividad Profesional guardada");
+        res.status(200).json({ mensaje: "Éxito" });
+    } catch (error) {
+        console.error("❌ Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get("/obtener-actividades", async (req, res) => {
+    try {
+        // Buscamos todas las actividades y las ordenamos por fecha de inicio (más reciente primero)
+        const actividades = await ActividadProfesional.find().sort({ fechaInicio: -1 });
+        res.status(200).json(actividades);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+app.delete("/eliminar-actividad/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const resultado = await ActividadProfesional.findByIdAndDelete(id);
+        
+        if (resultado) {
+            console.log(`🗑️ Actividad ${id} eliminada`);
+            res.status(200).json({ mensaje: "Registro eliminado correctamente" });
+        } else {
+            res.status(404).json({ mensaje: "No se encontró el registro" });
+        }
+    } catch (error) {
+        console.error("❌ Error al eliminar:", error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // ============================

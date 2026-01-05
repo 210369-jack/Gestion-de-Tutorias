@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Reportes de Tutorías Universitarias</title>
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       box-sizing: border-box;
@@ -13,24 +12,29 @@
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
-      min-height: 100%;
-      height: 100%;
-    }
-    
-    html {
-      height: 100%;
+      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
     }
     
     .container {
-      max-width: 1400px;
-      margin: 0 auto;
+      max-width: 100%;
+      height: 100%;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
       padding: 24px;
     }
     
     .header {
       background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
       color: white;
-      padding: 32px;
+      padding: 24px 32px;
       border-radius: 16px;
       margin-bottom: 24px;
       box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
@@ -38,7 +42,7 @@
     
     .header h1 {
       margin: 0 0 8px 0;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 600;
     }
     
@@ -165,6 +169,7 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       overflow: hidden;
+      margin-bottom: 24px;
     }
     
     .table-header {
@@ -513,6 +518,13 @@
       text-decoration: underline;
     }
     
+    /* Estilos para el sidebar */
+    .sidebar-open { transform: translateX(0) !important; }
+    .nav-item.active { 
+        background-color: rgba(255, 255, 255, 0.1); 
+        border-left: 4px solid #4ade80; 
+    }
+    
     @media (max-width: 768px) {
       .controls-grid {
         grid-template-columns: 1fr;
@@ -559,800 +571,1030 @@
       .detail-grid {
         grid-template-columns: 1fr;
       }
+      
+      .main-content {
+        padding: 16px;
+      }
+      
+      .header {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      
+      .header h1 {
+        font-size: 24px;
+      }
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body>
-  <div class="container">
-   <div class="header">
-    <h1 id="system-title">Sistema de Reportes de Tutorías Universitarias</h1>
-    <p id="institution-name">Escuela Profesional de Ingeniería Informática y de Sistemas</p>
-   </div>
-   <div class="controls-section">
-    <div class="controls-grid">
-     <div class="control-group"><label for="filter-fecha">Fecha</label> <input type="date" id="filter-fecha">
-     </div>
-     <div class="control-group"><label for="filter-grupo">Grupo</label> <select id="filter-grupo"> <option value="">Todos los grupos</option> <option value="A">Grupo A</option> <option value="B">Grupo B</option> <option value="C">Grupo C</option> <option value="D">Grupo D</option> </select>
-     </div>
-     <div class="control-group"><label for="filter-curso">Curso</label> <select id="filter-curso"> <option value="">Todos los cursos</option> <option value="Programación I">Programación I</option> <option value="Programación II">Programación II</option> <option value="Base de Datos">Base de Datos</option> <option value="Redes">Redes</option> <option value="Ingeniería de Software">Ingeniería de Software</option> <option value="Inteligencia Artificial">Inteligencia Artificial</option> </select>
-     </div>
-     <div class="control-group"><label for="filter-desempeno">Desempeño</label> <select id="filter-desempeno"> <option value="">Todos los niveles</option> <option value="Excelente">Excelente</option> <option value="Bueno">Bueno</option> <option value="Regular">Regular</option> <option value="Deficiente">Deficiente</option> </select>
-     </div>
-     <div class="control-group"><label for="search-estudiante">Buscar Estudiante</label> <input type="text" id="search-estudiante" placeholder="Código o nombre...">
-     </div>
-    </div>
-    <div class="button-group"><button class="btn btn-primary" id="btn-nueva-sesion"> <span>📝</span> <span id="register-button">Registrar Nueva Sesión</span> </button> <button class="btn btn-secondary" id="btn-aplicar-filtros"> <span>🔍</span> Aplicar Filtros </button> <button class="btn btn-secondary" id="btn-limpiar-filtros"> <span>🔄</span> Limpiar Filtros </button> <button class="btn btn-secondary" id="btn-generar-reporte"> <span>📊</span> Generar Reporte </button>
-    </div>
-   </div>
-   <div class="stats-grid">
-    <div class="stat-card">
-     <h3>Total de Sesiones</h3>
-     <p id="stat-total">0</p>
-    </div>
-    <div class="stat-card">
-     <h3>Sesiones Esta Semana</h3>
-     <p id="stat-semana">0</p>
-    </div>
-    <div class="stat-card">
-     <h3>Estudiantes Atendidos</h3>
-     <p id="stat-estudiantes">0</p>
-    </div>
-    <div class="stat-card">
-     <h3>Dificultades Detectadas</h3>
-     <p id="stat-dificultades">0</p>
-    </div>
-   </div>
-   <div class="table-container">
-    <div class="table-header">
-     <h2 id="sessions-title">Registro de Sesiones Académicas</h2>
-    </div>
-    <div class="loading" id="loading">
-     <p>⏳ Cargando sesiones...</p>
-    </div>
-    <div class="table-wrapper" id="table-wrapper">
-     <table id="sesiones-table">
-      <thead>
-       <tr>
-        <th>Fecha</th>
-        <th>Estudiante</th>
-        <th>Grupo</th>
-        <th>Curso</th>
-        <th>Temas Tratados</th>
-        <th>Desempeño</th>
-        <th>Estado</th>
-        <th>Archivos</th>
-        <th>Acciones</th>
-       </tr>
-      </thead>
-      <tbody id="sesiones-tbody">
-      </tbody>
-     </table>
-    </div>
-    <div class="empty-state" id="empty-state" style="display: none;">
-     <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14,2 14,8 20,8" /> <line x1="16" y1="13" x2="8" y2="13" /> <line x1="16" y1="17" x2="8" y2="17" /> <polyline points="10,9 9,9 8,9" />
-     </svg>
-     <h3>No hay sesiones registradas</h3>
-     <p>Comienza registrando la primera sesión académica con un estudiante.</p>
-    </div>
-   </div><!-- Modal para registrar/editar sesión -->
-   <div class="modal-overlay" id="modal-overlay" style="display: none;">
-    <div class="modal">
-     <div class="modal-header">
-      <h3 id="modal-title">Registrar Nueva Sesión</h3><button class="modal-close" id="modal-close">×</button>
-     </div>
-     <form class="modal-body" id="sesion-form">
-      <div class="form-grid">
-       <div class="form-group"><label for="sesion-fecha">Fecha de la Sesión *</label> <input type="date" id="sesion-fecha" required>
-       </div>
-       <div class="form-group"><label for="sesion-tutor">Tutor *</label> <input type="text" id="sesion-tutor" required placeholder="Nombre del tutor">
-       </div>
-       <div class="form-group"><label for="sesion-estudiante-codigo">Código del Estudiante *</label> <input type="text" id="sesion-estudiante-codigo" required placeholder="Ej: 2021001234">
-       </div>
-       <div class="form-group"><label for="sesion-estudiante-nombre">Nombre del Estudiante *</label> <input type="text" id="sesion-estudiante-nombre" required placeholder="Nombre completo">
-       </div>
-       <div class="form-group"><label for="sesion-grupo">Grupo *</label> <select id="sesion-grupo" required> <option value="">Seleccionar grupo</option> <option value="A">Grupo A</option> <option value="B">Grupo B</option> <option value="C">Grupo C</option> <option value="D">Grupo D</option> </select>
-       </div>
-       <div class="form-group"><label for="sesion-curso">Curso *</label> <select id="sesion-curso" required> <option value="">Seleccionar curso</option> <option value="Programación I">Programación I</option> <option value="Programación II">Programación II</option> <option value="Base de Datos">Base de Datos</option> <option value="Redes">Redes</option> <option value="Ingeniería de Software">Ingeniería de Software</option> <option value="Inteligencia Artificial">Inteligencia Artificial</option> </select>
-       </div>
-       <div class="form-group full-width"><label for="sesion-temas">Temas Tratados *</label> <textarea id="sesion-temas" required placeholder="Describe los temas abordados en la sesión..."></textarea>
-       </div>
-       <div class="form-group full-width"><label for="sesion-observaciones">Observaciones</label> <textarea id="sesion-observaciones" placeholder="Observaciones generales sobre el estudiante..."></textarea>
-       </div>
-       <div class="form-group full-width"><label for="sesion-recomendaciones">Recomendaciones</label> <textarea id="sesion-recomendaciones" placeholder="Recomendaciones para mejorar el desempeño..."></textarea>
-       </div>
-       <div class="form-group full-width"><label for="sesion-dificultades">Dificultades Detectadas</label> <textarea id="sesion-dificultades" placeholder="Describe las dificultades identificadas..."></textarea>
-       </div>
-       <div class="form-group"><label for="sesion-desempeno">Nivel de Desempeño *</label> <select id="sesion-desempeno" required> <option value="">Evaluar desempeño</option> <option value="Excelente">Excelente</option> <option value="Bueno">Bueno</option> <option value="Regular">Regular</option> <option value="Deficiente">Deficiente</option> </select>
-       </div>
-       <div class="form-group"><label for="sesion-proxima">Próxima Sesión</label> <input type="date" id="sesion-proxima">
-       </div>
-       <div class="form-group full-width"><label for="sesion-archivo">Archivo Adjunto</label>
-        <div class="file-upload"><input type="file" id="sesion-archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-         <div class="file-upload-label"><span>📎</span> <span>Seleccionar archivo (PDF, DOC, JPG, PNG)</span>
-         </div>
-        </div>
-        <div class="file-info" id="file-info"></div>
-       </div>
-      </div>
-      <div class="modal-actions"><button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button> <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar Sesión</button>
-      </div>
-     </form>
-    </div>
-   </div><!-- Modal de detalles de sesión -->
-   <div class="modal-overlay" id="details-modal" style="display: none;">
-    <div class="modal">
-     <div class="modal-header">
-      <h3>Detalles de la Sesión</h3><button class="modal-close" id="details-close">×</button>
-     </div>
-     <div class="modal-body" id="details-content"><!-- Contenido dinámico -->
-     </div>
-    </div>
-   </div><!-- Modal de confirmación -->
-   <div class="modal-overlay" id="confirm-modal" style="display: none;">
-    <div class="modal modal-small">
-     <div class="modal-header">
-      <h3>Confirmar Acción</h3>
-     </div>
-     <div class="modal-body">
-      <p id="confirm-message">¿Está seguro de realizar esta acción?</p>
-      <div class="modal-actions"><button type="button" class="btn btn-secondary" id="btn-cancelar-confirm">Cancelar</button> <button type="button" class="btn btn-primary" id="btn-confirmar">Confirmar</button>
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
-  <script>
-    const defaultConfig = {
-      background_color: "#e8f5e9",
-      primary_color: "#2e7d32",
-      secondary_color: "#43a047",
-      text_color: "#333333",
-      surface_color: "#ffffff",
-      font_family: "Segoe UI",
-      font_size: 16,
-      system_title: "Sistema de Reportes de Tutorías Universitarias",
-      institution_name: "Escuela Profesional de Ingeniería Informática y de Sistemas",
-      register_button: "Registrar Nueva Sesión",
-      sessions_title: "Registro de Sesiones Académicas"
-    };
+ <body class="bg-gray-50 flex flex-col md:flex-row h-screen overflow-hidden">
+    
+    <!-- Overlay móvil -->
+    <div id="mobileOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity"></div>
 
-    let allSesiones = [];
-    let filteredSesiones = [];
-    let editingSesion = null;
-    let pendingAction = null;
+    <!-- Menú móvil -->
+    <div class="bg-green-900 text-white p-4 flex justify-between items-center md:hidden z-20 shadow-md">
+        <span class="font-bold text-lg">REPORTES</span>
+        <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-green-800">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
 
-    const dataHandler = {
-      onDataChanged(data) {
-        allSesiones = data;
-        applyFilters();
-      }
-    };
-
-    async function initializeApp() {
-      const initResult = await window.dataSdk.init(dataHandler);
-      if (!initResult.isOk) {
-        console.error("Error al inicializar Data SDK");
-      }
-      
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange: async (config) => {
-            const customFont = config.font_family || defaultConfig.font_family;
-            const baseFontStack = 'Tahoma, Geneva, Verdana, sans-serif';
-            const baseSize = config.font_size || defaultConfig.font_size;
-            
-            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
-            document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 100%)`;
-            
-            const header = document.querySelector('.header');
-            if (header) {
-              header.style.background = `linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, ${config.secondary_color || defaultConfig.secondary_color} 100%)`;
-            }
-            
-            const systemTitle = document.getElementById('system-title');
-            if (systemTitle) {
-              systemTitle.textContent = config.system_title || defaultConfig.system_title;
-              systemTitle.style.fontSize = `${baseSize * 2}px`;
-            }
-            
-            const institutionName = document.getElementById('institution-name');
-            if (institutionName) {
-              institutionName.textContent = config.institution_name || defaultConfig.institution_name;
-              institutionName.style.fontSize = `${baseSize}px`;
-            }
-            
-            const registerButton = document.getElementById('register-button');
-            if (registerButton) {
-              registerButton.textContent = config.register_button || defaultConfig.register_button;
-            }
-            
-            const sessionsTitle = document.getElementById('sessions-title');
-            if (sessionsTitle) {
-              sessionsTitle.textContent = config.sessions_title || defaultConfig.sessions_title;
-              sessionsTitle.style.fontSize = `${baseSize * 1.25}px`;
-            }
-            
-            const labels = document.querySelectorAll('.control-group label, .stat-card h3, th, .form-group label');
-            labels.forEach(label => {
-              label.style.color = config.primary_color || defaultConfig.primary_color;
-              label.style.fontSize = `${baseSize * 0.875}px`;
-            });
-            
-            const primaryButtons = document.querySelectorAll('.btn-primary');
-            primaryButtons.forEach(btn => {
-              btn.style.background = config.primary_color || defaultConfig.primary_color;
-              btn.style.fontSize = `${baseSize * 0.875}px`;
-            });
-            
-            const secondaryButtons = document.querySelectorAll('.btn-secondary');
-            secondaryButtons.forEach(btn => {
-              btn.style.color = config.primary_color || defaultConfig.primary_color;
-              btn.style.borderColor = config.primary_color || defaultConfig.primary_color;
-              btn.style.fontSize = `${baseSize * 0.875}px`;
-            });
-            
-            const statValues = document.querySelectorAll('.stat-card p');
-            statValues.forEach(val => {
-              val.style.color = config.primary_color || defaultConfig.primary_color;
-              val.style.fontSize = `${baseSize * 2}px`;
-            });
-            
-            const tableHeader = document.querySelector('.table-header h2');
-            if (tableHeader) {
-              tableHeader.style.color = config.primary_color || defaultConfig.primary_color;
-              tableHeader.style.fontSize = `${baseSize * 1.25}px`;
-            }
-            
-            const thead = document.querySelector('thead');
-            if (thead) {
-              thead.style.background = config.primary_color || defaultConfig.primary_color;
-            }
-            
-            const tableCells = document.querySelectorAll('td');
-            tableCells.forEach(cell => {
-              cell.style.fontSize = `${baseSize * 0.875}px`;
-            });
-          },
-          mapToCapabilities: (config) => ({
-            recolorables: [
-              {
-                get: () => config.background_color || defaultConfig.background_color,
-                set: (value) => {
-                  config.background_color = value;
-                  window.elementSdk.setConfig({ background_color: value });
-                }
-              },
-              {
-                get: () => config.surface_color || defaultConfig.surface_color,
-                set: (value) => {
-                  config.surface_color = value;
-                  window.elementSdk.setConfig({ surface_color: value });
-                }
-              },
-              {
-                get: () => config.text_color || defaultConfig.text_color,
-                set: (value) => {
-                  config.text_color = value;
-                  window.elementSdk.setConfig({ text_color: value });
-                }
-              },
-              {
-                get: () => config.primary_color || defaultConfig.primary_color,
-                set: (value) => {
-                  config.primary_color = value;
-                  window.elementSdk.setConfig({ primary_color: value });
-                }
-              },
-              {
-                get: () => config.secondary_color || defaultConfig.secondary_color,
-                set: (value) => {
-                  config.secondary_color = value;
-                  window.elementSdk.setConfig({ secondary_color: value });
-                }
-              }
-            ],
-            borderables: [],
-            fontEditable: {
-              get: () => config.font_family || defaultConfig.font_family,
-              set: (value) => {
-                config.font_family = value;
-                window.elementSdk.setConfig({ font_family: value });
-              }
-            },
-            fontSizeable: {
-              get: () => config.font_size || defaultConfig.font_size,
-              set: (value) => {
-                config.font_size = value;
-                window.elementSdk.setConfig({ font_size: value });
-              }
-            }
-          }),
-          mapToEditPanelValues: (config) => new Map([
-            ["system_title", config.system_title || defaultConfig.system_title],
-            ["institution_name", config.institution_name || defaultConfig.institution_name],
-            ["register_button", config.register_button || defaultConfig.register_button],
-            ["sessions_title", config.sessions_title || defaultConfig.sessions_title]
-          ])
-        });
-      }
-      
-      setupEventListeners();
-      setDefaultDate();
-    }
-
-    function setupEventListeners() {
-      document.getElementById('btn-nueva-sesion').addEventListener('click', () => openSesionModal());
-      document.getElementById('btn-aplicar-filtros').addEventListener('click', applyFilters);
-      document.getElementById('btn-limpiar-filtros').addEventListener('click', clearFilters);
-      document.getElementById('btn-generar-reporte').addEventListener('click', generateReport);
-      document.getElementById('search-estudiante').addEventListener('input', applyFilters);
-      
-      document.getElementById('modal-close').addEventListener('click', closeModal);
-      document.getElementById('btn-cancelar').addEventListener('click', closeModal);
-      document.getElementById('sesion-form').addEventListener('submit', handleSesionSubmit);
-      
-      document.getElementById('details-close').addEventListener('click', closeDetailsModal);
-      
-      document.getElementById('btn-cancelar-confirm').addEventListener('click', closeConfirmModal);
-      document.getElementById('btn-confirmar').addEventListener('click', executeAction);
-      
-      document.getElementById('sesion-archivo').addEventListener('change', handleFileSelect);
-      
-      document.getElementById('modal-overlay').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('modal-overlay')) {
-          closeModal();
-        }
-      });
-      
-      document.getElementById('details-modal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('details-modal')) {
-          closeDetailsModal();
-        }
-      });
-    }
-
-    function setDefaultDate() {
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('sesion-fecha').value = today;
-    }
-
-    function applyFilters() {
-      const fecha = document.getElementById('filter-fecha').value;
-      const grupo = document.getElementById('filter-grupo').value;
-      const curso = document.getElementById('filter-curso').value;
-      const desempeno = document.getElementById('filter-desempeno').value;
-      const search = document.getElementById('search-estudiante').value.toLowerCase();
-      
-      filteredSesiones = allSesiones.filter(sesion => {
-        if (fecha && sesion.fecha !== fecha) return false;
-        if (grupo && sesion.grupo !== grupo) return false;
-        if (curso && sesion.curso !== curso) return false;
-        if (desempeno && sesion.nivel_desempeno !== desempeno) return false;
-        if (search && !sesion.estudiante_codigo.toLowerCase().includes(search) && 
-            !sesion.estudiante_nombre.toLowerCase().includes(search)) return false;
-        return true;
-      });
-      
-      renderTable();
-      updateStats();
-    }
-
-    function clearFilters() {
-      document.getElementById('filter-fecha').value = '';
-      document.getElementById('filter-grupo').value = '';
-      document.getElementById('filter-curso').value = '';
-      document.getElementById('filter-desempeno').value = '';
-      document.getElementById('search-estudiante').value = '';
-      applyFilters();
-    }
-
-    function renderTable() {
-      const tbody = document.getElementById('sesiones-tbody');
-      const emptyState = document.getElementById('empty-state');
-      const tableWrapper = document.getElementById('table-wrapper');
-      
-      if (filteredSesiones.length === 0) {
-        tableWrapper.style.display = 'none';
-        emptyState.style.display = 'block';
-        return;
-      }
-      
-      tableWrapper.style.display = 'block';
-      emptyState.style.display = 'none';
-      
-      tbody.innerHTML = filteredSesiones.map(sesion => {
-        const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
-        const temasCortos = sesion.temas_tratados.length > 50 ? 
-          sesion.temas_tratados.substring(0, 50) + '...' : sesion.temas_tratados;
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-green-900 text-white flex flex-col shadow-xl transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static md:h-full">
         
-        return `
-          <tr>
-            <td>${fecha}</td>
-            <td>
-              <div>
-                <strong>${sesion.estudiante_nombre}</strong><br>
-                <small style="color: #666;">${sesion.estudiante_codigo}</small>
-              </div>
-            </td>
-            <td>${sesion.grupo}</td>
-            <td>${sesion.curso}</td>
-            <td>${temasCortos}</td>
-            <td><span class="badge badge-${sesion.nivel_desempeno.toLowerCase()}">${sesion.nivel_desempeno}</span></td>
-            <td><span class="badge badge-${sesion.estado.toLowerCase()}">${sesion.estado}</span></td>
-            <td>
-              ${sesion.archivo_adjunto ? 
-                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.__backendId}')">📎 ${sesion.tipo_archivo}</a>` : 
-                '<span style="color: #999;">Sin archivos</span>'
-              }
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn btn-small btn-secondary" onclick="viewDetails('${sesion.__backendId}')">
-                  👁️ Ver
+        <div class="flex justify-end p-2 md:hidden">
+            <button onclick="toggleSidebar()" class="text-white p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950 hidden md:flex">
+            <h1 class="text-xl font-bold tracking-wider">TUTORÍAS</h1>
+        </div>
+
+        <nav class="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+            
+            <a href="HU1.html" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
+
+            <div class="space-y-1">
+                <button onclick="toggleMenu('menu-admin')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Administración</span>
+                    </div>
+                    <svg class="w-4 h-4 transform rotate-180 transition-transform" id="arrow-admin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
                 </button>
-                <button class="btn btn-small btn-secondary" onclick="editSesion('${sesion.__backendId}')">
-                  ✏️ Editar
+                <div id="menu-admin" class="pl-12 space-y-1">
+                    <a href="HU1.html" class="nav-item active block px-2 py-2 text-sm text-white bg-green-800 rounded-lg">
+                        Usuarios y Accesos 
+                    </a>
+                    <a href="HU2.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">
+                        Asignar Tutores
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <button onclick="toggleMenu('menu-tutor')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <span>Gestión Tutorías</span>
+                    </div>
+                    <svg class="w-4 h-4 transform transition-transform" id="arrow-tutor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
                 </button>
-                <button class="btn btn-small btn-danger" onclick="deleteSesion('${sesion.__backendId}')">
-                  🗑️ Eliminar
+                <div id="menu-tutor" class="hidden pl-12 space-y-1">
+                    <a href="HU7.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Nueva Sesión (HU6-8)</a>
+                    <a href="HU4.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Sistema de Reportes de Tutorías</a>
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Constancias (HU10)</a>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <button onclick="toggleMenu('menu-verify')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        <span>Supervisión</span>
+                    </div>
+                    <svg class="w-4 h-4 transform transition-transform" id="arrow-verify" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
                 </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function updateStats() {
-      const total = filteredSesiones.length;
-      
-      // Sesiones de esta semana
-      const today = new Date();
-      const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-      const semana = filteredSesiones.filter(s => new Date(s.fecha) >= startOfWeek).length;
-      
-      // Estudiantes únicos
-      const estudiantes = new Set(filteredSesiones.map(s => s.estudiante_codigo)).size;
-      
-      // Dificultades detectadas
-      const dificultades = filteredSesiones.filter(s => s.dificultades_detectadas && s.dificultades_detectadas.trim()).length;
-      
-      document.getElementById('stat-total').textContent = total;
-      document.getElementById('stat-semana').textContent = semana;
-      document.getElementById('stat-estudiantes').textContent = estudiantes;
-      document.getElementById('stat-dificultades').textContent = dificultades;
-    }
-
-    function openSesionModal(sesion = null) {
-      editingSesion = sesion;
-      const modal = document.getElementById('modal-overlay');
-      const title = document.getElementById('modal-title');
-      const form = document.getElementById('sesion-form');
-      
-      if (sesion) {
-        title.textContent = 'Editar Sesión';
-        fillForm(sesion);
-      } else {
-        title.textContent = 'Registrar Nueva Sesión';
-        form.reset();
-        setDefaultDate();
-      }
-      
-      modal.style.display = 'flex';
-    }
-
-    function fillForm(sesion) {
-      document.getElementById('sesion-fecha').value = sesion.fecha;
-      document.getElementById('sesion-tutor').value = sesion.tutor;
-      document.getElementById('sesion-estudiante-codigo').value = sesion.estudiante_codigo;
-      document.getElementById('sesion-estudiante-nombre').value = sesion.estudiante_nombre;
-      document.getElementById('sesion-grupo').value = sesion.grupo;
-      document.getElementById('sesion-curso').value = sesion.curso;
-      document.getElementById('sesion-temas').value = sesion.temas_tratados;
-      document.getElementById('sesion-observaciones').value = sesion.observaciones || '';
-      document.getElementById('sesion-recomendaciones').value = sesion.recomendaciones || '';
-      document.getElementById('sesion-dificultades').value = sesion.dificultades_detectadas || '';
-      document.getElementById('sesion-desempeno').value = sesion.nivel_desempeno;
-      document.getElementById('sesion-proxima').value = sesion.proxima_sesion || '';
-      
-      if (sesion.archivo_adjunto) {
-        document.getElementById('file-info').textContent = `Archivo actual: ${sesion.tipo_archivo}`;
-      }
-    }
-
-    function closeModal() {
-      document.getElementById('modal-overlay').style.display = 'none';
-      document.getElementById('file-info').textContent = '';
-      editingSesion = null;
-    }
-
-    function handleFileSelect(e) {
-      const file = e.target.files[0];
-      const fileInfo = document.getElementById('file-info');
-      
-      if (file) {
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (file.size > maxSize) {
-          fileInfo.textContent = 'Error: El archivo debe ser menor a 5MB';
-          fileInfo.style.color = '#d32f2f';
-          e.target.value = '';
-          return;
-        }
-        
-        fileInfo.textContent = `Archivo seleccionado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-        fileInfo.style.color = '#2e7d32';
-      } else {
-        fileInfo.textContent = '';
-      }
-    }
-
-    async function handleSesionSubmit(e) {
-      e.preventDefault();
-      
-      if (allSesiones.length >= 999 && !editingSesion) {
-        showMessage('Límite máximo de 999 sesiones alcanzado. Elimine algunas sesiones primero.');
-        return;
-      }
-      
-      const file = document.getElementById('sesion-archivo').files[0];
-      let archivoData = '';
-      let tipoArchivo = '';
-      
-      if (file) {
-        // Simular carga de archivo (en un sistema real se subiría a un servidor)
-        archivoData = `archivo_${Date.now()}_${file.name}`;
-        tipoArchivo = file.name.split('.').pop().toUpperCase();
-      } else if (editingSesion) {
-        archivoData = editingSesion.archivo_adjunto || '';
-        tipoArchivo = editingSesion.tipo_archivo || '';
-      }
-      
-      const sesionData = {
-        fecha: document.getElementById('sesion-fecha').value,
-        tutor: document.getElementById('sesion-tutor').value,
-        estudiante_codigo: document.getElementById('sesion-estudiante-codigo').value,
-        estudiante_nombre: document.getElementById('sesion-estudiante-nombre').value,
-        grupo: document.getElementById('sesion-grupo').value,
-        curso: document.getElementById('sesion-curso').value,
-        temas_tratados: document.getElementById('sesion-temas').value,
-        observaciones: document.getElementById('sesion-observaciones').value,
-        recomendaciones: document.getElementById('sesion-recomendaciones').value,
-        dificultades_detectadas: document.getElementById('sesion-dificultades').value,
-        nivel_desempeno: document.getElementById('sesion-desempeno').value,
-        proxima_sesion: document.getElementById('sesion-proxima').value,
-        archivo_adjunto: archivoData,
-        tipo_archivo: tipoArchivo,
-        estado: 'Completada',
-        fecha_creacion: editingSesion ? editingSesion.fecha_creacion : new Date().toISOString(),
-        id: editingSesion ? editingSesion.id : `sesion_${Date.now()}`
-      };
-      
-      showLoading(true);
-      
-      try {
-        let result;
-        if (editingSesion) {
-          result = await window.dataSdk.update({ ...sesionData, __backendId: editingSesion.__backendId });
-        } else {
-          result = await window.dataSdk.create(sesionData);
-        }
-        
-        if (result.isOk) {
-          closeModal();
-          showMessage(editingSesion ? 'Sesión actualizada correctamente' : 'Sesión registrada correctamente');
-        } else {
-          showMessage('Error al guardar la sesión. Inténtelo nuevamente.');
-        }
-      } catch (error) {
-        showMessage('Error al procesar la solicitud.');
-      } finally {
-        showLoading(false);
-      }
-    }
-
-    function viewDetails(sesionId) {
-      const sesion = allSesiones.find(s => s.__backendId === sesionId);
-      if (!sesion) return;
-      
-      const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
-      const proximaSesion = sesion.proxima_sesion ? 
-        new Date(sesion.proxima_sesion).toLocaleDateString('es-ES') : 'No programada';
-      
-      const content = `
-        <div class="session-details">
-          <h4>Información General</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <label>Fecha</label>
-              <span>${fecha}</span>
+                <div id="menu-verify" class="hidden pl-12 space-y-1">
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Consultas (HU11-13)</a>
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Derivaciones (HU14)</a>
+                </div>
             </div>
-            <div class="detail-item">
-              <label>Tutor</label>
-              <span>${sesion.tutor}</span>
+
+            <!-- Este link estará activo en la página actual -->
+            <a href="HU6.html" class="nav-item active flex items-center px-4 py-3 bg-green-800 text-white rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Resumen Ejecutivo
+            </a>
+
+        </nav>
+
+        <div class="p-4 bg-green-950 border-t border-green-800 hidden md:block">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">A</div>
+                <div>
+                    <p class="text-sm font-semibold text-white">Administrador</p>
+                    <p class="text-xs text-green-300">admin@tutorias.com</p>
+                </div>
             </div>
-            <div class="detail-item">
-              <label>Estudiante</label>
-              <span>${sesion.estudiante_nombre} (${sesion.estudiante_codigo})</span>
-            </div>
-            <div class="detail-item">
-              <label>Grupo</label>
-              <span>${sesion.grupo}</span>
-            </div>
-            <div class="detail-item">
-              <label>Curso</label>
-              <span>${sesion.curso}</span>
-            </div>
-            <div class="detail-item">
-              <label>Desempeño</label>
-              <span class="badge badge-${sesion.nivel_desempeno.toLowerCase()}">${sesion.nivel_desempeno}</span>
-            </div>
-          </div>
         </div>
-        
-        <div class="session-details">
-          <h4>Contenido de la Sesión</h4>
-          <div class="detail-item">
-            <label>Temas Tratados</label>
-            <span>${sesion.temas_tratados}</span>
-          </div>
-        </div>
-        
-        ${sesion.observaciones ? `
-        <div class="session-details">
-          <h4>Observaciones</h4>
-          <div class="detail-item">
-            <span>${sesion.observaciones}</span>
-          </div>
-        </div>
-        ` : ''}
-        
-        ${sesion.recomendaciones ? `
-        <div class="session-details">
-          <h4>Recomendaciones</h4>
-          <div class="detail-item">
-            <span>${sesion.recomendaciones}</span>
-          </div>
-        </div>
-        ` : ''}
-        
-        ${sesion.dificultades_detectadas ? `
-        <div class="session-details">
-          <h4>Dificultades Detectadas</h4>
-          <div class="detail-item">
-            <span>${sesion.dificultades_detectadas}</span>
-          </div>
-        </div>
-        ` : ''}
-        
-        <div class="session-details">
-          <h4>Información Adicional</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <label>Próxima Sesión</label>
-              <span>${proximaSesion}</span>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden w-full md:h-full">
+        <!-- Contenido scrollable -->
+        <div class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+            <div class="container mx-auto">
+                <div class="header">
+                    <h1 id="system-title">Sistema de Reportes de Tutorías Universitarias</h1>
+                    <p id="institution-name">Escuela Profesional de Ingeniería Informática y de Sistemas</p>
+                </div>
+                
+                <div class="controls-section">
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label for="filter-fecha">Fecha</label>
+                            <input type="date" id="filter-fecha">
+                        </div>
+                        <div class="control-group">
+                            <label for="filter-grupo">Grupo</label>
+                            <select id="filter-grupo">
+                                <option value="">Todos los grupos</option>
+                                <option value="A">Grupo A</option>
+                                <option value="B">Grupo B</option>
+                                <option value="C">Grupo C</option>
+                                <option value="D">Grupo D</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="filter-curso">Curso</label>
+                            <select id="filter-curso">
+                                <option value="">Todos los cursos</option>
+                                <option value="Programación I">Programación I</option>
+                                <option value="Programación II">Programación II</option>
+                                <option value="Base de Datos">Base de Datos</option>
+                                <option value="Redes">Redes</option>
+                                <option value="Ingeniería de Software">Ingeniería de Software</option>
+                                <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="filter-desempeno">Desempeño</label>
+                            <select id="filter-desempeno">
+                                <option value="">Todos los niveles</option>
+                                <option value="Excelente">Excelente</option>
+                                <option value="Bueno">Bueno</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Deficiente">Deficiente</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="search-estudiante">Buscar Estudiante</label>
+                            <input type="text" id="search-estudiante" placeholder="Código o nombre...">
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="btn-nueva-sesion">
+                            <span>📝</span>
+                            <span id="register-button">Registrar Nueva Sesión</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btn-aplicar-filtros">
+                            <span>🔍</span>
+                            Aplicar Filtros
+                        </button>
+                        <button class="btn btn-secondary" id="btn-limpiar-filtros">
+                            <span>🔄</span>
+                            Limpiar Filtros
+                        </button>
+                        <button class="btn btn-secondary" id="btn-generar-reporte">
+                            <span>📊</span>
+                            Generar Reporte
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total de Sesiones</h3>
+                        <p id="stat-total">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Sesiones Esta Semana</h3>
+                        <p id="stat-semana">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Estudiantes Atendidos</h3>
+                        <p id="stat-estudiantes">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Dificultades Detectadas</h3>
+                        <p id="stat-dificultades">0</p>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2 id="sessions-title">Registro de Sesiones Académicas</h2>
+                    </div>
+                    <div class="loading" id="loading">
+                        <p>⏳ Cargando sesiones...</p>
+                    </div>
+                    <div class="table-wrapper" id="table-wrapper">
+                        <table id="sesiones-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Estudiante</th>
+                                    <th>Grupo</th>
+                                    <th>Curso</th>
+                                    <th>Temas Tratados</th>
+                                    <th>Desempeño</th>
+                                    <th>Estado</th>
+                                    <th>Archivos</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sesiones-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state" id="empty-state" style="display: none;">
+                        <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14,2 14,8 20,8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10,9 9,9 8,9" />
+                        </svg>
+                        <h3>No hay sesiones registradas</h3>
+                        <p>Comienza registrando la primera sesión académica con un estudiante.</p>
+                    </div>
+                </div>
             </div>
-            <div class="detail-item">
-              <label>Archivo Adjunto</label>
-              <span>${sesion.archivo_adjunto ? 
-                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.__backendId}')">📎 ${sesion.tipo_archivo}</a>` : 
-                'Sin archivos'
-              }</span>
-            </div>
-          </div>
         </div>
-      `;
-      
-      document.getElementById('details-content').innerHTML = content;
-      document.getElementById('details-modal').style.display = 'flex';
-    }
+    </main>
 
-    function closeDetailsModal() {
-      document.getElementById('details-modal').style.display = 'none';
-    }
+    <!-- Modal para registrar/editar sesión -->
+    <div class="modal-overlay" id="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Registrar Nueva Sesión</h3>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <form class="modal-body" id="sesion-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sesion-fecha">Fecha de la Sesión *</label>
+                        <input type="date" id="sesion-fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-tutor">Tutor *</label>
+                        <input type="text" id="sesion-tutor" required placeholder="Nombre del tutor">
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-estudiante-codigo">Código del Estudiante *</label>
+                        <input type="text" id="sesion-estudiante-codigo" required placeholder="Ej: 2021001234">
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-estudiante-nombre">Nombre del Estudiante *</label>
+                        <input type="text" id="sesion-estudiante-nombre" required placeholder="Nombre completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-grupo">Grupo *</label>
+                        <select id="sesion-grupo" required>
+                            <option value="">Seleccionar grupo</option>
+                            <option value="A">Grupo A</option>
+                            <option value="B">Grupo B</option>
+                            <option value="C">Grupo C</option>
+                            <option value="D">Grupo D</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-curso">Curso *</label>
+                        <select id="sesion-curso" required>
+                            <option value="">Seleccionar curso</option>
+                            <option value="Programación I">Programación I</option>
+                            <option value="Programación II">Programación II</option>
+                            <option value="Base de Datos">Base de Datos</option>
+                            <option value="Redes">Redes</option>
+                            <option value="Ingeniería de Software">Ingeniería de Software</option>
+                            <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="sesion-temas">Temas Tratados *</label>
+                        <textarea id="sesion-temas" required placeholder="Describe los temas abordados en la sesión..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="sesion-observaciones">Observaciones</label>
+                        <textarea id="sesion-observaciones" placeholder="Observaciones generales sobre el estudiante..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="sesion-recomendaciones">Recomendaciones</label>
+                        <textarea id="sesion-recomendaciones" placeholder="Recomendaciones para mejorar el desempeño..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="sesion-dificultades">Dificultades Detectadas</label>
+                        <textarea id="sesion-dificultades" placeholder="Describe las dificultades identificadas..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-desempeno">Nivel de Desempeño *</label>
+                        <select id="sesion-desempeno" required>
+                            <option value="">Evaluar desempeño</option>
+                            <option value="Excelente">Excelente</option>
+                            <option value="Bueno">Bueno</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Deficiente">Deficiente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sesion-proxima">Próxima Sesión</label>
+                        <input type="date" id="sesion-proxima">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="sesion-archivo">Archivo Adjunto</label>
+                        <div class="file-upload">
+                            <input type="file" id="sesion-archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            <div class="file-upload-label">
+                                <span>📎</span>
+                                <span>Seleccionar archivo (PDF, DOC, JPG, PNG)</span>
+                            </div>
+                        </div>
+                        <div class="file-info" id="file-info"></div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar Sesión</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    function editSesion(sesionId) {
-      const sesion = allSesiones.find(s => s.__backendId === sesionId);
-      if (sesion) {
-        openSesionModal(sesion);
-      }
-    }
+    <!-- Modal de detalles de sesión -->
+    <div class="modal-overlay" id="details-modal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Detalles de la Sesión</h3>
+                <button class="modal-close" id="details-close">×</button>
+            </div>
+            <div class="modal-body" id="details-content"><!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
 
-    function deleteSesion(sesionId) {
-      const sesion = allSesiones.find(s => s.__backendId === sesionId);
-      if (sesion) {
-        showConfirmModal(
-          `¿Está seguro de eliminar la sesión del ${new Date(sesion.fecha).toLocaleDateString('es-ES')} con ${sesion.estudiante_nombre}? Esta acción no se puede deshacer.`,
-          async () => {
-            showLoading(true);
-            const result = await window.dataSdk.delete(sesion);
-            
-            if (result.isOk) {
-              showMessage('Sesión eliminada correctamente');
+    <!-- Modal de confirmación -->
+    <div class="modal-overlay" id="confirm-modal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>Confirmar Acción</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">¿Está seguro de realizar esta acción?</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancelar-confirm">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirmar">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones del menú lateral
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+
+        function toggleSidebar() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
             } else {
-              showMessage('Error al eliminar la sesión');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
             }
-            showLoading(false);
-          }
-        );
-      }
-    }
+        }
 
-    function downloadFile(sesionId) {
-      const sesion = allSesiones.find(s => s.__backendId === sesionId);
-      if (sesion && sesion.archivo_adjunto) {
-        // En un sistema real, esto descargaría el archivo del servidor
-        showMessage(`Descargando archivo: ${sesion.tipo_archivo}`);
-      }
-    }
+        function toggleMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            const arrow = document.getElementById('arrow-' + menuId.split('-')[1]);
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
 
-    function generateReport() {
-      if (filteredSesiones.length === 0) {
-        showMessage('No hay sesiones para generar el reporte');
-        return;
-      }
-      
-      // Simular generación de reporte
-      showMessage(`Generando reporte con ${filteredSesiones.length} sesiones...`);
-      
-      setTimeout(() => {
-        showMessage('Reporte generado correctamente');
-      }, 2000);
-    }
+        // ===== LÓGICA DEL SISTEMA DE REPORTES =====
+        let allSesiones = [];
+        let filteredSesiones = [];
+        let editingSesion = null;
+        let pendingAction = null;
 
-    function showConfirmModal(message, action) {
-      document.getElementById('confirm-message').textContent = message;
-      document.getElementById('confirm-modal').style.display = 'flex';
-      pendingAction = action;
-    }
+        // Datos de ejemplo
+        const initialData = [
+            {
+                id: "sesion_1",
+                fecha: "2024-01-15",
+                tutor: "Prof. Ana García",
+                estudiante_codigo: "20210001",
+                estudiante_nombre: "Juan Pérez",
+                grupo: "A",
+                curso: "Programación I",
+                temas_tratados: "Introducción a Python, variables y tipos de datos",
+                observaciones: "Estudiante motivado, comprende rápido",
+                recomendaciones: "Practicar ejercicios de lógica",
+                dificultades_detectadas: "Dificultad con listas anidadas",
+                nivel_desempeno: "Bueno",
+                proxima_sesion: "2024-01-22",
+                archivo_adjunto: "",
+                tipo_archivo: "",
+                estado: "Completada",
+                fecha_creacion: "2024-01-15T10:00:00"
+            },
+            {
+                id: "sesion_2",
+                fecha: "2024-01-16",
+                tutor: "Prof. Carlos López",
+                estudiante_codigo: "20210002",
+                estudiante_nombre: "María Rodríguez",
+                grupo: "B",
+                curso: "Base de Datos",
+                temas_tratados: "Modelado ER, normalización",
+                observaciones: "Necesita reforzar conceptos de normalización",
+                recomendaciones: "Revisar ejemplos prácticos",
+                dificultades_detectadas: "Confusión en formas normales",
+                nivel_desempeno: "Regular",
+                proxima_sesion: "2024-01-23",
+                archivo_adjunto: "archivo_123.pdf",
+                tipo_archivo: "PDF",
+                estado: "Completada",
+                fecha_creacion: "2024-01-16T14:30:00"
+            }
+        ];
 
-    function closeConfirmModal() {
-      document.getElementById('confirm-modal').style.display = 'none';
-      pendingAction = null;
-    }
+        async function initializeApp() {
+            // Cargar datos del localStorage o usar datos iniciales
+            const storedData = localStorage.getItem('tutoring_sessions');
+            if (storedData) {
+                allSesiones = JSON.parse(storedData);
+            } else {
+                allSesiones = initialData;
+                saveToLocalStorage();
+            }
+            
+            setupEventListeners();
+            setDefaultDate();
+            applyFilters();
+        }
 
-    function executeAction() {
-      if (pendingAction) {
-        pendingAction();
-        closeConfirmModal();
-      }
-    }
+        function setupEventListeners() {
+            // Botón principal para nueva sesión
+            document.getElementById('btn-nueva-sesion').addEventListener('click', () => openSesionModal());
+            
+            // Filtros
+            document.getElementById('btn-aplicar-filtros').addEventListener('click', applyFilters);
+            document.getElementById('btn-limpiar-filtros').addEventListener('click', clearFilters);
+            document.getElementById('btn-generar-reporte').addEventListener('click', generateReport);
+            document.getElementById('search-estudiante').addEventListener('input', applyFilters);
+            
+            // Modal
+            document.getElementById('modal-close').addEventListener('click', closeModal);
+            document.getElementById('btn-cancelar').addEventListener('click', closeModal);
+            document.getElementById('sesion-form').addEventListener('submit', handleSesionSubmit);
+            
+            // Modal detalles
+            document.getElementById('details-close').addEventListener('click', closeDetailsModal);
+            
+            // Modal confirmación
+            document.getElementById('btn-cancelar-confirm').addEventListener('click', closeConfirmModal);
+            document.getElementById('btn-confirmar').addEventListener('click', executeAction);
+            
+            // Archivo
+            document.getElementById('sesion-archivo').addEventListener('change', handleFileSelect);
+            
+            // Cerrar modales al hacer clic fuera
+            document.getElementById('modal-overlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('modal-overlay')) {
+                    closeModal();
+                }
+            });
+            
+            document.getElementById('details-modal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('details-modal')) {
+                    closeDetailsModal();
+                }
+            });
+        }
 
-    function showLoading(show) {
-      const loading = document.getElementById('loading');
-      if (show) {
-        loading.classList.add('active');
-      } else {
-        loading.classList.remove('active');
-      }
-    }
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('sesion-fecha').value = today;
+        }
 
-    function showMessage(message) {
-      const messageDiv = document.createElement('div');
-      messageDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #2e7d32;
-        color: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 2000;
-        font-size: 14px;
-        max-width: 300px;
-      `;
-      messageDiv.textContent = message;
-      document.body.appendChild(messageDiv);
-      
-      setTimeout(() => {
-        messageDiv.remove();
-      }, 4000);
-    }
+        function saveToLocalStorage() {
+            localStorage.setItem('tutoring_sessions', JSON.stringify(allSesiones));
+        }
 
-    initializeApp();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'996b4b8b77b66d61',t:'MTc2MTgzMTMxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+        function applyFilters() {
+            const fecha = document.getElementById('filter-fecha').value;
+            const grupo = document.getElementById('filter-grupo').value;
+            const curso = document.getElementById('filter-curso').value;
+            const desempeno = document.getElementById('filter-desempeno').value;
+            const search = document.getElementById('search-estudiante').value.toLowerCase();
+            
+            filteredSesiones = allSesiones.filter(sesion => {
+                if (fecha && sesion.fecha !== fecha) return false;
+                if (grupo && sesion.grupo !== grupo) return false;
+                if (curso && sesion.curso !== curso) return false;
+                if (desempeno && sesion.nivel_desempeno !== desempeno) return false;
+                if (search && !sesion.estudiante_codigo.toLowerCase().includes(search) && 
+                    !sesion.estudiante_nombre.toLowerCase().includes(search)) return false;
+                return true;
+            });
+            
+            renderTable();
+            updateStats();
+        }
+
+        function clearFilters() {
+            document.getElementById('filter-fecha').value = '';
+            document.getElementById('filter-grupo').value = '';
+            document.getElementById('filter-curso').value = '';
+            document.getElementById('filter-desempeno').value = '';
+            document.getElementById('search-estudiante').value = '';
+            applyFilters();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('sesiones-tbody');
+            const emptyState = document.getElementById('empty-state');
+            const tableWrapper = document.getElementById('table-wrapper');
+            
+            if (filteredSesiones.length === 0) {
+                tableWrapper.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            tableWrapper.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = filteredSesiones.map(sesion => {
+                const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
+                const temasCortos = sesion.temas_tratados.length > 50 ? 
+                    sesion.temas_tratados.substring(0, 50) + '...' : sesion.temas_tratados;
+                
+                return `
+                    <tr>
+                        <td>${fecha}</td>
+                        <td>
+                            <div>
+                                <strong>${sesion.estudiante_nombre}</strong><br>
+                                <small style="color: #666;">${sesion.estudiante_codigo}</small>
+                            </div>
+                        </td>
+                        <td>${sesion.grupo}</td>
+                        <td>${sesion.curso}</td>
+                        <td>${temasCortos}</td>
+                        <td><span class="badge badge-${sesion.nivel_desempeno.toLowerCase()}">${sesion.nivel_desempeno}</span></td>
+                        <td><span class="badge badge-${sesion.estado.toLowerCase()}">${sesion.estado}</span></td>
+                        <td>
+                            ${sesion.archivo_adjunto ? 
+                                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.id}')">📎 ${sesion.tipo_archivo}</a>` : 
+                                '<span style="color: #999;">Sin archivos</span>'
+                            }
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-small btn-secondary" onclick="viewDetails('${sesion.id}')">
+                                    👁️ Ver
+                                </button>
+                                <button class="btn btn-small btn-secondary" onclick="editSesion('${sesion.id}')">
+                                    ✏️ Editar
+                                </button>
+                                <button class="btn btn-small btn-danger" onclick="deleteSesion('${sesion.id}')">
+                                    🗑️ Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            const total = filteredSesiones.length;
+            
+            // Sesiones de esta semana
+            const today = new Date();
+            const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+            const semana = filteredSesiones.filter(s => new Date(s.fecha) >= startOfWeek).length;
+            
+            // Estudiantes únicos
+            const estudiantes = new Set(filteredSesiones.map(s => s.estudiante_codigo)).size;
+            
+            // Dificultades detectadas
+            const dificultades = filteredSesiones.filter(s => s.dificultades_detectadas && s.dificultades_detectadas.trim()).length;
+            
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-semana').textContent = semana;
+            document.getElementById('stat-estudiantes').textContent = estudiantes;
+            document.getElementById('stat-dificultades').textContent = dificultades;
+        }
+
+        function openSesionModal(sesion = null) {
+            editingSesion = sesion;
+            const modal = document.getElementById('modal-overlay');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('sesion-form');
+            
+            if (sesion) {
+                title.textContent = 'Editar Sesión';
+                fillForm(sesion);
+            } else {
+                title.textContent = 'Registrar Nueva Sesión';
+                form.reset();
+                setDefaultDate();
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function fillForm(sesion) {
+            document.getElementById('sesion-fecha').value = sesion.fecha;
+            document.getElementById('sesion-tutor').value = sesion.tutor;
+            document.getElementById('sesion-estudiante-codigo').value = sesion.estudiante_codigo;
+            document.getElementById('sesion-estudiante-nombre').value = sesion.estudiante_nombre;
+            document.getElementById('sesion-grupo').value = sesion.grupo;
+            document.getElementById('sesion-curso').value = sesion.curso;
+            document.getElementById('sesion-temas').value = sesion.temas_tratados;
+            document.getElementById('sesion-observaciones').value = sesion.observaciones || '';
+            document.getElementById('sesion-recomendaciones').value = sesion.recomendaciones || '';
+            document.getElementById('sesion-dificultades').value = sesion.dificultades_detectadas || '';
+            document.getElementById('sesion-desempeno').value = sesion.nivel_desempeno;
+            document.getElementById('sesion-proxima').value = sesion.proxima_sesion || '';
+            
+            if (sesion.archivo_adjunto) {
+                document.getElementById('file-info').textContent = `Archivo actual: ${sesion.tipo_archivo}`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.getElementById('file-info').textContent = '';
+            editingSesion = null;
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            const fileInfo = document.getElementById('file-info');
+            
+            if (file) {
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    fileInfo.textContent = 'Error: El archivo debe ser menor a 5MB';
+                    fileInfo.style.color = '#d32f2f';
+                    e.target.value = '';
+                    return;
+                }
+                
+                fileInfo.textContent = `Archivo seleccionado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileInfo.style.color = '#2e7d32';
+            } else {
+                fileInfo.textContent = '';
+            }
+        }
+
+        function handleSesionSubmit(e) {
+            e.preventDefault();
+            
+            if (allSesiones.length >= 999 && !editingSesion) {
+                showMessage('Límite máximo de 999 sesiones alcanzado. Elimine algunas sesiones primero.');
+                return;
+            }
+            
+            const file = document.getElementById('sesion-archivo').files[0];
+            let archivoData = '';
+            let tipoArchivo = '';
+            
+            if (file) {
+                // Simular nombre de archivo
+                archivoData = `archivo_${Date.now()}_${file.name}`;
+                tipoArchivo = file.name.split('.').pop().toUpperCase();
+            } else if (editingSesion) {
+                archivoData = editingSesion.archivo_adjunto || '';
+                tipoArchivo = editingSesion.tipo_archivo || '';
+            }
+            
+            const sesionData = {
+                fecha: document.getElementById('sesion-fecha').value,
+                tutor: document.getElementById('sesion-tutor').value,
+                estudiante_codigo: document.getElementById('sesion-estudiante-codigo').value,
+                estudiante_nombre: document.getElementById('sesion-estudiante-nombre').value,
+                grupo: document.getElementById('sesion-grupo').value,
+                curso: document.getElementById('sesion-curso').value,
+                temas_tratados: document.getElementById('sesion-temas').value,
+                observaciones: document.getElementById('sesion-observaciones').value,
+                recomendaciones: document.getElementById('sesion-recomendaciones').value,
+                dificultades_detectadas: document.getElementById('sesion-dificultades').value,
+                nivel_desempeno: document.getElementById('sesion-desempeno').value,
+                proxima_sesion: document.getElementById('sesion-proxima').value,
+                archivo_adjunto: archivoData,
+                tipo_archivo: tipoArchivo,
+                estado: 'Completada',
+                fecha_creacion: editingSesion ? editingSesion.fecha_creacion : new Date().toISOString(),
+                id: editingSesion ? editingSesion.id : `sesion_${Date.now()}`
+            };
+            
+            showLoading(true);
+            
+            try {
+                if (editingSesion) {
+                    // Actualizar sesión existente
+                    const index = allSesiones.findIndex(s => s.id === editingSesion.id);
+                    if (index !== -1) {
+                        allSesiones[index] = sesionData;
+                    }
+                } else {
+                    // Crear nueva sesión
+                    allSesiones.push(sesionData);
+                }
+                
+                saveToLocalStorage();
+                closeModal();
+                showMessage(editingSesion ? 'Sesión actualizada correctamente' : 'Sesión registrada correctamente');
+                applyFilters();
+                
+            } catch (error) {
+                showMessage('Error al guardar la sesión. Inténtelo nuevamente.');
+                console.error(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function viewDetails(sesionId) {
+            const sesion = allSesiones.find(s => s.id === sesionId);
+            if (!sesion) return;
+            
+            const fecha = new Date(sesion.fecha).toLocaleDateString('es-ES');
+            const proximaSesion = sesion.proxima_sesion ? 
+                new Date(sesion.proxima_sesion).toLocaleDateString('es-ES') : 'No programada';
+            
+            const content = `
+                <div class="session-details">
+                    <h4>Información General</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Fecha</label>
+                            <span>${fecha}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Tutor</label>
+                            <span>${sesion.tutor}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Estudiante</label>
+                            <span>${sesion.estudiante_nombre} (${sesion.estudiante_codigo})</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Grupo</label>
+                            <span>${sesion.grupo}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Curso</label>
+                            <span>${sesion.curso}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Desempeño</label>
+                            <span class="badge badge-${sesion.nivel_desempeno.toLowerCase()}">${sesion.nivel_desempeno}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="session-details">
+                    <h4>Contenido de la Sesión</h4>
+                    <div class="detail-item">
+                        <label>Temas Tratados</label>
+                        <span>${sesion.temas_tratados}</span>
+                    </div>
+                </div>
+                
+                ${sesion.observaciones ? `
+                <div class="session-details">
+                    <h4>Observaciones</h4>
+                    <div class="detail-item">
+                        <span>${sesion.observaciones}</span>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${sesion.recomendaciones ? `
+                <div class="session-details">
+                    <h4>Recomendaciones</h4>
+                    <div class="detail-item">
+                        <span>${sesion.recomendaciones}</span>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${sesion.dificultades_detectadas ? `
+                <div class="session-details">
+                    <h4>Dificultades Detectadas</h4>
+                    <div class="detail-item">
+                        <span>${sesion.dificultades_detectadas}</span>
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="session-details">
+                    <h4>Información Adicional</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Próxima Sesión</label>
+                            <span>${proximaSesion}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Archivo Adjunto</label>
+                            <span>${sesion.archivo_adjunto ? 
+                                `<a href="#" class="attachment-link" onclick="downloadFile('${sesion.id}')">📎 ${sesion.tipo_archivo}</a>` : 
+                                'Sin archivos'
+                            }</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('details-content').innerHTML = content;
+            document.getElementById('details-modal').style.display = 'flex';
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').style.display = 'none';
+        }
+
+        function editSesion(sesionId) {
+            const sesion = allSesiones.find(s => s.id === sesionId);
+            if (sesion) {
+                openSesionModal(sesion);
+            }
+        }
+
+        function deleteSesion(sesionId) {
+            const sesion = allSesiones.find(s => s.id === sesionId);
+            if (sesion) {
+                showConfirmModal(
+                    `¿Está seguro de eliminar la sesión del ${new Date(sesion.fecha).toLocaleDateString('es-ES')} con ${sesion.estudiante_nombre}? Esta acción no se puede deshacer.`,
+                    () => {
+                        showLoading(true);
+                        
+                        try {
+                            allSesiones = allSesiones.filter(s => s.id !== sesionId);
+                            saveToLocalStorage();
+                            showMessage('Sesión eliminada correctamente');
+                            applyFilters();
+                        } catch (error) {
+                            showMessage('Error al eliminar la sesión');
+                            console.error(error);
+                        } finally {
+                            showLoading(false);
+                        }
+                    }
+                );
+            }
+        }
+
+        function downloadFile(sesionId) {
+            const sesion = allSesiones.find(s => s.id === sesionId);
+            if (sesion && sesion.archivo_adjunto) {
+                showMessage(`Simulación: Descargando archivo: ${sesion.tipo_archivo}`);
+            }
+        }
+
+        function generateReport() {
+            if (filteredSesiones.length === 0) {
+                showMessage('No hay sesiones para generar el reporte');
+                return;
+            }
+            
+            // Crear contenido del reporte
+            let reportContent = `Reporte de Tutorías - ${new Date().toLocaleDateString('es-ES')}\n\n`;
+            reportContent += `Total de sesiones: ${filteredSesiones.length}\n`;
+            reportContent += `Estudiantes únicos: ${new Set(filteredSesiones.map(s => s.estudiante_codigo)).size}\n\n`;
+            reportContent += `Detalle por curso:\n`;
+            
+            // Agrupar por curso
+            const porCurso = {};
+            filteredSesiones.forEach(sesion => {
+                if (!porCurso[sesion.curso]) porCurso[sesion.curso] = 0;
+                porCurso[sesion.curso]++;
+            });
+            
+            for (const [curso, cantidad] of Object.entries(porCurso)) {
+                reportContent += `  ${curso}: ${cantidad} sesiones\n`;
+            }
+            
+            // Crear y descargar el archivo
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte_tutorias_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showMessage('Reporte generado y descargado correctamente');
+        }
+
+        function showConfirmModal(message, action) {
+            document.getElementById('confirm-message').textContent = message;
+            document.getElementById('confirm-modal').style.display = 'flex';
+            pendingAction = action;
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').style.display = 'none';
+            pendingAction = null;
+        }
+
+        function executeAction() {
+            if (pendingAction) {
+                pendingAction();
+                closeConfirmModal();
+            }
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        function showMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #2e7d32;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 2000;
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 4000);
+        }
+
+        // Inicializar la aplicación cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Marcar la página activa en el menú
+            const currentPage = window.location.pathname.split('/').pop();
+            const menuItems = document.querySelectorAll('.nav-item, nav a');
+            
+            menuItems.forEach(item => {
+                if (item.getAttribute('href') === currentPage) {
+                    item.classList.add('active', 'bg-green-800', 'text-white');
+                    // Expandir el menú padre si está en un submenú
+                    const parentMenu = item.closest('.space-y-1');
+                    if (parentMenu) {
+                        const button = parentMenu.querySelector('button');
+                        if (button && button.getAttribute('onclick')) {
+                            const match = button.getAttribute('onclick').match(/'([^']+)'/);
+                            if (match) {
+                                toggleMenu(match[1]);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Inicializar la aplicación de reportes
+            initializeApp();
+        });
+    </script>
+</body>
 </html>

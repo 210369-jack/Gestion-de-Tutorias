@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>HU15 - Reporte Consolidado por Semestre</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4fdf6;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2e7d32;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .filtro {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-left: 6px solid #2e7d32;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 15px;
+      color: #2e7d32;
+    }
+
+    .card p {
+      font-size: 26px;
+      margin: 10px 0 0;
+      font-weight: bold;
+    }
+
+    /* ===================== */
+    /* CAMBIO: GRAFICOS PEQUEÑOS */
+    /* ===================== */
+    .grafico {
+      max-width: 320px;
+      max-height: 320px;
+      margin: 20px auto;
+    }
+
+    .grafico canvas {
+      width: 280px !important;
+      height: 280px !important;
+    }
+
+    table {
+      width: 100%;
+      background: white;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #2e7d32;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f8f4;
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>HU15 – Reporte Consolidado de Tutorías</h1>
+  <p>Estadísticas académicas por semestre</p>
+</header>
+
+<div class="container">
+
+  <!-- FILTRO -->
+  <div class="filtro">
+    <label for="semestre">Semestre:</label>
+    <select id="semestre">
+      <option value="">-- Seleccione --</option>
+      <option value="2024-I">2024-I</option>
+      <option value="2024-II">2024-II</option>
+    </select>
+    <button onclick="cargarReporte()">Generar reporte</button>
+  </div>
+
+  <!-- TARJETAS -->
+  <div class="cards">
+    <div class="card">
+      <h3>% Tutorías realizadas</h3>
+      <p id="realizadas">0%</p>
+    </div>
+
+    <div class="card">
+      <h3>% Tutorías canceladas</h3>
+      <p id="canceladas">0%</p>
+    </div>
+
+    <div class="card">
+      <h3>% Tutorías reprogramadas</h3>
+      <p id="reprogramadas">0%</p>
+    </div>
+
+    <div class="card">
+      <h3>% Asistencia estudiantil</h3>
+      <p id="asistencia">0%</p>
+    </div>
+  </div>
+
+  <!-- GRAFICOS -->
+  <h2>Distribución de tutorías</h2>
+  <div class="grafico">
+    <canvas id="graficoEstados"></canvas>
+  </div>
+
+  <h2>Tutorías por tutor</h2>
+  <div class="grafico">
+    <canvas id="graficoTutor"></canvas>
+  </div>
+
+  <!-- TABLA -->
+  <h2>Porcentaje de tutorías por tutor</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tutor</th>
+        <th>Porcentaje (%)</th>
+      </tr>
+    </thead>
+    <tbody id="tablaTutor">
+      <tr>
+        <td colspan="2">Seleccione un semestre</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<footer>
+  Sistema de Gestión de Tutorías – HU15
+</footer>
+
+<script>
+  let chartEstados = null;
+  let chartTutor = null;
+
+  async function cargarReporte() {
+    const semestre = document.getElementById("semestre").value;
+    if (!semestre) {
+      alert("Seleccione un semestre");
+      return;
+    }
+
+    const res = await fetch(`/api/reporte/semestre?semestre=${semestre}`);
+    const data = await res.json();
+
+    if (data.mensaje) {
+      alert(data.mensaje);
+      return;
+    }
+
+    document.getElementById("realizadas").innerText = data.porcentajeRealizadas + "%";
+    document.getElementById("canceladas").innerText = data.porcentajeCanceladas + "%";
+    document.getElementById("reprogramadas").innerText = data.porcentajeReprogramadas + "%";
+    document.getElementById("asistencia").innerText = data.porcentajeAsistencia + "%";
+
+    const tbody = document.getElementById("tablaTutor");
+    tbody.innerHTML = "";
+    data.tutoriasPorTutor.forEach(t => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${t.tutor}</td>
+          <td>${t.porcentaje}%</td>
+        </tr>`;
+    });
+
+    if (chartEstados) chartEstados.destroy();
+    chartEstados = new Chart(document.getElementById("graficoEstados"), {
+      type: "pie",
+      data: {
+        labels: ["Realizadas", "Canceladas", "Reprogramadas"],
+        datasets: [{
+          data: [
+            data.porcentajeRealizadas,
+            data.porcentajeCanceladas,
+            data.porcentajeReprogramadas
+          ],
+          backgroundColor: ["#2e7d32", "#c62828", "#f9a825"]
+        }]
+      }
+    });
+
+    if (chartTutor) chartTutor.destroy();
+    chartTutor = new Chart(document.getElementById("graficoTutor"), {
+      type: "pie",
+      data: {
+        labels: data.tutoriasPorTutor.map(t => t.tutor),
+        datasets: [{
+          data: data.tutoriasPorTutor.map(t => t.porcentaje),
+          backgroundColor: [
+            "#388e3c", "#1976d2", "#7b1fa2", "#f57c00", "#455a64"
+          ]
+        }]
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
+

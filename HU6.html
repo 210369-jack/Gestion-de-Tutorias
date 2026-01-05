@@ -9,6 +9,9 @@
     <style>
         body {
             box-sizing: border-box;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in;
@@ -17,8 +20,8 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .institutional-blue { background-color: #1e3a8a; }
-        .institutional-light-blue { background-color: #3b82f6; }
+        .institutional-green { background-color: #166534; } /* Verde oscuro */
+        .institutional-light-green { background-color: #16a34a; } /* Verde claro */
         .metric-card {
             transition: all 0.3s ease;
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -33,7 +36,7 @@
             width: 100%;
         }
         .executive-summary {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #166534 0%, #16a34a 100%); /* Gradiente verde */
         }
         .progress-ring {
             transform: rotate(-90deg);
@@ -44,472 +47,621 @@
             transform-origin: 50% 50%;
         }
         .stat-icon {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); /* Fondo verde claro */
+        }
+        .sidebar-open { transform: translateX(0) !important; }
+        .nav-item.active { 
+            background-color: rgba(255, 255, 255, 0.1); 
+            border-left: 4px solid #4ade80; 
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-full">
-    <!-- Header -->
-    <header class="institutional-blue shadow-lg">
-        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <div class="bg-white p-2 rounded-lg">
-                        <svg class="w-8 h-8 text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-white">Sistema de Tutorías</h1>
-                        <p class="text-blue-200 text-sm">Estadísticas Globales del Programa</p>
-                    </div>
-                </div>
-                <nav class="hidden md:flex space-x-6">
-                    <button onclick="goBack()" class="text-blue-200 hover:text-white pb-1 font-medium">← Dashboard</button>
-                    <button class="text-white border-b-2 border-white pb-1 font-medium">Estadísticas</button>
-                    <button onclick="goToReports()" class="text-blue-200 hover:text-white pb-1 font-medium">Reportes</button>
-                </nav>
-                <div class="flex items-center space-x-3">
-                    <div class="text-right">
-                        <p class="text-white text-sm font-medium">Dr. María González</p>
-                        <p class="text-blue-200 text-xs">Coordinadora Académica</p>
-                    </div>
-                    <div class="w-10 h-10 bg-blue-300 rounded-full flex items-center justify-center">
-                        <span class="text-blue-800 font-semibold">MG</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+<body class="bg-gray-50 flex flex-col md:flex-row h-screen overflow-hidden">
+    
+    <!-- Overlay móvil -->
+    <div id="mobileOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity"></div>
 
-    <!-- Main Content -->
-    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Executive Summary -->
-        <div class="executive-summary rounded-xl p-8 mb-8 text-white fade-in">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <h2 class="text-3xl font-bold mb-2">Resumen Ejecutivo</h2>
-                    <p class="text-blue-100">Indicadores principales del programa de tutorías - Periodo 2024-I</p>
-                </div>
-                <div class="flex space-x-3">
-                    <select id="periodoSelect" class="bg-white bg-opacity-20 text-white border border-white border-opacity-30 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                        <option value="mensual" class="text-gray-900">Vista Mensual</option>
-                        <option value="semestral" class="text-gray-900" selected>Vista Semestral</option>
-                        <option value="anual" class="text-gray-900">Vista Anual</option>
-                    </select>
-                    <button onclick="generateReport()" class="bg-white text-blue-800 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Generar Informe
-                    </button>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Tutorías Totales</p>
-                            <p class="text-4xl font-bold">2,847</p>
-                            <p class="text-green-300 text-sm flex items-center mt-1">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                                </svg>
-                                +18% vs anterior
-                            </p>
-                        </div>
-                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Asistencia Global</p>
-                            <p class="text-4xl font-bold">87.3%</p>
-                            <p class="text-green-300 text-sm flex items-center mt-1">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                                </svg>
-                                +5.2% vs anterior
-                            </p>
-                        </div>
-                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Satisfacción</p>
-                            <p class="text-4xl font-bold">4.6/5</p>
-                            <p class="text-green-300 text-sm flex items-center mt-1">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                                </svg>
-                                +0.3 vs anterior
-                            </p>
-                        </div>
-                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 border border-white border-opacity-20">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-100 text-sm font-medium">Participación Docente</p>
-                            <p class="text-4xl font-bold">94.7%</p>
-                            <p class="text-green-300 text-sm flex items-center mt-1">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                                </svg>
-                                +2.1% vs anterior
-                            </p>
-                        </div>
-                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Detailed Metrics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Asistencia por Carrera -->
-            <div class="metric-card rounded-xl shadow-lg p-6 border">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Asistencia por Carrera</h3>
-                    <div class="stat-icon w-12 h-12 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-gray-700">Medicina</span>
-                        <span class="text-sm font-bold text-green-600">94.2%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 94.2%"></div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-gray-700">Ing. Sistemas</span>
-                        <span class="text-sm font-bold text-blue-600">89.7%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-blue-500 h-2 rounded-full" style="width: 89.7%"></div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-gray-700">Derecho</span>
-                        <span class="text-sm font-bold text-purple-600">86.3%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-purple-500 h-2 rounded-full" style="width: 86.3%"></div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-gray-700">Administración</span>
-                        <span class="text-sm font-bold text-yellow-600">82.1%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 82.1%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Satisfacción Estudiantil -->
-            <div class="metric-card rounded-xl shadow-lg p-6 border">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Satisfacción Estudiantil</h3>
-                    <div class="stat-icon w-12 h-12 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="flex items-center justify-center mb-6">
-                    <div class="relative w-32 h-32">
-                        <svg class="w-32 h-32 progress-ring">
-                            <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="8" fill="transparent"></circle>
-                            <circle cx="64" cy="64" r="56" stroke="#10b981" stroke-width="8" fill="transparent" 
-                                    stroke-dasharray="351.86" stroke-dashoffset="69.37" class="progress-ring-circle"></circle>
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-900">4.6</div>
-                                <div class="text-sm text-gray-600">de 5.0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Excelente (5★)</span>
-                        <span class="font-medium">68%</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Muy Bueno (4★)</span>
-                        <span class="font-medium">24%</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Bueno (3★)</span>
-                        <span class="font-medium">6%</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Regular (2★)</span>
-                        <span class="font-medium">2%</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tendencia Mensual -->
-            <div class="metric-card rounded-xl shadow-lg p-6 border">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Tendencia Mensual</h3>
-                    <div class="stat-icon w-12 h-12 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Marzo 2024</p>
-                            <p class="text-xs text-gray-600">587 tutorías</p>
-                        </div>
-                        <div class="flex items-center text-green-600">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                            </svg>
-                            <span class="text-sm font-semibold">+12%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Febrero 2024</p>
-                            <p class="text-xs text-gray-600">542 tutorías</p>
-                        </div>
-                        <div class="flex items-center text-blue-600">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                            </svg>
-                            <span class="text-sm font-semibold">+8%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Enero 2024</p>
-                            <p class="text-xs text-gray-600">478 tutorías</p>
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <span class="text-sm font-semibold">Base</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Participación por Carrera -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-900">Participación Docente por Carrera</h3>
-                    <div class="flex space-x-2">
-                        <button onclick="toggleChartView('participacion', 'bar')" id="barBtn" class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">Barras</button>
-                        <button onclick="toggleChartView('participacion', 'pie')" id="pieBtn" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">Circular</button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="participacionChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Evolución Temporal -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-900">Evolución de Tutorías</h3>
-                    <select id="evolucionPeriodo" class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500">
-                        <option value="6meses">Últimos 6 meses</option>
-                        <option value="12meses">Último año</option>
-                        <option value="2anos">Últimos 2 años</option>
-                    </select>
-                </div>
-                <div class="chart-container">
-                    <canvas id="evolucionChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Detailed Statistics -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Distribución por Ciclo -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border">
-                <h3 class="text-xl font-semibold text-gray-900 mb-6">Distribución por Ciclo Académico</h3>
-                <div class="chart-container" style="height: 280px;">
-                    <canvas id="ciclosChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Top Tutores -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border">
-                <h3 class="text-xl font-semibold text-gray-900 mb-6">Top Tutores del Periodo</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
-                                <span class="text-yellow-900 font-bold text-sm">1</span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-900">Dra. Ana López</p>
-                                <p class="text-sm text-gray-600">Derecho</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-900">98.5%</p>
-                            <p class="text-xs text-gray-600">Satisfacción</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                                <span class="text-gray-900 font-bold text-sm">2</span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-900">Dr. Carlos Morales</p>
-                                <p class="text-sm text-gray-600">Medicina</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-900">96.8%</p>
-                            <p class="text-xs text-gray-600">Satisfacción</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center">
-                                <span class="text-orange-900 font-bold text-sm">3</span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-900">Prof. Juan García</p>
-                                <p class="text-sm text-gray-600">Ing. Sistemas</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-900">94.2%</p>
-                            <p class="text-xs text-gray-600">Satisfacción</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
-                                <span class="text-blue-800 font-semibold text-xs">4</span>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Dra. María Rodríguez</p>
-                                <p class="text-xs text-gray-600">Administración</p>
-                            </div>
-                        </div>
-                        <span class="text-sm font-medium text-gray-700">92.1%</span>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
-                                <span class="text-blue-800 font-semibold text-xs">5</span>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Prof. Pedro Sánchez</p>
-                                <p class="text-xs text-gray-600">Ing. Sistemas</p>
-                            </div>
-                        </div>
-                        <span class="text-sm font-medium text-gray-700">90.7%</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alertas y Recomendaciones -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border">
-                <h3 class="text-xl font-semibold text-gray-900 mb-6">Alertas y Recomendaciones</h3>
-                <div class="space-y-4">
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div class="flex items-start space-x-3">
-                            <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-green-800">Objetivo Cumplido</p>
-                                <p class="text-xs text-green-700">Meta de asistencia del 85% superada en todas las carreras</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div class="flex items-start space-x-3">
-                            <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-blue-800">Oportunidad de Mejora</p>
-                                <p class="text-xs text-blue-700">Implementar tutorías virtuales para aumentar flexibilidad</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <div class="flex items-start space-x-3">
-                            <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-yellow-800">Atención Requerida</p>
-                                <p class="text-xs text-yellow-700">Administración necesita refuerzo en tutorías de matemáticas</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <div class="flex items-start space-x-3">
-                            <svg class="w-5 h-5 text-purple-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-purple-800">Innovación</p>
-                                <p class="text-xs text-purple-700">Considerar sistema de mentorías peer-to-peer</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Menú móvil -->
+    <div class="bg-green-900 text-white p-4 flex justify-between items-center md:hidden z-20 shadow-md">
+        <span class="font-bold text-lg">ESTADÍSTICAS</span>
+        <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-green-800">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
     </div>
 
+    <!-- Sidebar - Ocupa toda la altura -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-green-900 text-white flex flex-col shadow-xl transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static md:h-full">
+        
+        <div class="flex justify-end p-2 md:hidden">
+            <button onclick="toggleSidebar()" class="text-white p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950 hidden md:flex">
+            <h1 class="text-xl font-bold tracking-wider">TUTORÍAS</h1>
+        </div>
+
+        <nav class="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+            
+            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
+
+            <div class="space-y-1">
+                <button onclick="toggleMenu('menu-admin')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Administración</span>
+                    </div>
+                    <svg class="w-4 h-4 transform rotate-180 transition-transform" id="arrow-admin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="menu-admin" class="pl-12 space-y-1">
+                    <a href="HU1.html" class="nav-item active block px-2 py-2 text-sm text-white bg-green-800 rounded-lg">
+                        Usuarios y Accesos 
+                    </a>
+                    <a href="HU2.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">
+                        Asignar Tutores
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <button onclick="toggleMenu('menu-tutor')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <span>Gestión Tutorías</span>
+                    </div>
+                    <svg class="w-4 h-4 transform transition-transform" id="arrow-tutor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="menu-tutor" class="hidden pl-12 space-y-1">
+                    <a href="HU7.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Nueva Sesión (HU6-8)</a>
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Mis Registros (HU9)</a>
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Constancias (HU10)</a>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <button onclick="toggleMenu('menu-verify')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        <span>Supervisión</span>
+                    </div>
+                    <svg class="w-4 h-4 transform transition-transform" id="arrow-verify" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="menu-verify" class="hidden pl-12 space-y-1">
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Consultas (HU11-13)</a>
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Derivaciones (HU14)</a>
+                </div>
+            </div>
+
+            <!-- Este link estará activo en la página actual -->
+            <a href="#" class="nav-item active flex items-center px-4 py-3 bg-green-800 text-white rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Resumen Ejecutivo
+            </a>
+        </nav>
+
+        <div class="p-4 bg-green-950 border-t border-green-800 hidden md:block">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">A</div>
+                <div>
+                    <p class="text-sm font-semibold text-white">Administrador</p>
+                    <p class="text-xs text-green-300">admin@tutorias.com</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden w-full md:h-full">
+        
+        <!-- Header -->
+        <header class="institutional-green shadow-lg">
+            <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-white p-2 rounded-lg">
+                            <svg class="w-8 h-8 text-green-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-white">Sistema de Tutorías</h1>
+                            <p class="text-green-200 text-sm">Estadísticas Globales del Programa</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <p class="text-white text-sm font-medium">Dr. María González</p>
+                            <p class="text-green-200 text-xs">Coordinadora Académica</p>
+                        </div>
+                        <div class="w-10 h-10 bg-green-300 rounded-full flex items-center justify-center">
+                            <span class="text-green-800 font-semibold">MG</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido scrollable -->
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+            <!-- Executive Summary -->
+            <div class="executive-summary rounded-xl p-6 md:p-8 mb-6 md:mb-8 text-white fade-in">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-6">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2">Resumen Ejecutivo</h2>
+                        <p class="text-green-100">Indicadores principales del programa de tutorías - Periodo 2024-I</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                        <select id="periodoSelect" class="bg-white bg-opacity-20 text-white border border-white border-opacity-30 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                            <option value="mensual" class="text-gray-900">Vista Mensual</option>
+                            <option value="semestral" class="text-gray-900" selected>Vista Semestral</option>
+                            <option value="anual" class="text-gray-900">Vista Anual</option>
+                        </select>
+                        <button onclick="generateReport()" class="bg-white text-green-800 px-4 md:px-6 py-2 rounded-lg font-medium hover:bg-green-50 transition-colors flex items-center justify-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Generar Informe
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium">Tutorías Totales</p>
+                                <p class="text-3xl md:text-4xl font-bold">2,847</p>
+                                <p class="text-green-300 text-sm flex items-center mt-1">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                    +18% vs anterior
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium">Asistencia Global</p>
+                                <p class="text-3xl md:text-4xl font-bold">87.3%</p>
+                                <p class="text-green-300 text-sm flex items-center mt-1">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                    +5.2% vs anterior
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium">Satisfacción</p>
+                                <p class="text-3xl md:text-4xl font-bold">4.6/5</p>
+                                <p class="text-green-300 text-sm flex items-center mt-1">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                    +0.3 vs anterior
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white border-opacity-20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium">Participación Docente</p>
+                                <p class="text-3xl md:text-4xl font-bold">94.7%</p>
+                                <p class="text-green-300 text-sm flex items-center mt-1">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                    +2.1% vs anterior
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+                <!-- Asistencia por Carrera -->
+                <div class="metric-card rounded-xl shadow-lg p-4 md:p-6 border">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Asistencia por Carrera</h3>
+                        <div class="stat-icon w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Medicina</span>
+                            <span class="text-sm font-bold text-green-600">94.2%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 94.2%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Ing. Sistemas</span>
+                            <span class="text-sm font-bold text-green-600">89.7%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 89.7%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Derecho</span>
+                            <span class="text-sm font-bold text-green-600">86.3%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 86.3%"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Administración</span>
+                            <span class="text-sm font-bold text-yellow-600">82.1%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 82.1%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Satisfacción Estudiantil -->
+                <div class="metric-card rounded-xl shadow-lg p-4 md:p-6 border">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Satisfacción Estudiantil</h3>
+                        <div class="stat-icon w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="relative w-24 h-24 md:w-32 md:h-32">
+                            <svg class="w-24 h-24 md:w-32 md:h-32 progress-ring">
+                                <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="8" fill="transparent"></circle>
+                                <circle cx="64" cy="64" r="56" stroke="#10b981" stroke-width="8" fill="transparent" 
+                                        stroke-dasharray="351.86" stroke-dashoffset="69.37" class="progress-ring-circle"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-xl md:text-2xl font-bold text-gray-900">4.6</div>
+                                    <div class="text-xs md:text-sm text-gray-600">de 5.0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Excelente (5★)</span>
+                            <span class="font-medium">68%</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Muy Bueno (4★)</span>
+                            <span class="font-medium">24%</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Bueno (3★)</span>
+                            <span class="font-medium">6%</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Regular (2★)</span>
+                            <span class="font-medium">2%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tendencia Mensual -->
+                <div class="metric-card rounded-xl shadow-lg p-4 md:p-6 border">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Tendencia Mensual</h3>
+                        <div class="stat-icon w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Marzo 2024</p>
+                                <p class="text-xs text-gray-600">587 tutorías</p>
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                </svg>
+                                <span class="text-sm font-semibold">+12%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Febrero 2024</p>
+                                <p class="text-xs text-gray-600">542 tutorías</p>
+                            </div>
+                            <div class="flex items-center text-green-600">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                </svg>
+                                <span class="text-sm font-semibold">+8%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Enero 2024</p>
+                                <p class="text-xs text-gray-600">478 tutorías</p>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <span class="text-sm font-semibold">Base</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
+                <!-- Participación por Carrera -->
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 border">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 md:mb-6">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-0">Participación Docente por Carrera</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="toggleChartView('participacion', 'bar')" id="barBtn" class="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Barras</button>
+                            <button onclick="toggleChartView('participacion', 'pie')" id="pieBtn" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">Circular</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="participacionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Evolución Temporal -->
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 border">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 md:mb-6">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-0">Evolución de Tutorías</h3>
+                        <select id="evolucionPeriodo" class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-green-500">
+                            <option value="6meses">Últimos 6 meses</option>
+                            <option value="12meses">Último año</option>
+                            <option value="2anos">Últimos 2 años</option>
+                        </select>
+                    </div>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="evolucionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Statistics -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Distribución por Ciclo -->
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 border">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Distribución por Ciclo Académico</h3>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="ciclosChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Tutores -->
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 border">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Top Tutores del Periodo</h3>
+                    <div class="space-y-3 md:space-y-4">
+                        <div class="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                                    <span class="text-yellow-900 font-bold text-xs md:text-sm">1</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm md:font-medium text-gray-900">Dra. Ana López</p>
+                                    <p class="text-xs text-gray-600">Derecho</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-900 text-sm md:text-base">98.5%</p>
+                                <p class="text-xs text-gray-600">Satisfacción</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded-full flex items-center justify-center">
+                                    <span class="text-gray-900 font-bold text-xs md:text-sm">2</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm md:font-medium text-gray-900">Dr. Carlos Morales</p>
+                                    <p class="text-xs text-gray-600">Medicina</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-900 text-sm md:text-base">96.8%</p>
+                                <p class="text-xs text-gray-600">Satisfacción</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-orange-400 rounded-full flex items-center justify-center">
+                                    <span class="text-orange-900 font-bold text-xs md:text-sm">3</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm md:font-medium text-gray-900">Prof. Juan García</p>
+                                    <p class="text-xs text-gray-600">Ing. Sistemas</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-900 text-sm md:text-base">94.2%</p>
+                                <p class="text-xs text-gray-600">Satisfacción</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-6 h-6 md:w-8 md:h-8 bg-green-200 rounded-full flex items-center justify-center">
+                                    <span class="text-green-800 font-semibold text-xs">4</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Dra. María Rodríguez</p>
+                                    <p class="text-xs text-gray-600">Administración</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">92.1%</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-6 h-6 md:w-8 md:h-8 bg-green-200 rounded-full flex items-center justify-center">
+                                    <span class="text-green-800 font-semibold text-xs">5</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Prof. Pedro Sánchez</p>
+                                    <p class="text-xs text-gray-600">Ing. Sistemas</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">90.7%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas y Recomendaciones -->
+                <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 border">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Alertas y Recomendaciones</h3>
+                    <div class="space-y-3 md:space-y-4">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 md:p-4">
+                            <div class="flex items-start space-x-2 md:space-x-3">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-xs md:text-sm font-medium text-green-800">Objetivo Cumplido</p>
+                                    <p class="text-xs text-green-700">Meta de asistencia del 85% superada en todas las carreras</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 md:p-4">
+                            <div class="flex items-start space-x-2 md:space-x-3">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-xs md:text-sm font-medium text-green-800">Oportunidad de Mejora</p>
+                                    <p class="text-xs text-green-700">Implementar tutorías virtuales para aumentar flexibilidad</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 md:p-4">
+                            <div class="flex items-start space-x-2 md:space-x-3">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-xs md:text-sm font-medium text-yellow-800">Atención Requerida</p>
+                                    <p class="text-xs text-yellow-700">Administración necesita refuerzo en tutorías de matemáticas</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-3 md:p-4">
+                            <div class="flex items-start space-x-2 md:space-x-3">
+                                <svg class="w-4 h-4 md:w-5 md:h-5 text-purple-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-xs md:text-sm font-medium text-purple-800">Innovación</p>
+                                    <p class="text-xs text-purple-700">Considerar sistema de mentorías peer-to-peer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <script>
+        // Lógica del menú
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+
+        function toggleSidebar() {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function toggleMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            const arrow = document.getElementById('arrow-' + menuId.split('-')[1]);
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
         // Chart instances
         let participacionChart, evolucionChart, ciclosChart;
         let currentParticipacionType = 'bar';
@@ -531,18 +683,18 @@
                         label: 'Participación Docente (%)',
                         data: [96.8, 98.2, 94.5, 91.3, 93.7],
                         backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(139, 92, 246, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(236, 72, 153, 0.8)'
+                            'rgba(22, 163, 74, 0.8)',    // Verde
+                            'rgba(34, 197, 94, 0.8)',    // Verde más claro
+                            'rgba(21, 128, 61, 0.8)',    // Verde oscuro
+                            'rgba(101, 163, 13, 0.8)',   // Verde lima
+                            'rgba(132, 204, 22, 0.8)'    // Verde brillante
                         ],
                         borderColor: [
-                            'rgba(59, 130, 246, 1)',
-                            'rgba(16, 185, 129, 1)',
-                            'rgba(139, 92, 246, 1)',
-                            'rgba(245, 158, 11, 1)',
-                            'rgba(236, 72, 153, 1)'
+                            'rgba(22, 163, 74, 1)',
+                            'rgba(34, 197, 94, 1)',
+                            'rgba(21, 128, 61, 1)',
+                            'rgba(101, 163, 13, 1)',
+                            'rgba(132, 204, 22, 1)'
                         ],
                         borderWidth: 2,
                         borderRadius: 8
@@ -588,22 +740,22 @@
                     datasets: [{
                         label: 'Tutorías Realizadas',
                         data: [420, 465, 398, 478, 542, 587],
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: 'rgba(22, 163, 74, 1)', // Verde
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
                         tension: 0.4,
                         fill: true,
-                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                        pointBackgroundColor: 'rgba(22, 163, 74, 1)',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 3,
                         pointRadius: 6
                     }, {
                         label: 'Asistencia Promedio (%)',
                         data: [82.1, 84.3, 79.8, 83.5, 86.2, 87.3],
-                        borderColor: 'rgba(16, 185, 129, 1)',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderColor: 'rgba(21, 128, 61, 1)', // Verde oscuro
+                        backgroundColor: 'rgba(21, 128, 61, 0.1)',
                         tension: 0.4,
                         fill: false,
-                        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                        pointBackgroundColor: 'rgba(21, 128, 61, 1)',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 3,
                         pointRadius: 6,
@@ -667,12 +819,12 @@
                     datasets: [{
                         data: [18, 22, 19, 16, 15, 10],
                         backgroundColor: [
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(139, 92, 246, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(236, 72, 153, 0.8)',
-                            'rgba(107, 114, 128, 0.8)'
+                            'rgba(22, 163, 74, 0.8)',    // Verde
+                            'rgba(34, 197, 94, 0.8)',    // Verde claro
+                            'rgba(21, 128, 61, 0.8)',    // Verde oscuro
+                            'rgba(101, 163, 13, 0.8)',   // Verde lima
+                            'rgba(132, 204, 22, 0.8)',   // Verde brillante
+                            'rgba(77, 124, 15, 0.8)'     // Verde oliva
                         ],
                         borderColor: '#ffffff',
                         borderWidth: 3
@@ -725,10 +877,10 @@
                 
                 // Update button states
                 document.getElementById('barBtn').className = type === 'bar' ? 
-                    'text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium' : 
+                    'text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium' : 
                     'text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium';
                 document.getElementById('pieBtn').className = type === 'pie' ? 
-                    'text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium' : 
+                    'text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium' : 
                     'text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium';
             }
         }
@@ -761,7 +913,7 @@
             notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
                 type === 'success' ? 'bg-green-500 text-white' :
                 type === 'error' ? 'bg-red-500 text-white' :
-                'bg-blue-500 text-white'
+                'bg-green-500 text-white'
             }`;
             notification.textContent = message;
             
@@ -779,16 +931,11 @@
         document.getElementById('periodoSelect').addEventListener('change', function() {
             const periodo = this.value;
             showNotification(`Actualizando vista: ${periodo}`, 'info');
-            
-            // Here you would update all charts and metrics based on the selected period
-            // For demo purposes, we'll just show the notification
         });
 
         document.getElementById('evolucionPeriodo').addEventListener('change', function() {
             const periodo = this.value;
             showNotification(`Actualizando gráfico de evolución: ${periodo}`, 'info');
-            
-            // Update evolution chart data based on selected period
         });
 
         // Initialize everything when page loads
@@ -805,5 +952,5 @@
             }, 100);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98dbc192a04c144d',t:'MTc2MDMyNjIwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

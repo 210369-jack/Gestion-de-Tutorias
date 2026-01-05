@@ -79,35 +79,35 @@
                 <form id="registroForm" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Actividad *</label>
-                        <select id="tipoActividad" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" required>
+                        <select id="tipoActividad" name="tipoActividad" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" required>
                             <option value="">Seleccionar tipo</option>
-                            <option value="curso">Curso de Capacitación</option>
-                            <option value="practica">Práctica Preprofesional</option>
-                            <option value="empleo">Experiencia Laboral</option>
-                            <option value="certificacion">Certificación Profesional</option>
-                            <option value="proyecto">Proyecto Académico</option>
-                            <option value="otro">Otra Actividad</option>
+                            <option value="Curso">Curso de Capacitación</option>
+                            <option value="Practica">Práctica Preprofesional</option>
+                            <option value="Empleo">Experiencia Laboral</option>
+                            <option value="Certificacion">Certificación Profesional</option>
+                            <option value="Proyecto">Proyecto Académico</option>
+                            <option value="Otro">Otra Actividad</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Descripción de la Actividad *</label>
-                        <textarea id="descripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Describe detalladamente la actividad realizada..." required></textarea>
+                        <textarea id="descripcion" name="descripcion" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Describe detalladamente la actividad realizada..." required></textarea>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Institución/Empresa *</label>
-                        <input type="text" id="institucion" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Nombre de la institución o empresa" required>
+                        <input type="text" id="institucion" name="institucion" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Nombre de la institución o empresa" required>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio *</label>
-                            <input type="date" id="fechaInicio" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" required>
+                            <input type="date" id="fechaInicio" name="fechaInicio" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
-                            <input type="date" id="fechaFin" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent">
+                            <input type="date" id="fechaFin" name="fechaFin" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent">
                         </div>
                     </div>
 
@@ -125,7 +125,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Observaciones Adicionales</label>
-                        <textarea id="observaciones" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Comentarios adicionales, logros destacados, etc."></textarea>
+                        <textarea id="observaciones" name="observaciones" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-verde-claro focus:border-transparent" placeholder="Comentarios adicionales, logros destacados, etc."></textarea>
                     </div>
 
                     <div class="flex gap-3 pt-4">
@@ -270,24 +270,37 @@
         });
 
         // Manejar envío del formulario
-        document.getElementById('registroForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nuevoRegistro = {
-                id: registros.length + 1,
-                tipo: document.getElementById('tipoActividad').value,
-                descripcion: document.getElementById('descripcion').value,
-                institucion: document.getElementById('institucion').value,
-                fechaInicio: document.getElementById('fechaInicio').value,
-                fechaFin: document.getElementById('fechaFin').value || null,
-                estado: 'En Progreso'
-            };
+        // Manejar envío del formulario
+document.getElementById('registroForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // 1. Recolectar datos automáticamente usando los 'name' del HTML
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
 
-            registros.push(nuevoRegistro);
-            actualizarListaRegistros();
+    try {
+        // 2. Enviar al servidor
+        const response = await fetch('/guardar-actividad', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            // 3. Si todo sale bien, mostramos el modal y limpiamos
             mostrarModal();
             limpiarFormulario();
-        });
+            cargarHistorial();
+            // Opcional: Recargar la página para ver el historial actualizado
+            // location.reload(); 
+        } else {
+            alert("Error al guardar en el servidor");
+        }
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        alert("No se pudo conectar con el servidor");
+    }
+});
 
         function limpiarFormulario() {
             document.getElementById('registroForm').reset();
@@ -326,9 +339,124 @@
         function verDocumentos(id) {
             alert(`Visualizando documentos del registro #${id}. En una implementación real, aquí se abriría un visor de documentos.`);
         }
+async function eliminarActividad(id) {
+    // Confirmación estética antes de borrar
+    if (!confirm("¿Estás seguro de que deseas eliminar este registro permanentemente?")) {
+        return;
+    }
 
-        // Inicializar contador
-        actualizarListaRegistros();
+    try {
+        const response = await fetch(`/eliminar-actividad/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            // Animación de salida (opcional) o simplemente recargar la lista
+            console.log("Registro eliminado");
+            cargarHistorial(); // Refrescamos la lista automáticamente
+        } else {
+            alert("No se pudo eliminar el registro del servidor.");
+        }
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
+        alert("Error de conexión al intentar eliminar.");
+    }
+}
+        // Función para cargar registros desde MongoDB
+async function cargarHistorial() {
+    try {
+        const response = await fetch('/obtener-actividades');
+        const actividades = await response.json();
+        
+        const listaRegistros = document.getElementById('listaRegistros');
+        const contador = document.getElementById('contadorRegistros');
+        
+        // Actualizar contador
+        contador.textContent = `${actividades.length} registros`;
+        
+        // Limpiar lista actual
+        listaRegistros.innerHTML = '';
+        
+        // Generar el HTML para cada actividad
+        actividades.forEach(act => {
+    // 1. Formateo de Fechas
+    const fechaI = new Date(act.fechaInicio).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+    const fechaFRaw = act.fechaFin ? new Date(act.fechaFin) : null;
+    const fechaF = fechaFRaw ? fechaFRaw.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Presente';
+
+    // 2. Lógica de Estado (Comparar con fecha actual)
+    const hoy = new Date();
+    const esCompletado = fechaFRaw && fechaFRaw < hoy;
+    const estadoTexto = esCompletado ? 'Completado' : 'En Progreso';
+    const estadoClase = esCompletado ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white';
+
+    // 3. Colores Dinámicos por Categoría
+    const categoriasMapa = {
+        'curso': { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Curso' },
+        'practica': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Práctica' },
+        'empleo': { bg: 'bg-indigo-100', text: 'text-indigo-800', label: 'Empleo' },
+        'certificacion': { bg: 'bg-amber-100', text: 'text-amber-800', label: 'Certificación' },
+        'proyecto': { bg: 'bg-cyan-100', text: 'text-cyan-800', label: 'Proyecto' },
+        'default': { bg: 'bg-gray-100', text: 'text-gray-800', label: act.tipoActividad.charAt(0).toUpperCase() + act.tipoActividad.slice(1) }
+    };
+
+    const estilo = categoriasMapa[act.tipoActividad.toLowerCase()] || categoriasMapa['default'];
+
+    // 4. Inyección del HTML mejorado
+    listaRegistros.innerHTML += `
+        <div class="group border border-gray-200 rounded-xl p-5 hover:border-verde-claro hover:shadow-lg transition-all duration-300 bg-white fade-in relative overflow-hidden">
+            <div class="absolute left-0 top-0 h-full w-1 ${esCompletado ? 'bg-green-500' : 'bg-yellow-500'}"></div>
+            
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="${estilo.bg} ${estilo.text} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            ${estilo.label}
+                        </span>
+                        <span class="${estadoClase} px-2 py-1 rounded text-[10px] font-bold uppercase">
+                            ${estadoTexto}
+                        </span>
+                    </div>
+                    
+                    <h4 class="font-bold text-gray-800 text-lg mb-1 group-hover:text-verde-institucional transition-colors">
+                        ${act.descripcion}
+                    </h4>
+                    
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <span class="font-medium text-gray-700">${act.institucion}</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 text-xs font-medium text-gray-400">
+                        <span class="flex items-center gap-1">
+                            📅 ${fechaI} — ${fechaF}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <button onclick="verDocumentos('${act._id}')" 
+                        class="p-2 bg-gray-50 hover:bg-verde-institucional hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
+                        <span>📄</span>
+                        <span class="hidden group-hover/btn:block">Documentos</span>
+                    </button>
+                    <button onclick="eliminarActividad('${act._id}')" 
+                        class="p-2 bg-gray-50 hover:bg-red-500 hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
+                        <span>🗑️</span>
+                        <span class="hidden group-hover/btn:block">Eliminar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+});
+        
+    } catch (error) {
+        console.error("Error al cargar el historial:", error);
+    }
+}
+
+// Llamar a la función al cargar la página
+window.onload = cargarHistorial;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f23278f5d8b4ef',t:'MTc2MDU2MTUxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
 </html>

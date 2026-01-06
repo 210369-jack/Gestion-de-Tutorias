@@ -8,10 +8,7 @@
     <style>
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Estilo para el link activo del menú */
         .nav-item.active { background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid #4ade80; }
-        
-        /* Clase para mostrar el menú en móvil */
         .sidebar-open { transform: translateX(0) !important; }
     </style>
 </head>
@@ -27,24 +24,19 @@
     </div>
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-green-900 text-white flex flex-col shadow-xl transform -translate-x-full transition-transform duration-300 md:translate-x-0 md:static">
-        
         <div class="flex justify-end p-2 md:hidden">
             <button onclick="toggleSidebar()" class="text-white p-2">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-
         <div class="h-16 flex items-center justify-center border-b border-green-800 bg-green-950 hidden md:flex">
             <h1 class="text-xl font-bold tracking-wider">TUTORÍAS</h1>
         </div>
-
         <nav class="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
-            
             <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 Dashboard
             </a>
-
             <div class="space-y-1">
                 <button onclick="toggleMenu('menu-admin')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
                     <div class="flex items-center">
@@ -54,51 +46,11 @@
                     <svg class="w-4 h-4 transform rotate-180 transition-transform" id="arrow-admin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div id="menu-admin" class="pl-12 space-y-1">
-                    <a href="HU1.html" class="nav-item active block px-2 py-2 text-sm text-white bg-green-800 rounded-lg">
-                        Usuarios y Accesos 
-                    </a>
-                    <a href="HU2.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">
-                        Asignar Tutores
-                    </a>
+                    <a href="HU1.html" class="nav-item active block px-2 py-2 text-sm text-white bg-green-800 rounded-lg">Usuarios y Accesos</a>
+                    <a href="HU2.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Asignar Tutores</a>
                 </div>
             </div>
-
-            <div class="space-y-1">
-                <button onclick="toggleMenu('menu-tutor')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                        <span>Gestión Tutorías</span>
-                    </div>
-                    <svg class="w-4 h-4 transform transition-transform" id="arrow-tutor" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="menu-tutor" class="hidden pl-12 space-y-1">
-                    <a href="HU7.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Nueva Sesión (HU6-8)</a>
-                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Mis Registros (HU9)</a>
-                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Constancias (HU10)</a>
-                </div>
-            </div>
-
-            <div class="space-y-1">
-                <button onclick="toggleMenu('menu-verify')" class="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors focus:outline-none">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                        <span>Supervisión</span>
-                    </div>
-                    <svg class="w-4 h-4 transform transition-transform" id="arrow-verify" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="menu-verify" class="hidden pl-12 space-y-1">
-                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Consultas (HU11-13)</a>
-                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Derivaciones</a>
-                </div>
-            </div>
-
-            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Reportes Consolidados
-            </a>
-
-        </nav>
-
+            </nav>
         <div class="p-4 bg-green-950 border-t border-green-800 hidden md:block">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">A</div>
@@ -111,7 +63,6 @@
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden w-full">
-        
         <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 z-10">
             <h2 class="text-xl md:text-2xl font-bold text-gray-800 truncate">Gestión de Usuarios</h2>
             <button class="text-gray-500 hover:text-green-600">
@@ -120,42 +71,29 @@
         </header>
 
         <div class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6">
-            
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="p-2 bg-green-100 rounded-lg"><svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Usuarios Activos</p>
-                            <p class="text-2xl font-bold text-gray-900"><span id="statTotal">...</span></p>
-                        </div>
+                        <div class="ml-4"><p class="text-sm font-medium text-gray-600">Usuarios Activos</p><p class="text-2xl font-bold text-gray-900"><span id="statTotal">...</span></p></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="p-2 bg-green-100 rounded-lg"><svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/></svg></div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Estudiantes</p>
-                            <p class="text-2xl font-bold text-gray-900"><span id="statEstudiantes">0</span></p>
-                        </div>
+                        <div class="ml-4"><p class="text-sm font-medium text-gray-600">Estudiantes</p><p class="text-2xl font-bold text-gray-900"><span id="statEstudiantes">0</span></p></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="p-2 bg-purple-100 rounded-lg"><svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg></div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Tutores</p>
-                            <p class="text-2xl font-bold text-gray-900"><span id="statTutores">0</span></p>
-                        </div>
+                        <div class="ml-4"><p class="text-sm font-medium text-gray-600">Tutores</p><p class="text-2xl font-bold text-gray-900"><span id="statTutores">0</span></p></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="p-2 bg-orange-100 rounded-lg"><svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"/></svg></div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Coordinadores</p>
-                            <p class="text-2xl font-bold text-gray-900"><span id="statCoordinadores">0</span></p>
-                        </div>
+                        <div class="ml-4"><p class="text-sm font-medium text-gray-600">Coordinadores</p><p class="text-2xl font-bold text-gray-900"><span id="statCoordinadores">0</span></p></div>
                     </div>
                 </div>
             </div>
@@ -209,8 +147,7 @@
                     </table>
                 </div>
             </div>
-
-            </div>
+        </div>
     </main>
 
     <div id="newUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
@@ -218,28 +155,33 @@
              <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Registrar Nuevo Usuario</h3>
             </div>
-            <form id="newUserForm" action="/registrar-usuario" method="POST" class="p-6 space-y-4">
-                
+            <form id="newUserForm" class="p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">DNI</label>
                     <input type="text" id="userDni" name="dni" required class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Ingrese DNI">
                 </div>
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
                     <input type="text" id="userName" name="nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <input type="email" id="userEmail" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">ID/Matrícula</label>
                     <input type="text" id="userId" name="matricula" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
                 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Usuario</label>
+                    <select id="userType" name="tipo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="Estudiante">Estudiante</option>
+                        <option value="Tutor">Tutor</option>
+                        <option value="Coordinador">Coordinador</option>
+                    </select>
+                </div>
+
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg">Registrar</button>
@@ -261,7 +203,13 @@
     </div>
 
     <script>
-        // --- LOGICA DE INTERFAZ (Sidebar, Menús) ---
+        // --- CONFIGURACIÓN DEL BACKEND ---
+        // IMPORTANTE: Cambia esta URL si tu servidor tiene otra ruta.
+        // Si usas 'http://localhost:3000/api/usuarios', pon eso.
+        // Si tu servidor sirve este HTML, usa ruta relativa '/api/usuarios'.
+        const API_URL = 'http://localhost:3000/api/usuarios'; 
+
+        // --- LÓGICA DE INTERFAZ ---
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('mobileOverlay');
 
@@ -278,7 +226,6 @@
         function toggleMenu(menuId) {
             const menu = document.getElementById(menuId);
             const arrow = document.getElementById('arrow-' + menuId.split('-')[1]);
-            
             if (menu.classList.contains('hidden')) {
                 menu.classList.remove('hidden');
                 arrow.classList.add('rotate-180');
@@ -288,43 +235,105 @@
             }
         }
 
-        // --- DATOS Y LÓGICA DE USUARIOS ---
-        
-        // 1. Aquí definimos datos "falsos" para que se vean en la pantalla inmediatamente
-        let users = [
-            {id: 1, name: "Juan Pérez", email: "juan.perez@tutorias.com", type: "Estudiante", matricula: "2023001", status: "Activo", date: new Date().toISOString()},
-            {id: 2, name: "María González", email: "maria.g@tutorias.com", type: "Tutor", matricula: "T-055", status: "Activo", date: new Date().toISOString()},
-            {id: 3, name: "Carlos López", email: "carlos.l@tutorias.com", type: "Coordinador", matricula: "ADM-01", status: "Activo", date: new Date().toISOString()},
-            {id: 4, name: "Ana Torres", email: "ana.torres@tutorias.com", type: "Estudiante", matricula: "2023045", status: "Activo", date: new Date().toISOString()},
-            {id: 5, name: "Roberto Diaz", email: "roberto.d@tutorias.com", type: "Tutor", matricula: "T-056", status: "Activo", date: new Date().toISOString()}
-        ];
-
+        // --- LÓGICA DE DATOS REAL (CONECTADO A BD) ---
+        let users = [];
         let currentDeleteId = null;
         
-        // Referencias al DOM
         const usersTableBody = document.getElementById('usersTableBody');
-        const statTotal = document.getElementById('statTotal');
-        const statEstudiantes = document.getElementById('statEstudiantes');
-        const statTutores = document.getElementById('statTutores');
-        const statCoordinadores = document.getElementById('statCoordinadores');
-        
         const deleteModal = document.getElementById('deleteModal');
         const newUserModal = document.getElementById('newUserModal');
 
-        // Función principal de carga (Simplificada para modo diseño)
-        function loadUsers() {
-            // En el futuro, aquí iría el fetch() a la base de datos.
-            // Por ahora, usamos los datos fijos de arriba.
-            renderUsers();
-            updateStats();
+        // 1. CARGAR USUARIOS DESDE LA NUBE
+        async function loadUsers() {
+            try {
+                // Hacemos la petición al servidor
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Error al cargar usuarios');
+                
+                // Convertimos la respuesta a JSON
+                const data = await response.json();
+                
+                // Guardamos los datos
+                users = data;
+                
+                // Actualizamos la pantalla
+                renderUsers();
+                updateStats();
+            } catch (error) {
+                console.error("Error:", error);
+                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">Error de conexión con la base de datos. Asegúrate de que el servidor (node server.js) esté corriendo.</td></tr>`;
+            }
         }
 
+        // 2. REGISTRAR NUEVO USUARIO
+        document.getElementById('newUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evitamos recarga
+            
+            const newUser = {
+                dni: document.getElementById('userDni').value,
+                nombreCompleto: document.getElementById('userName').value, // Asegúrate de usar los nombres que espera tu BD
+                email: document.getElementById('userEmail').value,
+                matricula: document.getElementById('userId').value,
+                tipoUsuario: document.getElementById('userType').value
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newUser)
+                });
+
+                if (response.ok) {
+                    alert('Usuario registrado exitosamente');
+                    newUserModal.classList.add('hidden');
+                    newUserModal.classList.remove('flex');
+                    document.getElementById('newUserForm').reset();
+                    loadUsers(); // Recargar la tabla
+                } else {
+                    alert('Error al registrar usuario');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de conexión al guardar');
+            }
+        });
+
+        // 3. ELIMINAR USUARIO
+        function askDelete(id) { 
+            currentDeleteId = id; 
+            deleteModal.classList.remove('hidden'); 
+            deleteModal.classList.add('flex'); 
+        }
+
+        async function handleDeleteReal() {
+            if(!currentDeleteId) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${currentDeleteId}`, {
+                    method: 'DELETE'
+                });
+
+                if(response.ok) {
+                    loadUsers(); // Recargar lista
+                    deleteModal.classList.add('hidden'); 
+                    deleteModal.classList.remove('flex');
+                } else {
+                    alert("No se pudo eliminar el usuario");
+                }
+            } catch(error) {
+                console.error(error);
+                alert("Error de conexión al eliminar");
+            }
+        }
+
+        // --- FUNCIONES VISUALES (Render y Stats) ---
         function updateStats() {
-            // Calculamos los números basándonos en el array 'users'
-            statTotal.textContent = users.length;
-            statEstudiantes.textContent = users.filter(u => u.type === 'Estudiante').length;
-            statTutores.textContent = users.filter(u => u.type === 'Tutor').length;
-            statCoordinadores.textContent = users.filter(u => u.type === 'Coordinador').length;
+            document.getElementById('statTotal').textContent = users.length;
+            // Ajusta estas propiedades (u.tipoUsuario) según cómo vengan de tu BD
+            document.getElementById('statEstudiantes').textContent = users.filter(u => u.tipoUsuario === 'Estudiante').length;
+            document.getElementById('statTutores').textContent = users.filter(u => u.tipoUsuario === 'Tutor').length;
+            document.getElementById('statCoordinadores').textContent = users.filter(u => u.tipoUsuario === 'Coordinador').length;
         }
 
         function renderUsers() {
@@ -332,87 +341,67 @@
             const typeF = document.getElementById('userTypeFilter').value;
             
             const filtered = users.filter(u => {
-                const name = u.name ? u.name.toLowerCase() : '';
+                // Ajusta nombres de propiedades según tu BD (ej: u.nombreCompleto vs u.name)
+                const name = u.nombreCompleto ? u.nombreCompleto.toLowerCase() : (u.name ? u.name.toLowerCase() : '');
                 const email = u.email ? u.email.toLowerCase() : '';
+                const type = u.tipoUsuario || u.type || '';
+                
                 return (name.includes(term) || email.includes(term)) &&
-                       (!typeF || u.type === typeF);
+                       (!typeF || type === typeF);
             });
 
-            usersTableBody.innerHTML = filtered.map(user => `
+            usersTableBody.innerHTML = filtered.map(user => {
+                // Preparamos datos seguros
+                const nombre = user.nombreCompleto || user.name || 'Sin nombre';
+                const correo = user.email || 'Sin email';
+                const tipo = user.tipoUsuario || user.type || 'N/A';
+                const id = user._id || user.id; // Mongo usa _id
+                const fecha = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString() : new Date().toLocaleDateString();
+
+                return `
                 <tr class="hover:bg-gray-50 border-b border-gray-100">
                     <td class="px-6 py-4">
                         <div class="flex items-center">
                             <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold mr-3">
-                                ${user.name.charAt(0)}
+                                ${nombre.charAt(0)}
                             </div>
                             <div>
-                                <div class="font-medium text-gray-900">${user.name}</div>
-                                <div class="text-gray-500 text-xs">${user.email}</div>
+                                <div class="font-medium text-gray-900">${nombre}</div>
+                                <div class="text-gray-500 text-xs">${correo}</div>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                            ${user.type === 'Estudiante' ? 'bg-blue-100 text-blue-800' : 
-                              user.type === 'Tutor' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'}">
-                            ${user.type}
+                            ${tipo === 'Estudiante' ? 'bg-blue-100 text-blue-800' : 
+                              tipo === 'Tutor' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'}">
+                            ${tipo}
                         </span>
                     </td>
                     <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span></td>
-                    <td class="px-6 py-4 text-sm text-gray-500">${new Date(user.date).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${fecha}</td>
                     <td class="px-6 py-4">
-                        <button onclick="askDelete('${user.id}')" class="text-red-600 hover:text-red-900 font-medium text-sm">
+                        <button onclick="askDelete('${id}')" class="text-red-600 hover:text-red-900 font-medium text-sm">
                             Eliminar
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
             
-            // Si no hay resultados
             if(filtered.length === 0) {
                 usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">No se encontraron usuarios</td></tr>`;
             }
         }
 
-        // Manejo del Modal de eliminar
-        function askDelete(id) { 
-            currentDeleteId = id; 
-            deleteModal.classList.remove('hidden'); 
-            deleteModal.classList.add('flex'); 
-        }
-
-        function handleDeleteReal() {
-            if(!currentDeleteId) return;
-            // Simulamos borrar del array
-            users = users.filter(u => u.id != currentDeleteId);
-            renderUsers(); 
-            updateStats(); 
-            deleteModal.classList.add('hidden'); 
-            deleteModal.classList.remove('flex');
-        }
-
-        // Event Listeners
+        // Listeners
         document.addEventListener('DOMContentLoaded', loadUsers);
         document.getElementById('refreshBtn').addEventListener('click', loadUsers);
         
-        // Modal Nuevo Usuario
-        document.getElementById('newUserBtn').addEventListener('click', () => { 
-            newUserModal.classList.remove('hidden'); 
-            newUserModal.classList.add('flex'); 
-        });
-        document.getElementById('cancelBtn').addEventListener('click', () => { 
-            newUserModal.classList.add('hidden'); 
-            newUserModal.classList.remove('flex'); 
-        });
-        
-        // Modal Borrar
-        document.getElementById('cancelDeleteBtn').addEventListener('click', () => { 
-            deleteModal.classList.add('hidden'); 
-            deleteModal.classList.remove('flex'); 
-        });
+        document.getElementById('newUserBtn').addEventListener('click', () => { newUserModal.classList.remove('hidden'); newUserModal.classList.add('flex'); });
+        document.getElementById('cancelBtn').addEventListener('click', () => { newUserModal.classList.add('hidden'); newUserModal.classList.remove('flex'); });
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => { deleteModal.classList.add('hidden'); deleteModal.classList.remove('flex'); });
         document.getElementById('confirmDeleteBtn').addEventListener('click', handleDeleteReal);
         
-        // Filtros
         document.getElementById('searchInput').addEventListener('input', renderUsers);
         document.getElementById('userTypeFilter').addEventListener('change', renderUsers);
     </script>

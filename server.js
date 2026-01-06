@@ -114,26 +114,40 @@ app.get("/", (req, res) => {
 });
 
 // Proceso de Login
+// Proceso de Login actualizado para 3 roles
 app.post("/login", async (req, res) => {
-  const emailIngresado = req.body.correo || req.body.email;
-  const passwordIngresado = req.body.password;
+  const { correo, password, rol } = req.body;
 
-  console.log(`Intentando login con: ${emailIngresado}`);
+  console.log(`Intentando login: ${correo} como ${rol}`);
 
   try {
-    const usuario = await Usuario.findOne({ email: emailIngresado });
+    const usuario = await Usuario.findOne({ 
+      email: correo,
+      rol: rol // Verificar que el rol coincida
+    });
 
     if (!usuario) {
-      return res.send("<script>alert('Usuario no encontrado'); window.location.href='/';</script>");
+      return res.send("<script>alert('Usuario no encontrado o rol incorrecto'); window.location.href='/';</script>");
     }
 
-    if (usuario.password !== passwordIngresado) {
+    if (usuario.password !== password) {
       return res.send("<script>alert('Contraseña incorrecta'); window.location.href='/';</script>");
     }
 
-    return usuario.rol === "coordinador" || usuario.rol === "admin"
-      ? res.redirect("/HU1.html")
-      : res.send("Rol no válido o sin permisos");
+    // Redirigir según el rol
+    switch(rol) {
+      case 'admin':
+        res.redirect("/admin-dashboard.html");
+        break;
+      case 'tutor':
+        res.redirect("/tutor-dashboard.html");
+        break;
+      case 'verificador':
+        res.redirect("/verificador-dashboard.html");
+        break;
+      default:
+        res.send("<script>alert('Rol no válido'); window.location.href='/';</script>");
+    }
 
   } catch (error) {
     console.error("Error en el login:", error);
@@ -306,6 +320,37 @@ const SesionTutoriaSchema = new mongoose.Schema({
 
 const SesionTutoria = mongoose.model("SesionTutoria", SesionTutoriaSchema);
 
+const verificarAutenticacion = (req, res, next) => {
+  // Aquí normalmente verificarías un token de sesión
+  // Por ahora, solo redirigimos si no hay usuario en la URL (simulación)
+  const url = req.url;
+  const usuarioAutenticado = req.headers.referer || req.cookies; // Ejemplo básico
+  
+  // En producción, implementarías un sistema real de autenticación
+  next();
+};
+
+const verificarRol = (rolesPermitidos) => {
+  return (req, res, next) => {
+    // En producción, aquí obtendrías el rol del usuario desde la sesión/token
+    const rolUsuario = req.query.rol || 'admin'; // Temporal - solo para pruebas
+    
+    if (rolesPermitidos.includes(rolUsuario)) {
+      next();
+    } else {
+      res.status(403).send(`
+        <html>
+          <body style="font-family: Arial; text-align: center; padding: 50px;">
+            <h1>⛔ Acceso Denegado</h1>
+            <p>No tienes permisos para acceder a esta página.</p>
+            <a href="/">Volver al Login</a>
+          </body>
+        </html>
+      `);
+    }
+  };
+};
+
 // ============================
 // RUTAS PARA SESIONES DE TUTORÍA (Reportes)
 // ============================
@@ -358,6 +403,84 @@ app.get("/sesiones/estadisticas", async (req, res) => {
     console.error("❌ Error al obtener estadísticas:", error);
     res.status(500).json({ error: "Error al obtener estadísticas" });
   }
+});
+
+app.get("/admin-dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-dashboard.html"));
+});
+
+app.get("/tutor-dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "tutor-dashboard.html"));
+});
+
+app.get("/verificador-dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "verificador-dashboard.html"));
+});
+
+app.get("/api/admin/usuarios", async (req, res) => {
+  try {
+    const usuarios = await NuevoUsuario.find();
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener usuarios" });
+  }
+});
+
+app.get("/api/tutor/sesiones", async (req, res) => {
+  try {
+    const sesiones = await SesionTutoria.find().sort({ fecha: -1 });
+    res.json(sesiones);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener sesiones" });
+  }
+});
+
+app.get("/api/verificador/estadisticas", async (req, res) => {
+  try {
+    // Estadísticas generales
+    const totalSesiones = await SesionTutoria.countDocuments();
+    const totalTutores = await Usuario.countDocuments({ rol: 'tutor' });
+    const totalEstudiantes = await NuevoUsuario.countDocuments();
+    
+    // Desempeño por tutor
+    const desempenoTutores = await SesionTutoria.aggregate([
+      {
+        $group: {
+          _id: "$tutor",
+          totalSesiones: { $sum: 1 },
+          promedioDesempeno: { 
+            $avg: { 
+              $switch: {
+                branches: [
+                  { case: { $eq: ["$nivel_desempeno", "Excelente"] }, then: 4 },
+                  { case: { $eq: ["$nivel_desempeno", "Bueno"] }, then: 3 },
+                  { case: { $eq: ["$nivel_desempeno", "Regular"] }, then: 2 },
+                  { case: { $eq: ["$nivel_desempeno", "Deficiente"] }, then: 1 }
+                ],
+                default: 0
+              }
+            }
+          }
+        }
+      }
+    ]);
+    
+    res.json({
+      totalSesiones,
+      totalTutores,
+      totalEstudiantes,
+      desempenoTutores
+    });
+  } catch (error) {
+    console.error("Error en estadísticas:", error);
+    res.status(500).json({ error: "Error al obtener estadísticas" });
+  }
+});
+
+// Ejemplo para la ruta de HU1 (solo admin)
+app.get("/HU1.html", (req, res) => {
+  // En producción, verificarías el rol aquí
+  res.sendFile(path.join(__dirname, "HU1.html"));
 });
 
 // RUTA PARA CREAR NUEVA SESIÓN

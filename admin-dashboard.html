@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Administrador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Menú de navegación -->
+  <nav class="bg-blue-900 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">Panel de Administrador</h1>
+      <div class="space-x-4">
+        <a href="/admin-dashboard.html" class="hover:text-blue-300">Dashboard</a>
+        <a href="/HU1.html" class="hover:text-blue-300">Gestión de Usuarios</a>
+        <a href="/HU2.html" class="hover:text-blue-300">Reportes</a>
+        <a href="/" class="hover:text-blue-300">Cerrar Sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-6">Bienvenido Administrador</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Tarjetas de resumen -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-bold text-lg text-blue-700">Usuarios Totales</h3>
+        <p id="totalUsuarios" class="text-3xl font-bold">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-bold text-lg text-green-700">Sesiones Activas</h3>
+        <p id="sesionesActivas" class="text-3xl font-bold">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-bold text-lg text-purple-700">Tutores Registrados</h3>
+        <p id="totalTutores" class="text-3xl font-bold">0</p>
+      </div>
+    </div>
+
+    <!-- Acceso rápido -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="font-bold text-lg mb-4">Acciones Rápidas</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <a href="/HU1.html" class="bg-blue-500 text-white p-4 rounded text-center hover:bg-blue-600">
+          👥 Gestionar Usuarios
+        </a>
+        <a href="/reportes.html" class="bg-green-500 text-white p-4 rounded text-center hover:bg-green-600">
+          📊 Ver Reportes
+        </a>
+        <a href="/estadisticas.html" class="bg-purple-500 text-white p-4 rounded text-center hover:bg-purple-600">
+          📈 Ver Estadísticas
+        </a>
+        <a href="/configuracion.html" class="bg-gray-500 text-white p-4 rounded text-center hover:bg-gray-600">
+          ⚙️ Configuración
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Cargar estadísticas del admin
+    async function cargarEstadisticas() {
+      try {
+        const res = await fetch('/api/verificador/estadisticas');
+        const datos = await res.json();
+        
+        document.getElementById('totalUsuarios').textContent = datos.totalEstudiantes || 0;
+        document.getElementById('totalTutores').textContent = datos.totalTutores || 0;
+        
+        // Para sesiones activas necesitarías otro endpoint
+        const resSesiones = await fetch('/api/tutor/sesiones');
+        const sesiones = await resSesiones.json();
+        document.getElementById('sesionesActivas').textContent = sesiones.length || 0;
+      } catch (error) {
+        console.error("Error cargando estadísticas:", error);
+      }
+    }
+    
+    cargarEstadisticas();
+  </script>
+</body>
+</html>

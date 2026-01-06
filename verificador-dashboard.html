@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Verificador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <nav class="bg-purple-700 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">Panel de Verificador</h1>
+      <div class="space-x-4">
+        <a href="/verificador-dashboard.html" class="hover:text-purple-300">Dashboard</a>
+        <a href="/estadisticas-detalladas.html" class="hover:text-purple-300">Estadísticas</a>
+        <a href="/desempeno-tutores.html" class="hover:text-purple-300">Desempeño</a>
+        <a href="/" class="hover:text-purple-300">Cerrar Sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-6">Estadísticas de Desempeño</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-bold text-lg mb-4">Desempeño por Tutor</h3>
+        <canvas id="chartDesempeno"></canvas>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-bold text-lg mb-4">Resumen General</h3>
+        <div id="resumenEstadisticas">
+          <!-- Aquí se cargarán las estadísticas -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Cargar estadísticas para el verificador
+    async function cargarEstadisticasVerificador() {
+      try {
+        const res = await fetch('/api/verificador/estadisticas');
+        const datos = await res.json();
+        
+        // Mostrar resumen
+        const resumen = document.getElementById('resumenEstadisticas');
+        resumen.innerHTML = `
+          <p class="mb-2">Total de Sesiones: <span class="font-bold">${datos.totalSesiones}</span></p>
+          <p class="mb-2">Total de Tutores: <span class="font-bold">${datos.totalTutores}</span></p>
+          <p class="mb-2">Total de Estudiantes: <span class="font-bold">${datos.totalEstudiantes}</span></p>
+        `;
+        
+        // Crear gráfico
+        if (datos.desempenoTutores && datos.desempenoTutores.length > 0) {
+          const ctx = document.getElementById('chartDesempeno').getContext('2d');
+          
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: datos.desempenoTutores.map(d => d._id),
+              datasets: [{
+                label: 'Promedio Desempeño',
+                data: datos.desempenoTutores.map(d => d.promedioDesempeno),
+                backgroundColor: 'rgba(147, 51, 234, 0.5)',
+                borderColor: 'rgba(147, 51, 234, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  max: 4
+                }
+              }
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error cargando estadísticas:", error);
+      }
+    }
+    
+    cargarEstadisticasVerificador();
+  </script>
+</body>
+</html>

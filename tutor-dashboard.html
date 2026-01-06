@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Tutor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <nav class="bg-green-700 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">Panel de Tutor</h1>
+      <div class="space-x-4">
+        <a href="/tutor-dashboard.html" class="hover:text-green-300">Inicio</a>
+        <a href="/registro-tutoria.html" class="hover:text-green-300">Nueva Tutoría</a>
+        <a href="/mis-sesiones.html" class="hover:text-green-300">Mis Sesiones</a>
+        <a href="/" class="hover:text-green-300">Cerrar Sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-6">Bienvenido Tutor</h2>
+    
+    <div class="bg-white p-6 rounded-lg shadow mb-6">
+      <h3 class="font-bold text-lg mb-4">Registrar Nueva Tutoría</h3>
+      <p class="mb-4">Completa el formulario para registrar una nueva sesión de tutoría.</p>
+      <a href="/registro-tutoria.html" class="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600">
+        📝 Ir al Formulario
+      </a>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="font-bold text-lg mb-4">Mis Últimas Sesiones</h3>
+      <div id="listaSesiones" class="space-y-4">
+        <!-- Aquí se cargarán las sesiones -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Cargar sesiones del tutor
+    async function cargarMisSesiones() {
+      try {
+        const res = await fetch('/api/tutor/sesiones');
+        const sesiones = await res.json();
+        
+        const lista = document.getElementById('listaSesiones');
+        lista.innerHTML = '';
+        
+        // Mostrar solo las 5 últimas
+        sesiones.slice(0, 5).forEach(sesion => {
+          lista.innerHTML += `
+            <div class="border p-4 rounded">
+              <h4 class="font-bold">${sesion.estudiante_nombre}</h4>
+              <p>Fecha: ${new Date(sesion.fecha).toLocaleDateString()}</p>
+              <p>Temas: ${sesion.temas_tratados}</p>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error("Error cargando sesiones:", error);
+      }
+    }
+    
+    cargarMisSesiones();
+  </script>
+</body>
+</html>

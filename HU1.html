@@ -634,15 +634,24 @@
                 
                 const data = await response.json();
                 
-                // 2. Mapeamos tus variables NUEVAS (nombreUsuario, gmail, etc.)
+                // 2. Mapeamos (Buscamos el nombre nuevo, SI NO ESTÁ, buscamos el viejo)
                 users = data.map(user => ({
                     id: user._id, 
-                    name: user.nombreUsuario || 'Sin Nombre', // Ahora busca 'nombreUsuario'
-                    email: user.gmail || 'Sin Email',         // Ahora busca 'gmail'
-                    type: user.tipo || 'N/A',                 // Ahora busca 'tipo'
-                    matricula: user.idMatricula || '',        // Ahora busca 'idMatricula'
+                    
+                    // Nombre: Busca 'nombreUsuario' (Nuevo) O 'nombreCompleto' (Viejo)
+                    name: user.nombreUsuario || user.nombreCompleto || 'Sin Nombre', 
+                    
+                    // Email: Busca 'gmail' (Nuevo) O 'email' (Viejo)
+                    email: user.gmail || user.email || 'Sin Email',         
+                    
+                    // Tipo: Busca 'tipo' (Nuevo) O 'tipoUsuario' (Viejo)
+                    type: user.tipo || user.tipoUsuario || 'N/A',                 
+                    
+                    // Matrícula: Busca 'idMatricula' (Nuevo) O 'matricula' (Viejo)
+                    matricula: user.idMatricula || user.matricula || '',        
+                    
                     status: 'activo', 
-                    date: Date.now() // Ponemos fecha actual porque borraste la fecha del server
+                    date: Date.now() 
                 }));
 
                 renderUsers(); 

@@ -141,7 +141,7 @@ app.post("/login", async (req, res) => {
 
     } else if (usuario.rol === "tutor") {
         console.log("➡️ Redirigiendo a Panel de Tutor");
-        return res.redirect("/HU6.html");
+        return res.redirect("/HU7.html");
 
     } else if (usuario.rol === "verificador") {
         console.log("➡️ Redirigiendo a Panel de Verificador");

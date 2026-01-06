@@ -79,12 +79,14 @@ const ActividadProfesional = mongoose.model("ActividadProfesional", ActividadPro
 
 // MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3 - Tu trabajo)
 // *** CAMBIO AQUÍ: Se agregó tutorActual ***
+// MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3)
 const NuevoUsuarioSchema = new mongoose.Schema({
+  dni: String, // <--- AGREGA ESTA LÍNEA
   nombreCompleto: String,
-  email: String,
+  email: String, 
   tipoUsuario: String,  
   matricula: String,
-  tutorActual: { type: String, default: "Sin Asignar" }, // <--- NUEVO CAMPO PARA HU3
+  tutorActual: { type: String, default: "Sin Asignar" },
   fechaRegistro: { type: Date, default: Date.now } 
 }, { collection: 'Usuarios_Sistema' });
 
@@ -176,6 +178,49 @@ app.delete("/eliminar-usuario/:id", async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: "Error al eliminar" });
   }
+});
+
+// ==========================================
+// RUTAS API REST PARA HU1 (Conexión con Dashboard)
+// ==========================================
+
+// 1. GET: Para cargar la tabla (JSON puro)
+app.get('/api/usuarios', async (req, res) => {
+    try {
+        const usuarios = await NuevoUsuario.find();
+        res.json(usuarios);
+    } catch (error) {
+        res.status(500).json({ error: "Error al cargar usuarios" });
+    }
+});
+
+// 2. POST: Para el Modal de Nuevo Usuario (JSON puro)
+app.post('/api/usuarios', async (req, res) => {
+    try {
+        const nuevoUsuario = new NuevoUsuario({
+            dni: req.body.dni,
+            nombreCompleto: req.body.nombreCompleto || req.body.nombre, // Aceptamos ambos por compatibilidad
+            email: req.body.email,
+            matricula: req.body.matricula,
+            tipoUsuario: req.body.tipoUsuario || req.body.tipo,
+            tutorActual: "Sin Asignar"
+        });
+        await nuevoUsuario.save();
+        res.status(201).json({ message: "Usuario creado exitosamente", usuario: nuevoUsuario });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: "Error al guardar usuario" });
+    }
+});
+
+// 3. DELETE: Para el botón eliminar de la tabla
+app.delete('/api/usuarios/:id', async (req, res) => {
+    try {
+        await NuevoUsuario.findByIdAndDelete(req.params.id);
+        res.json({ message: "Usuario eliminado correctamente" });
+    } catch (error) {
+        res.status(500).json({ error: "Error al eliminar usuario" });
+    }
 });
 
 app.put("/actualizar-usuario/:id", async (req, res) => {

@@ -90,7 +90,7 @@ const NuevoUsuarioSchema = new mongoose.Schema({
   matricula: String,
   tutorActual: { type: String, default: "Sin Asignar" }, // <--- NUEVO CAMPO PARA HU3
   fechaRegistro: { type: Date, default: Date.now } 
-}, { collection: 'Usuarios_Sistema' });
+}, { collection: 'Usuario' });
 
 const NuevoUsuario = mongoose.model("NuevoUsuario", NuevoUsuarioSchema);
 

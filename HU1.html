@@ -204,9 +204,7 @@
 
     <script>
         // --- CONFIGURACIÓN DEL BACKEND ---
-        // IMPORTANTE: Cambia esta URL si tu servidor tiene otra ruta.
-        // Si usas 'http://localhost:3000/api/usuarios', pon eso.
-        // Si tu servidor sirve este HTML, usa ruta relativa '/api/usuarios'.
+        // IMPORTANTE: Esta URL debe coincidir con tu servidor local
         const API_URL = 'http://localhost:3000/api/usuarios'; 
 
         // --- LÓGICA DE INTERFAZ ---
@@ -246,32 +244,32 @@
         // 1. CARGAR USUARIOS DESDE LA NUBE
         async function loadUsers() {
             try {
-                // Hacemos la petición al servidor
                 const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Error al cargar usuarios');
                 
-                // Convertimos la respuesta a JSON
+                if (!response.ok) {
+                    throw new Error('Error de respuesta del servidor');
+                }
+                
                 const data = await response.json();
-                
-                // Guardamos los datos
                 users = data;
                 
-                // Actualizamos la pantalla
                 renderUsers();
                 updateStats();
             } catch (error) {
-                console.error("Error:", error);
-                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">Error de conexión con la base de datos. Asegúrate de que el servidor (node server.js) esté corriendo.</td></tr>`;
+                console.error("Error al cargar:", error);
+                // Muestra un mensaje amigable en la tabla, pero NO datos falsos si no quieres
+                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 font-bold">Error de conexión con la base de datos. Asegúrate de que el servidor (node server.js) esté corriendo.</td></tr>`;
             }
         }
 
         // 2. REGISTRAR NUEVO USUARIO
         document.getElementById('newUserForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); // Evitamos recarga
+            e.preventDefault(); 
             
+            // Construimos el objeto tal cual lo espera tu server.js (NuevoUsuarioSchema)
             const newUser = {
                 dni: document.getElementById('userDni').value,
-                nombreCompleto: document.getElementById('userName').value, // Asegúrate de usar los nombres que espera tu BD
+                nombreCompleto: document.getElementById('userName').value,
                 email: document.getElementById('userEmail').value,
                 matricula: document.getElementById('userId').value,
                 tipoUsuario: document.getElementById('userType').value
@@ -289,13 +287,14 @@
                     newUserModal.classList.add('hidden');
                     newUserModal.classList.remove('flex');
                     document.getElementById('newUserForm').reset();
-                    loadUsers(); // Recargar la tabla
+                    loadUsers(); // Recargamos la tabla
                 } else {
-                    alert('Error al registrar usuario');
+                    const errorData = await response.json();
+                    alert('Error: ' + (errorData.error || 'No se pudo guardar'));
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error de conexión al guardar');
+                alert('Error de conexión al guardar. Verifica el servidor.');
             }
         });
 
@@ -315,7 +314,7 @@
                 });
 
                 if(response.ok) {
-                    loadUsers(); // Recargar lista
+                    loadUsers(); 
                     deleteModal.classList.add('hidden'); 
                     deleteModal.classList.remove('flex');
                 } else {
@@ -330,7 +329,7 @@
         // --- FUNCIONES VISUALES (Render y Stats) ---
         function updateStats() {
             document.getElementById('statTotal').textContent = users.length;
-            // Ajusta estas propiedades (u.tipoUsuario) según cómo vengan de tu BD
+            // Usamos 'tipoUsuario' porque así se llama en tu Schema de Mongoose
             document.getElementById('statEstudiantes').textContent = users.filter(u => u.tipoUsuario === 'Estudiante').length;
             document.getElementById('statTutores').textContent = users.filter(u => u.tipoUsuario === 'Tutor').length;
             document.getElementById('statCoordinadores').textContent = users.filter(u => u.tipoUsuario === 'Coordinador').length;
@@ -341,21 +340,21 @@
             const typeF = document.getElementById('userTypeFilter').value;
             
             const filtered = users.filter(u => {
-                // Ajusta nombres de propiedades según tu BD (ej: u.nombreCompleto vs u.name)
-                const name = u.nombreCompleto ? u.nombreCompleto.toLowerCase() : (u.name ? u.name.toLowerCase() : '');
+                // Ajustamos a los nombres de tu Schema (nombreCompleto, email, tipoUsuario)
+                const name = u.nombreCompleto ? u.nombreCompleto.toLowerCase() : '';
                 const email = u.email ? u.email.toLowerCase() : '';
-                const type = u.tipoUsuario || u.type || '';
+                const type = u.tipoUsuario || '';
                 
                 return (name.includes(term) || email.includes(term)) &&
                        (!typeF || type === typeF);
             });
 
             usersTableBody.innerHTML = filtered.map(user => {
-                // Preparamos datos seguros
-                const nombre = user.nombreCompleto || user.name || 'Sin nombre';
+                const nombre = user.nombreCompleto || 'Sin nombre';
                 const correo = user.email || 'Sin email';
-                const tipo = user.tipoUsuario || user.type || 'N/A';
-                const id = user._id || user.id; // Mongo usa _id
+                const tipo = user.tipoUsuario || 'N/A';
+                // IMPORTANTE: MongoDB usa '_id', no 'id'.
+                const id = user._id; 
                 const fecha = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString() : new Date().toLocaleDateString();
 
                 return `

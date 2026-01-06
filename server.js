@@ -115,43 +115,34 @@ app.get("/", (req, res) => {
 
 // Proceso de Login
 // Proceso de Login actualizado para 3 roles
+// En el proceso de login, redirigir según el rol:
 app.post("/login", async (req, res) => {
   const { correo, password, rol } = req.body;
-
-  console.log(`Intentando login: ${correo} como ${rol}`);
 
   try {
     const usuario = await Usuario.findOne({ 
       email: correo,
-      rol: rol // Verificar que el rol coincida
+      rol: rol
     });
 
-    if (!usuario) {
-      return res.send("<script>alert('Usuario no encontrado o rol incorrecto'); window.location.href='/';</script>");
+    if (!usuario || usuario.password !== password) {
+      return res.send("<script>alert('Credenciales incorrectas'); window.location.href='/';</script>");
     }
 
-    if (usuario.password !== password) {
-      return res.send("<script>alert('Contraseña incorrecta'); window.location.href='/';</script>");
-    }
-
-    // Redirigir según el rol
-    switch(rol) {
-      case 'admin':
-        res.redirect("/admin-dashboard.html");
-        break;
-      case 'tutor':
-        res.redirect("/tutor-dashboard.html");
-        break;
-      case 'verificador':
-        res.redirect("/verificador-dashboard.html");
-        break;
-      default:
-        res.send("<script>alert('Rol no válido'); window.location.href='/';</script>");
+    // Redirigir al dashboard correspondiente
+    if (rol === 'admin') {
+      res.redirect("/admin-dashboard.html");
+    } else if (rol === 'tutor') {
+      res.redirect("/tutor-dashboard.html");
+    } else if (rol === 'verificador') {
+      res.redirect("/verificador-dashboard.html");
+    } else {
+      res.redirect("/");
     }
 
   } catch (error) {
-    console.error("Error en el login:", error);
-    res.status(500).send("Error interno del servidor");
+    console.error("Error en login:", error);
+    res.status(500).send("Error interno");
   }
 });
 

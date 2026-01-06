@@ -79,17 +79,17 @@ const ActividadProfesional = mongoose.model("ActividadProfesional", ActividadPro
 
 // MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3 - Tu trabajo)
 // *** CAMBIO AQUÍ: Se agregó tutorActual ***
-// MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3)
 const NuevoUsuarioSchema = new mongoose.Schema({
-  dni: String, // <--- AGREGADO
   nombreCompleto: String,
   email: String,
+  tipoUsuario: String,  
   matricula: String,
-  tutorActual: { type: String, default: "Sin Asignar" },
+  tutorActual: { type: String, default: "Sin Asignar" }, // <--- NUEVO CAMPO PARA HU3
   fechaRegistro: { type: Date, default: Date.now } 
 }, { collection: 'Usuarios_Sistema' });
 
 const NuevoUsuario = mongoose.model("NuevoUsuario", NuevoUsuarioSchema);
+
 // ============================
 // 3. CONEXIÓN A MONGODB ATLAS
 // ============================

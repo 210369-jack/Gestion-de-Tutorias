@@ -73,7 +73,7 @@
                 </button>
                 <div id="menu-tutor" class="hidden pl-12 space-y-1">
                     <a href="HU7.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Nueva Sesión (HU6-8)</a>
-                    <a href="HU4.html" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Sistema de Reportes de Tutorías</a>
+                    <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Mis Registros (HU9)</a>
                     <a href="#" class="block px-2 py-2 text-sm text-gray-400 hover:text-white hover:bg-green-800 rounded-lg">Constancias (HU10)</a>
                 </div>
             </div>
@@ -92,12 +92,9 @@
                 </div>
             </div>
 
-            <!-- Busca esta sección en el menú lateral del dashboard -->
-            <a href="HU6.html" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Resumen Ejecutivo
+            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-green-800 hover:text-white rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Reportes Consolidados
             </a>
 
         </nav>
@@ -180,6 +177,15 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Buscar usuario</label>
                         <input type="text" id="searchInput" placeholder="Nombre, email o ID..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     </div>
+                    <div class="md:w-48">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de usuario</label>
+                        <select id="userTypeFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <option value="">Todos</option>
+                            <option value="Estudiante">Estudiantes</option>
+                            <option value="Tutor">Tutores</option>
+                            <option value="Coordinador">Coordinadores</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -213,15 +219,26 @@
                 <h3 class="text-lg font-medium text-gray-900">Registrar Nuevo Usuario</h3>
             </div>
             <form id="newUserForm" action="/registrar-usuario" method="POST" class="p-6 space-y-4">
-                <div><label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label><input type="text" id="userName" name="nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
-                 <div><label class="block text-sm font-medium text-gray-700 mb-2">Email</label><input type="email" id="userEmail" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
-                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-                    <select id="userType" name="tipo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        <option value="">Seleccionar</option><option value="Estudiante">Estudiante</option><option value="Tutor">Tutor</option><option value="Coordinador">Coordinador</option>
-                    </select>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">DNI</label>
+                    <input type="text" id="userDni" name="dni" required class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Ingrese DNI">
                 </div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-2">ID/Matrícula</label><input type="text" id="userId" name="matricula" required class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+                    <input type="text" id="userName" name="nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="userEmail" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ID/Matrícula</label>
+                    <input type="text" id="userId" name="matricula" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
                 
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg">Cancelar</button>
@@ -244,7 +261,7 @@
     </div>
 
     <script>
-        // --- NUEVA LÓGICA DEL MENÚ RESPONSIVE ---
+        // --- LOGICA DE INTERFAZ (Sidebar, Menús) ---
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('mobileOverlay');
 
@@ -258,7 +275,6 @@
             }
         }
 
-        // --- LÓGICA DE MENÚS DESPLEGABLES ---
         function toggleMenu(menuId) {
             const menu = document.getElementById(menuId);
             const arrow = document.getElementById('arrow-' + menuId.split('-')[1]);
@@ -272,10 +288,20 @@
             }
         }
 
-        // --- LÓGICA DE USUARIOS (Mantenida intacta) ---
-        let users = [];
+        // --- DATOS Y LÓGICA DE USUARIOS ---
+        
+        // 1. Aquí definimos datos "falsos" para que se vean en la pantalla inmediatamente
+        let users = [
+            {id: 1, name: "Juan Pérez", email: "juan.perez@tutorias.com", type: "Estudiante", matricula: "2023001", status: "Activo", date: new Date().toISOString()},
+            {id: 2, name: "María González", email: "maria.g@tutorias.com", type: "Tutor", matricula: "T-055", status: "Activo", date: new Date().toISOString()},
+            {id: 3, name: "Carlos López", email: "carlos.l@tutorias.com", type: "Coordinador", matricula: "ADM-01", status: "Activo", date: new Date().toISOString()},
+            {id: 4, name: "Ana Torres", email: "ana.torres@tutorias.com", type: "Estudiante", matricula: "2023045", status: "Activo", date: new Date().toISOString()},
+            {id: 5, name: "Roberto Diaz", email: "roberto.d@tutorias.com", type: "Tutor", matricula: "T-056", status: "Activo", date: new Date().toISOString()}
+        ];
+
         let currentDeleteId = null;
         
+        // Referencias al DOM
         const usersTableBody = document.getElementById('usersTableBody');
         const statTotal = document.getElementById('statTotal');
         const statEstudiantes = document.getElementById('statEstudiantes');
@@ -284,20 +310,17 @@
         
         const deleteModal = document.getElementById('deleteModal');
         const newUserModal = document.getElementById('newUserModal');
-        
-        async function loadUsers() {
-             try {
-                const response = await fetch('/obtener-usuarios');
-                const data = await response.json();
-                users = data.map(user => ({
-                    id: user._id, name: user.nombreCompleto, email: user.email, 
-                    type: user.tipoUsuario, matricula: user.matricula, status: 'activo', date: user.fechaRegistro
-                }));
-                renderUsers(); updateStats();
-            } catch (error) { console.error(error); }
+
+        // Función principal de carga (Simplificada para modo diseño)
+        function loadUsers() {
+            // En el futuro, aquí iría el fetch() a la base de datos.
+            // Por ahora, usamos los datos fijos de arriba.
+            renderUsers();
+            updateStats();
         }
 
         function updateStats() {
+            // Calculamos los números basándonos en el array 'users'
             statTotal.textContent = users.length;
             statEstudiantes.textContent = users.filter(u => u.type === 'Estudiante').length;
             statTutores.textContent = users.filter(u => u.type === 'Tutor').length;
@@ -309,34 +332,87 @@
             const typeF = document.getElementById('userTypeFilter').value;
             
             const filtered = users.filter(u => {
-                return (u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)) &&
+                const name = u.name ? u.name.toLowerCase() : '';
+                const email = u.email ? u.email.toLowerCase() : '';
+                return (name.includes(term) || email.includes(term)) &&
                        (!typeF || u.type === typeF);
             });
 
             usersTableBody.innerHTML = filtered.map(user => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4"><div><div class="font-medium text-gray-900">${user.name}</div><div class="text-gray-500 text-sm">${user.email}</div></div></td>
-                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">${user.type}</span></td>
+                <tr class="hover:bg-gray-50 border-b border-gray-100">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold mr-3">
+                                ${user.name.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">${user.name}</div>
+                                <div class="text-gray-500 text-xs">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                            ${user.type === 'Estudiante' ? 'bg-blue-100 text-blue-800' : 
+                              user.type === 'Tutor' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'}">
+                            ${user.type}
+                        </span>
+                    </td>
                     <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span></td>
                     <td class="px-6 py-4 text-sm text-gray-500">${new Date(user.date).toLocaleDateString()}</td>
-                    <td class="px-6 py-4"><button onclick="askDelete('${user.id}')" class="text-red-600 font-bold">Eliminar</button></td>
+                    <td class="px-6 py-4">
+                        <button onclick="askDelete('${user.id}')" class="text-red-600 hover:text-red-900 font-medium text-sm">
+                            Eliminar
+                        </button>
+                    </td>
                 </tr>
             `).join('');
+            
+            // Si no hay resultados
+            if(filtered.length === 0) {
+                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">No se encontraron usuarios</td></tr>`;
+            }
         }
 
-        function askDelete(id) { currentDeleteId = id; deleteModal.classList.remove('hidden'); deleteModal.classList.add('flex'); }
-        async function handleDeleteReal() {
+        // Manejo del Modal de eliminar
+        function askDelete(id) { 
+            currentDeleteId = id; 
+            deleteModal.classList.remove('hidden'); 
+            deleteModal.classList.add('flex'); 
+        }
+
+        function handleDeleteReal() {
             if(!currentDeleteId) return;
-            await fetch(`/eliminar-usuario/${currentDeleteId}`, {method: 'DELETE'});
-            loadUsers(); deleteModal.classList.add('hidden'); deleteModal.classList.remove('flex');
+            // Simulamos borrar del array
+            users = users.filter(u => u.id != currentDeleteId);
+            renderUsers(); 
+            updateStats(); 
+            deleteModal.classList.add('hidden'); 
+            deleteModal.classList.remove('flex');
         }
 
+        // Event Listeners
         document.addEventListener('DOMContentLoaded', loadUsers);
         document.getElementById('refreshBtn').addEventListener('click', loadUsers);
-        document.getElementById('newUserBtn').addEventListener('click', () => { newUserModal.classList.remove('hidden'); newUserModal.classList.add('flex'); });
-        document.getElementById('cancelBtn').addEventListener('click', () => { newUserModal.classList.add('hidden'); newUserModal.classList.remove('flex'); });
-        document.getElementById('cancelDeleteBtn').addEventListener('click', () => { deleteModal.classList.add('hidden'); deleteModal.classList.remove('flex'); });
+        
+        // Modal Nuevo Usuario
+        document.getElementById('newUserBtn').addEventListener('click', () => { 
+            newUserModal.classList.remove('hidden'); 
+            newUserModal.classList.add('flex'); 
+        });
+        document.getElementById('cancelBtn').addEventListener('click', () => { 
+            newUserModal.classList.add('hidden'); 
+            newUserModal.classList.remove('flex'); 
+        });
+        
+        // Modal Borrar
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => { 
+            deleteModal.classList.add('hidden'); 
+            deleteModal.classList.remove('flex'); 
+        });
         document.getElementById('confirmDeleteBtn').addEventListener('click', handleDeleteReal);
+        
+        // Filtros
         document.getElementById('searchInput').addEventListener('input', renderUsers);
         document.getElementById('userTypeFilter').addEventListener('change', renderUsers);
     </script>

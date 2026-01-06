@@ -402,6 +402,8 @@
 
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
 
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Registro</th>
+
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
 
                             </tr>
@@ -580,85 +582,28 @@
 
         const newUserModal = document.getElementById('newUserModal');
 
-       // --- LÓGICA DE REGISTRO (Validación y Envío) ---
-    document.getElementById('newUserForm').addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evita que se recargue la página
-        
-        // 1. Validar correo
-        const email = document.getElementById('userEmail').value.trim().toLowerCase();
-        if (!email.endsWith('@gmail.com') && !email.endsWith('@hotmail.com')) {
-            alert('⚠️ Error: Solo se permiten correos @gmail.com o @hotmail.com');
-            return;
-        }
+       
 
-        // 2. Preparar datos (mapeando a lo que espera tu server.js)
-        const newUser = {
-            dni: document.getElementById('userDni') ? document.getElementById('userDni').value : "0000", // Manejo por si falta el input
-            nombreCompleto: document.getElementById('userName').value,
-            email: email,
-            matricula: document.getElementById('userId').value,
-            tipoUsuario: document.getElementById('userType').value
-        };
+        async function loadUsers() {
 
-        // 3. Enviar al servidor (Ruta correcta: /api/usuarios)
-        try {
-            const response = await fetch('/api/usuarios', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newUser)
-            });
-
-            if (response.ok) {
-                alert('✅ Usuario registrado exitosamente');
-                document.getElementById('newUserForm').reset();
-                newUserModal.classList.add('hidden'); // Cerrar modal
-                newUserModal.classList.remove('flex');
-                loadUsers(); // Recargar tabla
-            } else {
-                alert('❌ Error al guardar en el servidor');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error de conexión');
-        }
-    });
-
-       async function loadUsers() {
              try {
-                // 1. Usamos la URL correcta (http://localhost:3000/api/usuarios)
-                // Usamos la ruta exacta que definiste en server.js (línea 139)
+
                 const response = await fetch('/obtener-usuarios');
-                if (!response.ok) throw new Error('Error al cargar');
-                
+
                 const data = await response.json();
-                
-                // 2. Mapeamos (Buscamos el nombre nuevo, SI NO ESTÁ, buscamos el viejo)
+
                 users = data.map(user => ({
-                    id: user._id, 
-                    
-                    // Nombre: Busca 'nombreUsuario' (Nuevo) O 'nombreCompleto' (Viejo)
-                    name: user.nombreUsuario || user.nombreCompleto || 'Sin Nombre', 
-                    
-                    // Email: Busca 'gmail' (Nuevo) O 'email' (Viejo)
-                    email: user.gmail || user.email || 'Sin Email',         
-                    
-                    // Tipo: Busca 'tipo' (Nuevo) O 'tipoUsuario' (Viejo)
-                    type: user.tipo || user.tipoUsuario || 'N/A',                 
-                    
-                    // Matrícula: Busca 'idMatricula' (Nuevo) O 'matricula' (Viejo)
-                    matricula: user.idMatricula || user.matricula || '',        
-                    
-                    status: 'activo', 
-                    date: Date.now() 
+
+                    id: user._id, name: user.nombreCompleto, email: user.email,
+
+                    type: user.tipoUsuario, matricula: user.matricula, status: 'activo', date: user.fechaRegistro
+
                 }));
 
-                renderUsers(); 
-                updateStats();
-            } catch (error) { 
-                console.error("Error:", error); 
-                // Mensaje de error útil en la tabla
-                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 font-bold">Error de conexión. Verifica el servidor.</td></tr>`;
-            }
+                renderUsers(); updateStats();
+
+            } catch (error) { console.error(error); }
+
         }
 
 
@@ -677,44 +622,42 @@
 
 
 
-function renderUsers() {
+        function renderUsers() {
+
             const term = document.getElementById('searchInput').value.toLowerCase();
+
             const typeF = document.getElementById('userTypeFilter').value;
-            
+
+           
+
             const filtered = users.filter(u => {
-                // AQUÍ USAMOS TUS VARIABLES NUEVAS
-                const name = u.nombreUsuario ? u.nombreUsuario.toLowerCase() : '';
-                const correo = u.gmail ? u.gmail.toLowerCase() : '';
-                const tipo = u.tipo || ''; // Antes era tipoUsuario
-                
-                return (name.includes(term) || correo.includes(term)) &&
-                       (!typeF || tipo === typeF);
+
+                return (u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)) &&
+
+                       (!typeF || u.type === typeF);
+
             });
 
+
+
             usersTableBody.innerHTML = filtered.map(user => `
-                <tr class="hover:bg-gray-50 border-b border-gray-100">
-                    <td class="px-6 py-4">
-                        <div>
-                            <div class="font-medium text-gray-900">${user.nombreUsuario || 'Sin Nombre'}</div>
-                            <div class="text-gray-500 text-sm">${user.gmail || ''}</div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                            ${user.tipo || 'N/A'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-500">
-                        ${user.idMatricula || '-'}
-                    </td>
-                    <td class="px-6 py-4">
-                        <button onclick="askDelete('${user._id}')" class="text-red-600 font-bold">Eliminar</button>
-                    </td>
+
+                <tr class="hover:bg-gray-50">
+
+                    <td class="px-6 py-4"><div><div class="font-medium text-gray-900">${user.name}</div><div class="text-gray-500 text-sm">${user.email}</div></div></td>
+
+                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">${user.type}</span></td>
+
+                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span></td>
+
+                    <td class="px-6 py-4 text-sm text-gray-500">${new Date(user.date).toLocaleDateString()}</td>
+
+                    <td class="px-6 py-4"><button onclick="askDelete('${user.id}')" class="text-red-600 font-bold">Eliminar</button></td>
+
                 </tr>
+
             `).join('');
+
         }
 
 

@@ -584,26 +584,32 @@
 
        
 
-        async function loadUsers() {
-
+       async function loadUsers() {
              try {
-
-                const response = await fetch('/obtener-usuarios');
-
+                // 1. Usamos la URL correcta (http://localhost:3000/api/usuarios)
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Error al cargar');
+                
                 const data = await response.json();
-
+                
+                // 2. Mapeamos tus variables NUEVAS (nombreUsuario, gmail, etc.)
                 users = data.map(user => ({
-
-                    id: user._id, name: user.nombreCompleto, email: user.email,
-
-                    type: user.tipoUsuario, matricula: user.matricula, status: 'activo', date: user.fechaRegistro
-
+                    id: user._id, 
+                    name: user.nombreUsuario || 'Sin Nombre', // Ahora busca 'nombreUsuario'
+                    email: user.gmail || 'Sin Email',         // Ahora busca 'gmail'
+                    type: user.tipo || 'N/A',                 // Ahora busca 'tipo'
+                    matricula: user.idMatricula || '',        // Ahora busca 'idMatricula'
+                    status: 'activo', 
+                    date: Date.now() // Ponemos fecha actual porque borraste la fecha del server
                 }));
 
-                renderUsers(); updateStats();
-
-            } catch (error) { console.error(error); }
-
+                renderUsers(); 
+                updateStats();
+            } catch (error) { 
+                console.error("Error:", error); 
+                // Mensaje de error útil en la tabla
+                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 font-bold">Error de conexión. Verifica el servidor.</td></tr>`;
+            }
         }
 
 

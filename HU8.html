@@ -114,12 +114,13 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Documentación de Respaldo</label>
                         <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center hover:border-verde-claro transition-colors">
-                            <input type="file" id="documento" class="hidden" accept=".pdf,.doc,.docx,.jpg,.png" multiple>
+                            <input type="file" id="documento" name="documento" class="hidden" accept=".pdf,.doc,.docx,.jpg,.png">
+                            
                             <button type="button" onclick="document.getElementById('documento').click()" class="text-verde-institucional hover:text-verde-hover font-medium">
                                 📎 Subir Documento
                             </button>
                             <p class="text-xs text-gray-500 mt-1">PDF, DOC, DOCX, JPG, PNG (máx. 5MB)</p>
-                            <div id="archivosSeleccionados" class="mt-2 text-sm text-gray-600"></div>
+                            <div id="archivosSeleccionados" class="mt-2 text-sm text-gray-600 font-semibold italic"></div>
                         </div>
                     </div>
 
@@ -274,31 +275,22 @@
 document.getElementById('registroForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // 1. Recolectar datos automáticamente usando los 'name' del HTML
+    // IMPORTANTE: Para enviar archivos usamos FormData directamente
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
 
     try {
-        // 2. Enviar al servidor
         const response = await fetch('/guardar-actividad', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: formData // No enviamos JSON, enviamos el formData directamente
         });
 
         if (response.ok) {
-            // 3. Si todo sale bien, mostramos el modal y limpiamos
             mostrarModal();
             limpiarFormulario();
             cargarHistorial();
-            // Opcional: Recargar la página para ver el historial actualizado
-            // location.reload(); 
-        } else {
-            alert("Error al guardar en el servidor");
         }
     } catch (error) {
-        console.error("Error de conexión:", error);
-        alert("No se pudo conectar con el servidor");
+        console.error("Error:", error);
     }
 });
 
@@ -336,9 +328,17 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             }
         }
 
-        function verDocumentos(id) {
-            alert(`Visualizando documentos del registro #${id}. En una implementación real, aquí se abriría un visor de documentos.`);
-        }
+        // Primero, asegúrate de que al cargar el historial, el botón pase el path del archivo:
+// <button onclick="verDocumentos('${act.archivoPath}')" ... >
+
+function verDocumentos(archivoPath) {
+    if (archivoPath && archivoPath !== 'undefined' && archivoPath !== 'null') {
+        // Esto abrirá: http://localhost:3000/uploads/nombre-del-archivo.pdf
+        window.open(`/uploads/${archivoPath}`, '_blank');
+    } else {
+        alert("No hay un archivo adjunto para esta actividad.");
+    }
+}
 async function eliminarActividad(id) {
     // Confirmación estética antes de borrar
     if (!confirm("¿Estás seguro de que deseas eliminar este registro permanentemente?")) {
@@ -434,11 +434,11 @@ async function cargarHistorial() {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <button onclick="verDocumentos('${act._id}')" 
+                    <button onclick="verDocumentos('${act.archivoPath}')" 
                         class="p-2 bg-gray-50 hover:bg-verde-institucional hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
                         <span>📄</span>
-                        <span class="hidden group-hover/btn:block">Documentos</span>
-                    </button>
+                        <span class="hidden group-hover/btn:block">Ver Documento</span>
+                    </button>  
                     <button onclick="eliminarActividad('${act._id}')" 
                         class="p-2 bg-gray-50 hover:bg-red-500 hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
                         <span>🗑️</span>

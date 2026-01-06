@@ -156,32 +156,27 @@
                 <h3 class="text-lg font-medium text-gray-900">Registrar Nuevo Usuario</h3>
             </div>
             <form id="newUserForm" class="p-6 space-y-4">
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">DNI</label>
                     <input type="text" id="userDni" name="dni" required class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Ingrese DNI">
                 </div>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
                     <input type="text" id="userName" name="nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <input type="email" id="userEmail" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">ID/Matrícula</label>
                     <input type="text" id="userId" name="matricula" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Usuario</label>
-                    <select id="userType" name="tipo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        <option value="Estudiante">Estudiante</option>
-                        <option value="Tutor">Tutor</option>
-                        <option value="Coordinador">Coordinador</option>
-                    </select>
-                </div>
-
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg">Registrar</button>
@@ -203,11 +198,8 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DEL BACKEND ---
-        // IMPORTANTE: Esta URL debe coincidir con tu servidor local
         const API_URL = 'http://localhost:3000/api/usuarios'; 
 
-        // --- LÓGICA DE INTERFAZ ---
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('mobileOverlay');
 
@@ -224,6 +216,7 @@
         function toggleMenu(menuId) {
             const menu = document.getElementById(menuId);
             const arrow = document.getElementById('arrow-' + menuId.split('-')[1]);
+            
             if (menu.classList.contains('hidden')) {
                 menu.classList.remove('hidden');
                 arrow.classList.add('rotate-180');
@@ -233,46 +226,71 @@
             }
         }
 
-        // --- LÓGICA DE DATOS REAL (CONECTADO A BD) ---
         let users = [];
         let currentDeleteId = null;
         
         const usersTableBody = document.getElementById('usersTableBody');
+        const statTotal = document.getElementById('statTotal');
+        const statEstudiantes = document.getElementById('statEstudiantes');
+        const statTutores = document.getElementById('statTutores');
+        const statCoordinadores = document.getElementById('statCoordinadores');
+        
         const deleteModal = document.getElementById('deleteModal');
         const newUserModal = document.getElementById('newUserModal');
-
-        // 1. CARGAR USUARIOS DESDE LA NUBE
+        
         async function loadUsers() {
-            try {
+             try {
                 const response = await fetch(API_URL);
-                
-                if (!response.ok) {
-                    throw new Error('Error de respuesta del servidor');
-                }
-                
+                if (!response.ok) throw new Error('Error de conexión');
                 const data = await response.json();
                 users = data;
-                
-                renderUsers();
-                updateStats();
-            } catch (error) {
-                console.error("Error al cargar:", error);
-                // Muestra un mensaje amigable en la tabla, pero NO datos falsos si no quieres
-                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500 font-bold">Error de conexión con la base de datos. Asegúrate de que el servidor (node server.js) esté corriendo.</td></tr>`;
+                renderUsers(); updateStats();
+            } catch (error) { 
+                console.error("Error:", error); 
+                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">Error de conexión. Revisa que 'node server.js' esté corriendo.</td></tr>`;
             }
         }
 
-        // 2. REGISTRAR NUEVO USUARIO
-        document.getElementById('newUserForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
+        function updateStats() {
+            statTotal.textContent = users.length;
+            statEstudiantes.textContent = users.filter(u => u.tipoUsuario === 'Estudiante').length;
+            statTutores.textContent = users.filter(u => u.tipoUsuario === 'Tutor').length;
+            statCoordinadores.textContent = users.filter(u => u.tipoUsuario === 'Coordinador').length;
+        }
+
+        function renderUsers() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const typeF = document.getElementById('userTypeFilter').value;
             
-            // Construimos el objeto tal cual lo espera tu server.js (NuevoUsuarioSchema)
+            const filtered = users.filter(u => {
+                const name = u.nombreCompleto ? u.nombreCompleto.toLowerCase() : '';
+                const email = u.email ? u.email.toLowerCase() : '';
+                const tipo = u.tipoUsuario || '';
+                return (name.includes(term) || email.includes(term)) &&
+                       (!typeF || tipo === typeF);
+            });
+
+            usersTableBody.innerHTML = filtered.map(user => `
+                <tr class="hover:bg-gray-50 border-b border-gray-100">
+                    <td class="px-6 py-4"><div><div class="font-medium text-gray-900">${user.nombreCompleto || 'Sin Nombre'}</div><div class="text-gray-500 text-sm">${user.email || ''}</div></div></td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">${user.tipoUsuario || 'N/A'}</span></td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span></td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString() : '-'}</td>
+                    <td class="px-6 py-4"><button onclick="askDelete('${user._id}')" class="text-red-600 font-bold">Eliminar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('newUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
             const newUser = {
                 dni: document.getElementById('userDni').value,
                 nombreCompleto: document.getElementById('userName').value,
                 email: document.getElementById('userEmail').value,
                 matricula: document.getElementById('userId').value,
-                tipoUsuario: document.getElementById('userType').value
+                // Como borramos el select, enviamos por defecto "Estudiante" o vacío
+                tipoUsuario: "Estudiante" 
             };
 
             try {
@@ -287,120 +305,32 @@
                     newUserModal.classList.add('hidden');
                     newUserModal.classList.remove('flex');
                     document.getElementById('newUserForm').reset();
-                    loadUsers(); // Recargamos la tabla
+                    loadUsers();
                 } else {
-                    const errorData = await response.json();
-                    alert('Error: ' + (errorData.error || 'No se pudo guardar'));
+                    alert('Error al registrar');
                 }
             } catch (error) {
                 console.error(error);
-                alert('Error de conexión al guardar. Verifica el servidor.');
+                alert('Error de conexión');
             }
         });
 
-        // 3. ELIMINAR USUARIO
-        function askDelete(id) { 
-            currentDeleteId = id; 
-            deleteModal.classList.remove('hidden'); 
-            deleteModal.classList.add('flex'); 
-        }
-
+        function askDelete(id) { currentDeleteId = id; deleteModal.classList.remove('hidden'); deleteModal.classList.add('flex'); }
         async function handleDeleteReal() {
             if(!currentDeleteId) return;
-            
             try {
-                const response = await fetch(`${API_URL}/${currentDeleteId}`, {
-                    method: 'DELETE'
-                });
-
-                if(response.ok) {
-                    loadUsers(); 
-                    deleteModal.classList.add('hidden'); 
-                    deleteModal.classList.remove('flex');
-                } else {
-                    alert("No se pudo eliminar el usuario");
-                }
-            } catch(error) {
-                console.error(error);
-                alert("Error de conexión al eliminar");
-            }
+                await fetch(`${API_URL}/${currentDeleteId}`, {method: 'DELETE'});
+                loadUsers();
+                deleteModal.classList.add('hidden'); deleteModal.classList.remove('flex');
+            } catch(e) { alert("Error al eliminar"); }
         }
 
-        // --- FUNCIONES VISUALES (Render y Stats) ---
-        function updateStats() {
-            document.getElementById('statTotal').textContent = users.length;
-            // Usamos 'tipoUsuario' porque así se llama en tu Schema de Mongoose
-            document.getElementById('statEstudiantes').textContent = users.filter(u => u.tipoUsuario === 'Estudiante').length;
-            document.getElementById('statTutores').textContent = users.filter(u => u.tipoUsuario === 'Tutor').length;
-            document.getElementById('statCoordinadores').textContent = users.filter(u => u.tipoUsuario === 'Coordinador').length;
-        }
-
-        function renderUsers() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const typeF = document.getElementById('userTypeFilter').value;
-            
-            const filtered = users.filter(u => {
-                // Ajustamos a los nombres de tu Schema (nombreCompleto, email, tipoUsuario)
-                const name = u.nombreCompleto ? u.nombreCompleto.toLowerCase() : '';
-                const email = u.email ? u.email.toLowerCase() : '';
-                const type = u.tipoUsuario || '';
-                
-                return (name.includes(term) || email.includes(term)) &&
-                       (!typeF || type === typeF);
-            });
-
-            usersTableBody.innerHTML = filtered.map(user => {
-                const nombre = user.nombreCompleto || 'Sin nombre';
-                const correo = user.email || 'Sin email';
-                const tipo = user.tipoUsuario || 'N/A';
-                // IMPORTANTE: MongoDB usa '_id', no 'id'.
-                const id = user._id; 
-                const fecha = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString() : new Date().toLocaleDateString();
-
-                return `
-                <tr class="hover:bg-gray-50 border-b border-gray-100">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold mr-3">
-                                ${nombre.charAt(0)}
-                            </div>
-                            <div>
-                                <div class="font-medium text-gray-900">${nombre}</div>
-                                <div class="text-gray-500 text-xs">${correo}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                            ${tipo === 'Estudiante' ? 'bg-blue-100 text-blue-800' : 
-                              tipo === 'Tutor' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'}">
-                            ${tipo}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span></td>
-                    <td class="px-6 py-4 text-sm text-gray-500">${fecha}</td>
-                    <td class="px-6 py-4">
-                        <button onclick="askDelete('${id}')" class="text-red-600 hover:text-red-900 font-medium text-sm">
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
-            `}).join('');
-            
-            if(filtered.length === 0) {
-                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">No se encontraron usuarios</td></tr>`;
-            }
-        }
-
-        // Listeners
         document.addEventListener('DOMContentLoaded', loadUsers);
         document.getElementById('refreshBtn').addEventListener('click', loadUsers);
-        
         document.getElementById('newUserBtn').addEventListener('click', () => { newUserModal.classList.remove('hidden'); newUserModal.classList.add('flex'); });
         document.getElementById('cancelBtn').addEventListener('click', () => { newUserModal.classList.add('hidden'); newUserModal.classList.remove('flex'); });
         document.getElementById('cancelDeleteBtn').addEventListener('click', () => { deleteModal.classList.add('hidden'); deleteModal.classList.remove('flex'); });
         document.getElementById('confirmDeleteBtn').addEventListener('click', handleDeleteReal);
-        
         document.getElementById('searchInput').addEventListener('input', renderUsers);
         document.getElementById('userTypeFilter').addEventListener('change', renderUsers);
     </script>

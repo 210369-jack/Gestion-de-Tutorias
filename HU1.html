@@ -582,12 +582,54 @@
 
         const newUserModal = document.getElementById('newUserModal');
 
-       
+       // --- LÓGICA DE REGISTRO (Validación y Envío) ---
+    document.getElementById('newUserForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evita que se recargue la página
+        
+        // 1. Validar correo
+        const email = document.getElementById('userEmail').value.trim().toLowerCase();
+        if (!email.endsWith('@gmail.com') && !email.endsWith('@hotmail.com')) {
+            alert('⚠️ Error: Solo se permiten correos @gmail.com o @hotmail.com');
+            return;
+        }
+
+        // 2. Preparar datos (mapeando a lo que espera tu server.js)
+        const newUser = {
+            dni: document.getElementById('userDni') ? document.getElementById('userDni').value : "0000", // Manejo por si falta el input
+            nombreCompleto: document.getElementById('userName').value,
+            email: email,
+            matricula: document.getElementById('userId').value,
+            tipoUsuario: document.getElementById('userType').value
+        };
+
+        // 3. Enviar al servidor (Ruta correcta: /api/usuarios)
+        try {
+            const response = await fetch('/api/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newUser)
+            });
+
+            if (response.ok) {
+                alert('✅ Usuario registrado exitosamente');
+                document.getElementById('newUserForm').reset();
+                newUserModal.classList.add('hidden'); // Cerrar modal
+                newUserModal.classList.remove('flex');
+                loadUsers(); // Recargar tabla
+            } else {
+                alert('❌ Error al guardar en el servidor');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error de conexión');
+        }
+    });
 
        async function loadUsers() {
              try {
                 // 1. Usamos la URL correcta (http://localhost:3000/api/usuarios)
-                const response = await fetch(API_URL);
+                // Usamos la ruta exacta que definiste en server.js (línea 139)
+                const response = await fetch('/obtener-usuarios');
                 if (!response.ok) throw new Error('Error al cargar');
                 
                 const data = await response.json();

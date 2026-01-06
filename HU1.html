@@ -622,42 +622,44 @@
 
 
 
-        function renderUsers() {
-
+function renderUsers() {
             const term = document.getElementById('searchInput').value.toLowerCase();
-
             const typeF = document.getElementById('userTypeFilter').value;
-
-           
-
+            
             const filtered = users.filter(u => {
-
-                return (u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)) &&
-
-                       (!typeF || u.type === typeF);
-
+                // AQUÍ USAMOS TUS VARIABLES NUEVAS
+                const name = u.nombreUsuario ? u.nombreUsuario.toLowerCase() : '';
+                const correo = u.gmail ? u.gmail.toLowerCase() : '';
+                const tipo = u.tipo || ''; // Antes era tipoUsuario
+                
+                return (name.includes(term) || correo.includes(term)) &&
+                       (!typeF || tipo === typeF);
             });
 
-
-
             usersTableBody.innerHTML = filtered.map(user => `
-
-                <tr class="hover:bg-gray-50">
-
-                    <td class="px-6 py-4"><div><div class="font-medium text-gray-900">${user.name}</div><div class="text-gray-500 text-sm">${user.email}</div></div></td>
-
-                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">${user.type}</span></td>
-
-                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span></td>
-
-                    <td class="px-6 py-4 text-sm text-gray-500">${new Date(user.date).toLocaleDateString()}</td>
-
-                    <td class="px-6 py-4"><button onclick="askDelete('${user.id}')" class="text-red-600 font-bold">Eliminar</button></td>
-
+                <tr class="hover:bg-gray-50 border-b border-gray-100">
+                    <td class="px-6 py-4">
+                        <div>
+                            <div class="font-medium text-gray-900">${user.nombreUsuario || 'Sin Nombre'}</div>
+                            <div class="text-gray-500 text-sm">${user.gmail || ''}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            ${user.tipo || 'N/A'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        ${user.idMatricula || '-'}
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="askDelete('${user._id}')" class="text-red-600 font-bold">Eliminar</button>
+                    </td>
                 </tr>
-
             `).join('');
-
         }
 
 

@@ -81,19 +81,18 @@ const ActividadProfesionalSchema = new mongoose.Schema({
 
 const ActividadProfesional = mongoose.model("ActividadProfesional", ActividadProfesionalSchema);
 
-// MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3 - Tu trabajo)
-// *** CAMBIO AQUÍ: Se agregó tutorActual ***
+// ========================================================
+// MODELO HU1 (GESTIÓN DE USUARIOS) - FINAL
+// ========================================================
 const NuevoUsuarioSchema = new mongoose.Schema({
-  nombreCompleto: String,
-  email: String,
-  tipoUsuario: String,  
-  matricula: String,
-  tutorActual: { type: String, default: "Sin Asignar" }, // <--- NUEVO CAMPO PARA HU3
-  fechaRegistro: { type: Date, default: Date.now } 
-}, { collection: 'Usuario' });
+  id: String,             // Aquí guardamos el DNI
+  nombreUsuario: String,  
+  gmail: String,          
+  tipo: String,           
+  idMatricula: String
+}, { collection: 'Usuarios' }); // Apunta a la colección 'Usuarios'
 
 const NuevoUsuario = mongoose.model("NuevoUsuario", NuevoUsuarioSchema);
-
 // ============================
 // 3. CONEXIÓN A MONGODB ATLAS
 // ============================
@@ -142,23 +141,23 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// RUTA PARA GUARDAR NUEVOS USUARIOS (HU1)
-app.post("/registrar-usuario", async (req, res) => {
-  try {
-    const usuario = new NuevoUsuario({
-      nombreCompleto: req.body.nombre,      
-      email: req.body.email,
-      tipoUsuario: req.body.tipo,
-      matricula: req.body.matricula,
-      tutorActual: "Sin Asignar" // Inicializamos como sin asignar
-    });
-    await usuario.save();
-    console.log("✅ Usuario registrado:", usuario);
-    res.send("<script>alert('¡Usuario registrado con éxito!'); window.location.href='/HU1.html';</script>");
-  } catch (error) {
-    console.error("❌ Error al registrar:", error);
-    res.send("<script>alert('Error al guardar los datos'); window.location.href='/HU1.html';</script>");
-  }
+/// 2. POST: Guardar nuevo usuario
+app.post('/api/usuarios', async (req, res) => {
+    try {
+        const nuevoUsuario = new NuevoUsuario({
+            id: req.body.dni,            // El HTML envía 'dni', lo guardamos en 'id'
+            nombreUsuario: req.body.nombreCompleto || req.body.nombre,
+            gmail: req.body.email,       // El HTML envía 'email', lo guardamos en 'gmail'
+            tipo: req.body.tipoUsuario || req.body.tipo,
+            idMatricula: req.body.matricula
+        });
+        
+        await nuevoUsuario.save();
+        res.status(201).json({ message: "Usuario creado exitosamente", usuario: nuevoUsuario });
+    } catch (error) {
+        console.error("Error al guardar:", error);
+        res.status(400).json({ error: "Error al guardar usuario" });
+    }
 });
 
 // RUTA PARA OBTENER TODOS LOS USUARIOS (GET - HU1)
@@ -201,26 +200,18 @@ app.put("/actualizar-usuario/:id", async (req, res) => {
 });
 
 // ==========================================
-// RUTA PARA ACTUALIZAR USUARIO (PUT) - HU3
-// ==========================================
-// Esta es la ruta nueva que permite "Reasignar" y "Modificar"
+// 4. PUT: Actualizar usuario
 app.put("/actualizar-usuario/:id", async (req, res) => {
   try {
-    const id = req.params.id;
-    const datosActualizados = req.body; 
-
-    // Busca por ID y actualiza
-    const usuarioActualizado = await NuevoUsuario.findByIdAndUpdate(id, datosActualizados, { new: true });
-
+    const id = req.params.id; // Busca por el _id de MongoDB
+    const usuarioActualizado = await NuevoUsuario.findByIdAndUpdate(id, req.body, { new: true });
+    
     if (!usuarioActualizado) {
         return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     }
-
-    console.log("✅ Usuario actualizado (HU3):", usuarioActualizado);
+    
     res.json({ success: true, message: "Actualización exitosa" });
-
   } catch (error) {
-    console.error("❌ Error al actualizar:", error);
     res.status(500).json({ success: false, message: "Error interno" });
   }
 });

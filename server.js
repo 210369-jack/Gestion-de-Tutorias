@@ -8,7 +8,31 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
+const multer = require('multer');
+const fs = require('fs');
+// 1. Definir la ruta absoluta (Esto es lo más seguro para la nube)
+const uploadDir = path.join(__dirname, 'uploads');
 
+// 2. Crear carpeta si no existe (con recursive: true por seguridad)
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// 3. Configuración de Multer usando la ruta absoluta
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir); // <--- Usamos la variable absoluta
+    },
+    filename: (req, file, cb) => {
+        // Evitamos espacios en blanco en el nombre del archivo para que la URL no falle
+        const nombreLimpio = file.originalname.replace(/\s+/g, '_');
+        cb(null, Date.now() + '-' + nombreLimpio);
+    }
+});
+const upload = multer({ storage: storage });
+
+// 4. Servir la carpeta (Ya lo tenías bien, pero asegúrate que use uploadDir)
+app.use('/uploads', express.static(uploadDir));
 // ============================
 // 1. CONFIGURACIONES
 // ============================
@@ -76,7 +100,9 @@ const ActividadProfesionalSchema = new mongoose.Schema({
     fechaInicio: Date,
     fechaFin: Date,
     observaciones: String,
-    fechaRegistro: { type: Date, default: Date.now }
+    fechaRegistro: { type: Date, default: Date.now },
+    archivoPath: String, // Guardaremos el nombre del archivo aquí
+    archivoNombre: String
 }, { collection: 'Actividades_Profesionales' });
 
 const ActividadProfesional = mongoose.model("ActividadProfesional", ActividadProfesionalSchema);
@@ -236,14 +262,17 @@ app.post("/guardar-tutoria", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.post("/guardar-actividad", async (req, res) => {
+app.post("/guardar-actividad", upload.single('documento'), async (req, res) => {
     try {
-        const nuevaActividad = new ActividadProfesional(req.body);
+        const datos = req.body;
+        if (req.file) {
+            datos.archivoPath = req.file.filename;
+            datos.archivoNombre = req.file.originalname;
+        }
+        const nuevaActividad = new ActividadProfesional(datos);
         await nuevaActividad.save();
-        console.log("✅ Actividad Profesional guardada");
-        res.status(200).json({ mensaje: "Éxito" });
+        res.status(200).json({ mensaje: "Guardado con éxito" });
     } catch (error) {
-        console.error("❌ Error:", error);
         res.status(500).json({ error: error.message });
     }
 });

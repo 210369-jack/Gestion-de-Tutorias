@@ -27,7 +27,11 @@ app.use(express.static(__dirname));
 const UsuarioSchema = new mongoose.Schema({
   email: { type: String, required: true },    
   password: { type: String, required: true },
-  rol: { type: String, required: true },
+  rol: { 
+    type: String, 
+    required: true,
+    enum: ['admin', 'tutor', 'verificador'] // Solo estos 3 roles
+  },
   nombres: String
 }, { collection: 'Coordinador' }); 
 

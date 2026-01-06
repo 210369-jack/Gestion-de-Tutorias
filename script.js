@@ -1,40 +1,35 @@
 console.log("El script se cargó correctamente"); // Mensaje para verificar carga
 
 document.getElementById('loginForm').addEventListener('submit', async function(evento) {
-    evento.preventDefault(); // 1. ESTO EVITA QUE LA PÁGINA SE RECARGUE
-    alert("¡Click detectado! Enviando datos..."); // PRUEBA A: ¿Sale esta alerta?
-
-    // Capturamos los elementos
-    const cajaEmail = document.getElementById('emailInput');
-    const cajaPass = document.getElementById('passwordInput');
-
-    // Verificamos si existen
-    if (!cajaEmail || !cajaPass) {
-        alert("ERROR: No encuentro las cajas de texto. Revisa los IDs en el HTML.");
-        return;
-    }
-
-    const email = cajaEmail.value;
-    const password = cajaPass.value;
+    evento.preventDefault();
+    
+    const email = document.querySelector('[name="correo"]').value;
+    const password = document.querySelector('[name="password"]').value;
+    const rol = document.querySelector('[name="rol"]').value;
 
     try {
-        const respuesta = await fetch('http://localhost:3000/api/login', {
+        const respuesta = await fetch('http://localhost:3000/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, password: password })
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ 
+                correo: email, 
+                password: password,
+                rol: rol 
+            })
         });
 
-        const datos = await respuesta.json();
-
-        if (respuesta.ok) {
-            alert("✅ Login correcto. Redirigiendo a HU2...");
-            window.location.href = "HU2.html"; 
+        if (respuesta.redirected) {
+            // Si el servidor redirige, seguimos la redirección
+            window.location.href = respuesta.url;
         } else {
-            alert("❌ Error: " + datos.error);
+            const datos = await respuesta.text();
+            document.body.innerHTML = datos; // Muestra la respuesta del servidor
         }
 
     } catch (error) {
-        console.error(error);
-        alert("⚠️ Error de conexión: Asegúrate de que 'node server.js' esté corriendo.");
+        console.error("Error:", error);
+        alert("Error de conexión con el servidor");
     }
 });

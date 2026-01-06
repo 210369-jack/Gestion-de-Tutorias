@@ -115,6 +115,7 @@ app.get("/", (req, res) => {
 });
 
 // Proceso de Login
+// Proceso de Login ACTUALIZADO
 app.post("/login", async (req, res) => {
   const emailIngresado = req.body.correo || req.body.email;
   const passwordIngresado = req.body.password;
@@ -122,6 +123,7 @@ app.post("/login", async (req, res) => {
   console.log(`Intentando login con: ${emailIngresado}`);
 
   try {
+    // Busca el usuario en la base de datos
     const usuario = await Usuario.findOne({ email: emailIngresado });
 
     if (!usuario) {
@@ -132,9 +134,22 @@ app.post("/login", async (req, res) => {
       return res.send("<script>alert('Contraseña incorrecta'); window.location.href='/';</script>");
     }
 
-    return usuario.rol === "coordinador" || usuario.rol === "admin"
-      ? res.redirect("/HU1.html")
-      : res.send("Rol no válido o sin permisos");
+    // --- AQUÍ ESTÁ EL CAMBIO: LÓGICA DE REDIRECCIÓN POR ROL ---
+    if (usuario.rol === "admin" || usuario.rol === "coordinador") {
+        console.log("➡️ Redirigiendo a Panel de Administrador");
+        return res.redirect("/HU1.html");
+
+    } else if (usuario.rol === "tutor") {
+        console.log("➡️ Redirigiendo a Panel de Tutor");
+        return res.redirect("/HU6.html");
+
+    } else if (usuario.rol === "verificador") {
+        console.log("➡️ Redirigiendo a Panel de Verificador");
+        return res.redirect("/HU8.html");
+
+    } else {
+        return res.send("<script>alert('Su rol no tiene una interfaz asignada'); window.location.href='/';</script>");
+    }
 
   } catch (error) {
     console.error("Error en el login:", error);

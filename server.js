@@ -145,7 +145,7 @@ app.post("/login", async (req, res) => {
 
     } else if (usuario.rol === "verificador") {
         console.log("➡️ Redirigiendo a Panel de Verificador");
-        return res.redirect("/HU8.html");
+        return res.redirect("/HU3.html");
 
     } else {
         return res.send("<script>alert('Su rol no tiene una interfaz asignada'); window.location.href='/';</script>");

@@ -384,11 +384,31 @@ async function cargarHistorial() {
     const fechaFRaw = act.fechaFin ? new Date(act.fechaFin) : null;
     const fechaF = fechaFRaw ? fechaFRaw.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Presente';
 
-    // 2. Lógica de Estado (Comparar con fecha actual)
-    const hoy = new Date();
-    const esCompletado = fechaFRaw && fechaFRaw < hoy;
-    const estadoTexto = esCompletado ? 'Completado' : 'En Progreso';
-    const estadoClase = esCompletado ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white';
+    // Obtener fecha de hoy sin horas para comparar solo días
+const hoy = new Date();
+hoy.setHours(0, 0, 0, 0);
+
+const inicio = new Date(act.fechaInicio);
+const fin = act.fechaFin ? new Date(act.fechaFin) : null;
+
+let estadoTexto, estadoClase, colorLinea;
+
+if (inicio > hoy) {
+    // CASO 1: Aún no empieza
+    estadoTexto = 'Próximamente';
+    estadoClase = 'bg-blue-500 text-white';
+    colorLinea = 'bg-blue-500';
+} else if (fin && fin < hoy) {
+    // CASO 2: Ya terminó
+    estadoTexto = 'Completado';
+    estadoClase = 'bg-green-500 text-white';
+    colorLinea = 'bg-green-500';
+} else {
+    // CASO 3: Empezó y no ha terminado (o es indefinido)
+    estadoTexto = 'En Curso';
+    estadoClase = 'bg-yellow-500 text-white';
+    colorLinea = 'bg-yellow-500';
+}
 
     // 3. Colores Dinámicos por Categoría
     const categoriasMapa = {
@@ -404,50 +424,50 @@ async function cargarHistorial() {
 
     // 4. Inyección del HTML mejorado
     listaRegistros.innerHTML += `
-        <div class="group border border-gray-200 rounded-xl p-5 hover:border-verde-claro hover:shadow-lg transition-all duration-300 bg-white fade-in relative overflow-hidden">
-            <div class="absolute left-0 top-0 h-full w-1 ${esCompletado ? 'bg-green-500' : 'bg-yellow-500'}"></div>
-            
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-3">
-                        <span class="${estilo.bg} ${estilo.text} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                            ${estilo.label}
-                        </span>
-                        <span class="${estadoClase} px-2 py-1 rounded text-[10px] font-bold uppercase">
-                            ${estadoTexto}
-                        </span>
-                    </div>
-                    
-                    <h4 class="font-bold text-gray-800 text-lg mb-1 group-hover:text-verde-institucional transition-colors">
-                        ${act.descripcion}
-                    </h4>
-                    
-                    <div class="flex items-center text-sm text-gray-500 mb-3">
-                        <span class="font-medium text-gray-700">${act.institucion}</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-4 text-xs font-medium text-gray-400">
-                        <span class="flex items-center gap-1">
-                            📅 ${fechaI} — ${fechaF}
-                        </span>
-                    </div>
+    <div class="group border border-gray-200 rounded-xl p-5 hover:border-verde-claro hover:shadow-lg transition-all duration-300 bg-white fade-in relative overflow-hidden">
+        <div class="absolute left-0 top-0 h-full w-1 ${colorLinea}"></div>
+        
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="${estilo.bg} ${estilo.text} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        ${estilo.label}
+                    </span>
+                    <span class="${estadoClase} px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">
+                        ${estadoTexto}
+                    </span>
                 </div>
-
-                <div class="flex flex-col gap-2">
-                    <button onclick="verDocumentos('${act.archivoPath}')" 
-                        class="p-2 bg-gray-50 hover:bg-verde-institucional hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
-                        <span>📄</span>
-                        <span class="hidden group-hover/btn:block">Ver Documento</span>
-                    </button>  
-                    <button onclick="eliminarActividad('${act._id}')" 
-                        class="p-2 bg-gray-50 hover:bg-red-500 hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
-                        <span>🗑️</span>
-                        <span class="hidden group-hover/btn:block">Eliminar</span>
-                    </button>
+                
+                <h4 class="font-bold text-gray-800 text-lg mb-1 group-hover:text-verde-institucional transition-colors">
+                    ${act.descripcion}
+                </h4>
+                
+                <div class="flex items-center text-sm text-gray-500 mb-3 font-medium">
+                    <span>🏢 ${act.institucion}</span>
+                </div>
+                
+                <div class="flex items-center gap-4 text-xs font-semibold text-gray-400">
+                    <span class="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
+                        📅 ${fechaI} — ${fechaF}
+                    </span>
                 </div>
             </div>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="verDocumentos('${act.archivoPath}')" 
+                    class="p-2 bg-gray-50 hover:bg-verde-institucional hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
+                    <span>📄</span>
+                    <span class="hidden group-hover/btn:block">Ver Documento</span>
+                </button>  
+                <button onclick="eliminarActividad('${act._id}')" 
+                    class="p-2 bg-gray-50 hover:bg-red-500 hover:text-white rounded-lg transition-all group/btn flex items-center gap-2 text-sm font-medium text-gray-600">
+                    <span>🗑️</span>
+                    <span class="hidden group-hover/btn:block">Eliminar</span>
+                </button>
+            </div>
         </div>
-    `;
+    </div>
+`;
 });
         
     } catch (error) {

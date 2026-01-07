@@ -8,7 +8,22 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
+const multer = require('multer');
+const fs = require('fs');
 
+// Crear carpeta 'uploads' si no existe
+const uploadDir = './uploads';
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+// Configuración de Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
+const upload = multer({ storage: storage });
+
+// Servir la carpeta de archivos para que se puedan descargar
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ============================
 // 1. CONFIGURACIONES
 // ============================
@@ -76,23 +91,26 @@ const ActividadProfesionalSchema = new mongoose.Schema({
     fechaInicio: Date,
     fechaFin: Date,
     observaciones: String,
-    fechaRegistro: { type: Date, default: Date.now }
+    fechaRegistro: { type: Date, default: Date.now },
+    archivoPath: String, // Guardaremos el nombre del archivo aquí
+    archivoNombre: String
 }, { collection: 'Actividades_Profesionales' });
 
 const ActividadProfesional = mongoose.model("ActividadProfesional", ActividadProfesionalSchema);
 
-// ========================================================
-// MODELO HU1 (GESTIÓN DE USUARIOS) - FINAL
-// ========================================================
+// MODELO PARA GESTIÓN DE USUARIOS (HU1 y HU3 - Tu trabajo)
+// *** CAMBIO AQUÍ: Se agregó tutorActual ***
 const NuevoUsuarioSchema = new mongoose.Schema({
-  id: String,             // Aquí guardamos el DNI
-  nombreUsuario: String,  
-  gmail: String,          
-  tipo: String,           
-  idMatricula: String
-}, { collection: 'Usuarios' }); // Apunta a la colección 'Usuarios'
+  nombreCompleto: String,
+  email: String,
+  tipoUsuario: String,  
+  matricula: String,
+  tutorActual: { type: String, default: "Sin Asignar" }, // <--- NUEVO CAMPO PARA HU3
+  fechaRegistro: { type: Date, default: Date.now } 
+}, { collection: 'Usuarios_Sistema' });
 
 const NuevoUsuario = mongoose.model("NuevoUsuario", NuevoUsuarioSchema);
+
 // ============================
 // 3. CONEXIÓN A MONGODB ATLAS
 // ============================
@@ -114,6 +132,7 @@ app.get("/", (req, res) => {
 });
 
 // Proceso de Login
+// Proceso de Login ACTUALIZADO
 app.post("/login", async (req, res) => {
   const emailIngresado = req.body.correo || req.body.email;
   const passwordIngresado = req.body.password;
@@ -121,6 +140,7 @@ app.post("/login", async (req, res) => {
   console.log(`Intentando login con: ${emailIngresado}`);
 
   try {
+    // Busca el usuario en la base de datos
     const usuario = await Usuario.findOne({ email: emailIngresado });
 
     if (!usuario) {
@@ -131,9 +151,22 @@ app.post("/login", async (req, res) => {
       return res.send("<script>alert('Contraseña incorrecta'); window.location.href='/';</script>");
     }
 
-    return usuario.rol === "coordinador" || usuario.rol === "admin"
-      ? res.redirect("/HU1.html")
-      : res.send("Rol no válido o sin permisos");
+    // --- AQUÍ ESTÁ EL CAMBIO: LÓGICA DE REDIRECCIÓN POR ROL ---
+    if (usuario.rol === "admin" || usuario.rol === "coordinador") {
+        console.log("➡️ Redirigiendo a Panel de Administrador");
+        return res.redirect("/HU1.html");
+
+    } else if (usuario.rol === "tutor") {
+        console.log("➡️ Redirigiendo a Panel de Tutor");
+        return res.redirect("/HU7.html");
+
+    } else if (usuario.rol === "verificador") {
+        console.log("➡️ Redirigiendo a Panel de Verificador");
+        return res.redirect("/HU3.html");
+
+    } else {
+        return res.send("<script>alert('Su rol no tiene una interfaz asignada'); window.location.href='/';</script>");
+    }
 
   } catch (error) {
     console.error("Error en el login:", error);
@@ -141,23 +174,23 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/// 2. POST: Guardar nuevo usuario
-app.post('/api/usuarios', async (req, res) => {
-    try {
-        const nuevoUsuario = new NuevoUsuario({
-            id: req.body.dni,            // El HTML envía 'dni', lo guardamos en 'id'
-            nombreUsuario: req.body.nombreCompleto || req.body.nombre,
-            gmail: req.body.email,       // El HTML envía 'email', lo guardamos en 'gmail'
-            tipo: req.body.tipoUsuario || req.body.tipo,
-            idMatricula: req.body.matricula
-        });
-        
-        await nuevoUsuario.save();
-        res.status(201).json({ message: "Usuario creado exitosamente", usuario: nuevoUsuario });
-    } catch (error) {
-        console.error("Error al guardar:", error);
-        res.status(400).json({ error: "Error al guardar usuario" });
-    }
+// RUTA PARA GUARDAR NUEVOS USUARIOS (HU1)
+app.post("/registrar-usuario", async (req, res) => {
+  try {
+    const usuario = new NuevoUsuario({
+      nombreCompleto: req.body.nombre,      
+      email: req.body.email,
+      tipoUsuario: req.body.tipo,
+      matricula: req.body.matricula,
+      tutorActual: "Sin Asignar" // Inicializamos como sin asignar
+    });
+    await usuario.save();
+    console.log("✅ Usuario registrado:", usuario);
+    res.send("<script>alert('¡Usuario registrado con éxito!'); window.location.href='/HU1.html';</script>");
+  } catch (error) {
+    console.error("❌ Error al registrar:", error);
+    res.send("<script>alert('Error al guardar los datos'); window.location.href='/HU1.html';</script>");
+  }
 });
 
 // RUTA PARA OBTENER TODOS LOS USUARIOS (GET - HU1)
@@ -200,18 +233,26 @@ app.put("/actualizar-usuario/:id", async (req, res) => {
 });
 
 // ==========================================
-// 4. PUT: Actualizar usuario
+// RUTA PARA ACTUALIZAR USUARIO (PUT) - HU3
+// ==========================================
+// Esta es la ruta nueva que permite "Reasignar" y "Modificar"
 app.put("/actualizar-usuario/:id", async (req, res) => {
   try {
-    const id = req.params.id; // Busca por el _id de MongoDB
-    const usuarioActualizado = await NuevoUsuario.findByIdAndUpdate(id, req.body, { new: true });
-    
+    const id = req.params.id;
+    const datosActualizados = req.body; 
+
+    // Busca por ID y actualiza
+    const usuarioActualizado = await NuevoUsuario.findByIdAndUpdate(id, datosActualizados, { new: true });
+
     if (!usuarioActualizado) {
         return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     }
-    
+
+    console.log("✅ Usuario actualizado (HU3):", usuarioActualizado);
     res.json({ success: true, message: "Actualización exitosa" });
+
   } catch (error) {
+    console.error("❌ Error al actualizar:", error);
     res.status(500).json({ success: false, message: "Error interno" });
   }
 });
@@ -236,14 +277,17 @@ app.post("/guardar-tutoria", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.post("/guardar-actividad", async (req, res) => {
+app.post("/guardar-actividad", upload.single('documento'), async (req, res) => {
     try {
-        const nuevaActividad = new ActividadProfesional(req.body);
+        const datos = req.body;
+        if (req.file) {
+            datos.archivoPath = req.file.filename;
+            datos.archivoNombre = req.file.originalname;
+        }
+        const nuevaActividad = new ActividadProfesional(datos);
         await nuevaActividad.save();
-        console.log("✅ Actividad Profesional guardada");
-        res.status(200).json({ mensaje: "Éxito" });
+        res.status(200).json({ mensaje: "Guardado con éxito" });
     } catch (error) {
-        console.error("❌ Error:", error);
         res.status(500).json({ error: error.message });
     }
 });

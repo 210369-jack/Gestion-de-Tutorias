@@ -1,0 +1,24 @@
+[{
+  "_id": "ALU0001",
+  "usuario_id": "USR0003",
+  "nombres": "Juan",
+  "apellidos": "Perez"
+},
+{
+  "_id": "ALU0002",
+  "usuario_id": "USR0004",
+  "nombres": "Maria",
+  "apellidos": "Lopez"
+},
+{
+  "_id": "ALU0003",
+  "usuario_id": "USR0005",
+  "nombres": "Carlos",
+  "apellidos": "Ramos"
+},
+{
+  "_id": "ALU0004",
+  "usuario_id": "USR0006",
+  "nombres": "Lucia",
+  "apellidos": "Fernandez"
+}]

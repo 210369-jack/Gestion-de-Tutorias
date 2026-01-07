@@ -1,0 +1,110 @@
+[{
+  "_id": {
+    "$oid": "695cf32f69102d3b971b30bf"
+  },
+  "estudianteId": "2021001234",
+  "tipoActividad": "Practica",
+  "descripcion": "knkn",
+  "institucion": "unsaac",
+  "fechaInicio": {
+    "$date": "2026-01-09T00:00:00.000Z"
+  },
+  "fechaFin": {
+    "$date": "2026-01-20T00:00:00.000Z"
+  },
+  "observaciones": ",,",
+  "archivoPath": "1767699247091-Captura.PNG",
+  "archivoNombre": "Captura.PNG",
+  "fechaRegistro": {
+    "$date": "2026-01-06T11:34:07.798Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695cf39d38f07b94b991dbdc"
+  },
+  "estudianteId": "2021001234",
+  "tipoActividad": "Empleo",
+  "descripcion": "dsa",
+  "institucion": "unsaac",
+  "fechaInicio": {
+    "$date": "2026-01-05T00:00:00.000Z"
+  },
+  "fechaFin": {
+    "$date": "2026-01-16T00:00:00.000Z"
+  },
+  "observaciones": "sa",
+  "archivoPath": "1767699357530-Grafico42.PNG",
+  "archivoNombre": "Grafico42.PNG",
+  "fechaRegistro": {
+    "$date": "2026-01-06T11:35:57.716Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d00e5575331e0d77327f7"
+  },
+  "estudianteId": "2021001234",
+  "tipoActividad": "Curso",
+  "descripcion": ",,,",
+  "institucion": "unsaac",
+  "fechaInicio": {
+    "$date": "2026-01-05T00:00:00.000Z"
+  },
+  "fechaFin": {
+    "$date": "2026-01-08T00:00:00.000Z"
+  },
+  "observaciones": ",,,",
+  "archivoPath": "1767702757140-Traea2.PNG",
+  "archivoNombre": "Traea2.PNG",
+  "fechaRegistro": {
+    "$date": "2026-01-06T12:32:37.301Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d0126575331e0d77327fa"
+  },
+  "estudianteId": "2021001234",
+  "tipoActividad": "Proyecto",
+  "descripcion": "...",
+  "institucion": "unsaac",
+  "fechaInicio": {
+    "$date": "2025-12-28T00:00:00.000Z"
+  },
+  "fechaFin": {
+    "$date": "2026-01-06T00:00:00.000Z"
+  },
+  "observaciones": ",,,",
+  "archivoPath": "1767702822699-Mapas.PNG",
+  "archivoNombre": "Mapas.PNG",
+  "fechaRegistro": {
+    "$date": "2026-01-06T12:33:42.891Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d13c1e0a73e16a39c4a2c"
+  },
+  "estudianteId": "2021001234",
+  "tipoActividad": "Curso",
+  "descripcion": "sdfadsfd",
+  "institucion": "unsaac",
+  "fechaInicio": {
+    "$date": "2026-01-09T00:00:00.000Z"
+  },
+  "fechaFin": {
+    "$date": "2026-01-16T00:00:00.000Z"
+  },
+  "observaciones": "observaciones",
+  "archivoPath": "1767707585394-Captura de pantalla 2025-11-24 214938.png",
+  "archivoNombre": "Captura de pantalla 2025-11-24 214938.png",
+  "fechaRegistro": {
+    "$date": "2026-01-06T13:53:05.396Z"
+  },
+  "__v": 0
+}]

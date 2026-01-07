@@ -1,0 +1,138 @@
+[{
+  "_id": "USR0003",
+  "nombreusuario": "alumno01",
+  "email": "alumno01@uni.pe",
+  "tipo": "alumno",
+  "id_matricula": "202502"
+},
+{
+  "_id": "USR0004",
+  "nombreusuario": "alumno02",
+  "email": "alumno02@uni.pe",
+  "tipo": "alumno",
+  "id_matricula": "202503"
+},
+{
+  "_id": "USR0005",
+  "nombreusuario": "alumno03",
+  "email": "alumno03@uni.pe",
+  "tipo": "alumno",
+  "id_matricula": "202504"
+},
+{
+  "_id": "USR0006",
+  "nombreusuario": "alumno04",
+  "email": "alumno04@uni.pe",
+  "tipo": "alumno",
+  "id_matricula": "202505"
+},
+{
+  "_id": "USR0007",
+  "nombreusuario": "alumno05",
+  "email": "alumno05@uni.pe",
+  "tipo": "alumno",
+  "id_matricula": "202506"
+},
+{
+  "_id": "USR0008",
+  "nombreusuario": "alumno06",
+  "email": "alumno06@uni.pe",
+  "tipo": "alumno",
+  "id_matricula": "202507"
+},
+{
+  "_id": "USR0009",
+  "nombreusuario": "tutor02",
+  "email": "tutor02@uni.pe",
+  "tipo": "tutor"
+},
+{
+  "_id": "USR0010",
+  "nombreusuario": "tutor03",
+  "email": "tutor03@uni.pe",
+  "tipo": "tutor"
+},
+{
+  "_id": "USR0011",
+  "nombreusuario": "tutor04",
+  "email": "tutor04@uni.pe",
+  "tipo": "tutor"
+},
+{
+  "_id": "USR0012",
+  "nombreusuario": "tutor05",
+  "email": "tutor05@uni.pe",
+  "tipo": "tutor"
+},
+{
+  "_id": "USR0013",
+  "nombreusuario": "tutor06",
+  "email": "tutor06@uni.pe",
+  "tipo": "tutor"
+},
+{
+  "_id": "USR0024",
+  "nombreusuario": "admin03",
+  "email": "admin03@uni.pe",
+  "tipo": "administrador"
+},
+{
+  "_id": "USR0025",
+  "nombreusuario": "admin04",
+  "email": "admin04@uni.pe",
+  "tipo": "administrador"
+},
+{
+  "_id": "USR0026",
+  "nombreusuario": "admin05",
+  "email": "admin05@uni.pe",
+  "tipo": "administrador"
+},
+{
+  "_id": "USR0027",
+  "nombreusuario": "admin06",
+  "email": "admin06@uni.pe",
+  "tipo": "administrador"
+},
+{
+  "_id": "USR0028",
+  "nombreusuario": "admin07",
+  "email": "admin07@uni.pe",
+  "tipo": "administrador"
+},
+{
+  "_id": "USR0014",
+  "nombreusuario": "verif01",
+  "email": "verif01@uni.pe",
+  "tipo": "verificador"
+},
+{
+  "_id": "USR0015",
+  "nombreusuario": "verif02",
+  "email": "verif02@uni.pe",
+  "tipo": "verificador"
+},
+{
+  "_id": "USR0016",
+  "nombreusuario": "verif03",
+  "email": "verif03@uni.pe",
+  "tipo": "verificador"
+},
+{
+  "_id": "USR0017",
+  "nombreusuario": "verif04",
+  "email": "verif04@uni.pe",
+  "tipo": "verificador"
+},
+{
+  "_id": "USR0018",
+  "nombreusuario": "verif05",
+  "email": "verif05@uni.pe",
+  "tipo": "verificador"
+},
+{
+  "_id": "USR0019",
+  "nombreusuario": "admin01",
+  "email": "admin01@uni.pe",
+  "tipo": "verificador"
+}]

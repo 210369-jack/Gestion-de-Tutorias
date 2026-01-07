@@ -1,0 +1,108 @@
+[{
+  "_id": {
+    "$oid": "6959b9df55971d2d83180c28"
+  },
+  "nombreCompleto": "baruc",
+  "email": "sdfgdsfg@gamail.com",
+  "tipoUsuario": "Tutor",
+  "matricula": "003",
+  "fechaRegistro": {
+    "$date": "2026-01-04T00:52:47.408Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6959bd4355971d2d83180c2a"
+  },
+  "nombreCompleto": "juannnn",
+  "email": "asdfsadfv@gmail.com",
+  "tipoUsuario": "Tutor",
+  "matricula": "004",
+  "fechaRegistro": {
+    "$date": "2026-01-04T01:07:15.666Z"
+  },
+  "__v": 0,
+  "tutorActual": "Lic. Juan Pérez"
+},
+{
+  "_id": {
+    "$oid": "6959c7447dea41cb29340ed3"
+  },
+  "nombreCompleto": "Coordinador General",
+  "email": "tutor123@tutorias.com",
+  "tipoUsuario": "Coordinador",
+  "matricula": "695991416dad07fd0ae26c43",
+  "fechaRegistro": {
+    "$date": "2026-01-04T01:49:56.684Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6959dde797b4010a249ef642"
+  },
+  "nombreCompleto": "Jack tito",
+  "email": "210369@unsaac.edu.pe",
+  "tipoUsuario": "Estudiante",
+  "matricula": "000022",
+  "fechaRegistro": {
+    "$date": "2026-01-04T03:26:31.469Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695a7f6a8f430d15517a4c89"
+  },
+  "nombreCompleto": "archi",
+  "email": "archi@gmail.com",
+  "tipoUsuario": "Coordinador",
+  "matricula": "0004",
+  "fechaRegistro": {
+    "$date": "2026-01-04T14:55:38.292Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695c6fb98cc80df7c04707fd"
+  },
+  "nombreCompleto": "jack",
+  "email": "advadsa@dvfdsdf.com",
+  "tipoUsuario": "Estudiante",
+  "matricula": "1231",
+  "tutorActual": "Sin Asignar",
+  "fechaRegistro": {
+    "$date": "2026-01-06T02:13:13.875Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d06c82c823e1f6e0b2f48"
+  },
+  "nombreCompleto": "Andy",
+  "email": "Andy@gmail.com",
+  "tipoUsuario": "Tutor",
+  "matricula": "00006",
+  "tutorActual": "Sin Asignar",
+  "fechaRegistro": {
+    "$date": "2026-01-06T12:57:44.206Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d12b5e0a73e16a39c4a27"
+  },
+  "nombreCompleto": "jack",
+  "email": "jackttitohuaman@gmail.com",
+  "tipoUsuario": "Tutor",
+  "matricula": "004",
+  "tutorActual": "Sin Asignar",
+  "fechaRegistro": {
+    "$date": "2026-01-06T13:48:37.649Z"
+  },
+  "__v": 0
+}]

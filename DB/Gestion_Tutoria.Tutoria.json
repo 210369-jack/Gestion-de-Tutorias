@@ -1,0 +1,56 @@
+[{
+  "_id": {
+    "$oid": "695c771808971c03167aa206"
+  },
+  "idTutoria": "TUT001",
+  "idAlumno": "ALU001",
+  "idTutor": "TUT001",
+  "idCurso": "CUR001",
+  "tipoTutoria": "Academica",
+  "semestre": "2025-I",
+  "fechaInicio": "2025-03-15T00:00:00Z",
+  "fechaFin": null,
+  "estado": "Activa"
+},
+{
+  "_id": {
+    "$oid": "695c771808971c03167aa207"
+  },
+  "idTutoria": "TUT002",
+  "idAlumno": "ALU002",
+  "idTutor": "TUT001",
+  "idCurso": "CUR002",
+  "tipoTutoria": "Personal",
+  "semestre": "2025-I",
+  "fechaInicio": "2025-03-18T00:00:00Z",
+  "fechaFin": null,
+  "estado": "Activa"
+},
+{
+  "_id": {
+    "$oid": "695c771808971c03167aa208"
+  },
+  "idTutoria": "TUT003",
+  "idAlumno": "ALU003",
+  "idTutor": "TUT002",
+  "idCurso": "CUR001",
+  "tipoTutoria": "Academica",
+  "semestre": "2025-I",
+  "fechaInicio": "2025-03-20T00:00:00Z",
+  "fechaFin": "2025-06-30T00:00:00Z",
+  "estado": "Finalizada"
+},
+{
+  "_id": {
+    "$oid": "695c771808971c03167aa209"
+  },
+  "idTutoria": "TUT004",
+  "idAlumno": "ALU004",
+  "idTutor": "TUT003",
+  "idCurso": "CUR003",
+  "tipoTutoria": "Profesional",
+  "semestre": "2025-I",
+  "fechaInicio": "2025-04-01T00:00:00Z",
+  "fechaFin": null,
+  "estado": "Cancelada"
+}]

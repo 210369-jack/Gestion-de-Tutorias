@@ -1,0 +1,25 @@
+[{
+  "_id": "CUR001",
+  "Nombre": "Algoritmos",
+  "Creditos": 4
+},
+{
+  "_id": "CUR002",
+  "Nombre": "Base de Datos",
+  "Creditos": 3
+},
+{
+  "_id": "CUR003",
+  "Nombre": "Ingeniería de Software",
+  "Creditos": 4
+},
+{
+  "_id": "CUR004",
+  "Nombre": "Redes de Computadoras",
+  "Creditos": 3
+},
+{
+  "_id": "CUR005",
+  "Nombre": "Inteligencia Artificial",
+  "Creditos": 4
+}]

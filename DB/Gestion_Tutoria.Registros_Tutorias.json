@@ -1,0 +1,148 @@
+[{
+  "_id": {
+    "$oid": "695a009ef6f460e85ca96291"
+  },
+  "estudiante": {
+    "nombre": "Ana Patricia Rodríguez López",
+    "matricula": "2021-0456789",
+    "carrera": "Ingeniería en Sistemas"
+  },
+  "bienestar": {
+    "estadoAnimo": "preocupante",
+    "nivelEstres": "alto",
+    "observaciones": "das"
+  },
+  "participacion": {
+    "clase": "muy-activa",
+    "asistencia": "buena",
+    "actividades": [
+      "Voluntariado"
+    ]
+  },
+  "situacionPersonal": {
+    "familiar": "dificultades",
+    "economica": "ajustada",
+    "factoresRendimiento": "dsa"
+  },
+  "seguimiento": {
+    "observacionesGenerales": "das",
+    "derivaciones": [
+      "Apoyo académico especializado"
+    ],
+    "seguimientoRequerido": "das"
+  },
+  "fechaRegistro": {
+    "$date": "2026-01-04T05:54:38.506Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695b4fc169736c647ce37be4"
+  },
+  "estudiante": {
+    "nombre": "Ana Patricia Rodríguez López",
+    "matricula": "2021-0456789",
+    "carrera": "Ingeniería en Sistemas"
+  },
+  "bienestar": {
+    "estadoAnimo": "regular",
+    "nivelEstres": "alto",
+    "observaciones": "Normal"
+  },
+  "participacion": {
+    "clase": "moderada",
+    "asistencia": "regular",
+    "actividades": [
+      "Grupos estudiantiles"
+    ]
+  },
+  "situacionPersonal": {
+    "familiar": "estable",
+    "economica": "estable",
+    "factoresRendimiento": "todo bien"
+  },
+  "seguimiento": {
+    "observacionesGenerales": "Retraido",
+    "derivaciones": [
+      "Trabajo social"
+    ],
+    "seguimientoRequerido": "Seguimiento academico"
+  },
+  "fechaRegistro": {
+    "$date": "2026-01-05T05:44:33.770Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d01d9575331e0d77327fd"
+  },
+  "estudiante": {
+    "nombre": "Ana Patricia Rodríguez López",
+    "matricula": "2021-0456789",
+    "carrera": "Ingeniería en Sistemas"
+  },
+  "bienestar": {
+    "estadoAnimo": "excelente",
+    "nivelEstres": "moderado",
+    "observaciones": "..."
+  },
+  "participacion": {
+    "clase": "activa",
+    "asistencia": "excelente",
+    "actividades": [
+      "Actividades culturales"
+    ]
+  },
+  "situacionPersonal": {
+    "familiar": "cambios-menores",
+    "economica": "dificil",
+    "factoresRendimiento": ",,,,"
+  },
+  "seguimiento": {
+    "observacionesGenerales": "..",
+    "derivaciones": [
+      "Psicología estudiantil"
+    ],
+    "seguimientoRequerido": "..."
+  },
+  "fechaRegistro": {
+    "$date": "2026-01-06T12:36:41.061Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695d1332e0a73e16a39c4a2a"
+  },
+  "estudiante": {
+    "nombre": "Ana Patricia Rodríguez López",
+    "matricula": "2021-0456789",
+    "carrera": "Ingeniería en Sistemas"
+  },
+  "bienestar": {
+    "estadoAnimo": "excelente",
+    "nivelEstres": "moderado",
+    "observaciones": "biuenestar emocional exelente"
+  },
+  "participacion": {
+    "clase": "activa",
+    "asistencia": "buena",
+    "actividades": []
+  },
+  "situacionPersonal": {
+    "familiar": "estable",
+    "economica": "",
+    "factoresRendimiento": ""
+  },
+  "seguimiento": {
+    "observacionesGenerales": "",
+    "derivaciones": [],
+    "seguimientoRequerido": ""
+  },
+  "fechaRegistro": {
+    "$date": "2026-01-06T13:50:42.743Z"
+  },
+  "__v": 0
+}]

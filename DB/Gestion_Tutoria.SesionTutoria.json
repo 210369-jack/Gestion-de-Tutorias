@@ -1,0 +1,48 @@
+[{
+  "_id": {
+    "$oid": "695c779e08971c03167aa20b"
+  },
+  "idSesion": "SES001",
+  "idTutoria": "TUT001",
+  "fecha": "2025-03-20",
+  "horaInicio": "15:00",
+  "horaFin": "16:00",
+  "observaciones": "Avance satisfactorio",
+  "estado": "Realizada"
+},
+{
+  "_id": {
+    "$oid": "695c779e08971c03167aa20c"
+  },
+  "idSesion": "SES002",
+  "idTutoria": "TUT001",
+  "fecha": "2025-03-27",
+  "horaInicio": "15:00",
+  "horaFin": "16:00",
+  "observaciones": "Dificultades leves",
+  "estado": "Realizada"
+},
+{
+  "_id": {
+    "$oid": "695c779e08971c03167aa20d"
+  },
+  "idSesion": "SES003",
+  "idTutoria": "TUT002",
+  "fecha": "2025-03-22",
+  "horaInicio": "10:00",
+  "horaFin": "10:45",
+  "observaciones": "Sesión personal",
+  "estado": "Realizada"
+},
+{
+  "_id": {
+    "$oid": "695c779e08971c03167aa20e"
+  },
+  "idSesion": "SES004",
+  "idTutoria": "TUT004",
+  "fecha": "2025-04-05",
+  "horaInicio": "09:00",
+  "horaFin": null,
+  "observaciones": "Reprogramada por inasistencia",
+  "estado": "Reprogramada"
+}]

@@ -1,0 +1,40 @@
+[{
+  "_id": {
+    "$oid": "695c783908971c03167aa20f"
+  },
+  "id": "ASIS001",
+  "idSesion": "SES001",
+  "idAlumno": "ALU001",
+  "asistio": true,
+  "observacion": "Puntual"
+},
+{
+  "_id": {
+    "$oid": "695c783908971c03167aa210"
+  },
+  "id": "ASIS002",
+  "idSesion": "SES002",
+  "idAlumno": "ALU001",
+  "asistio": true,
+  "observacion": null
+},
+{
+  "_id": {
+    "$oid": "695c783908971c03167aa211"
+  },
+  "id": "ASIS003",
+  "idSesion": "SES003",
+  "idAlumno": "ALU002",
+  "asistio": false,
+  "observacion": "Falta justificada"
+},
+{
+  "_id": {
+    "$oid": "695c783908971c03167aa212"
+  },
+  "id": "ASIS004",
+  "idSesion": "SES004",
+  "idAlumno": "ALU004",
+  "asistio": false,
+  "observacion": "Sesión reprogramada"
+}]

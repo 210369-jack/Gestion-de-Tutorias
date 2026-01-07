@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "nombres": "Coordinador General",
+    "email": "tutor@tutorias.com",
+    "password": "admin123",
+    "rol": "coordinador"
+  }
+},
+{
+  "_id": {
+    "$oid": "695991416dad07fd0ae26c7d"
+  },
+  "email": "tutor@tutorias.com",
+  "password": "admin123",
+  "rol": "coordinador",
+  "nombres": "Coordinador General",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695991416dad07fd0ae26c43"
+  },
+  "email": "tutor123@tutorias.com",
+  "password": "admin",
+  "rol": "coordinador",
+  "nombres": "Coordinador General",
+  "__v": 0
+}]

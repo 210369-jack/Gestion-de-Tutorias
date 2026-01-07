@@ -1,0 +1,40 @@
+[{
+  "_id": {
+    "$oid": "695c788708971c03167aa213"
+  },
+  "id": "DER001",
+  "idAlumno": "ALU001",
+  "idTutor": "TUT001",
+  "fechaDerivacion": "2025-03-25",
+  "motivo": "Ansiedad académica"
+},
+{
+  "_id": {
+    "$oid": "695c788708971c03167aa214"
+  },
+  "id": "DER002",
+  "idAlumno": "ALU002",
+  "idTutor": "TUT001",
+  "fechaDerivacion": "2025-04-02",
+  "motivo": "Bajo rendimiento sostenido"
+},
+{
+  "_id": {
+    "$oid": "695c788708971c03167aa215"
+  },
+  "id": "DER003",
+  "idAlumno": "ALU003",
+  "idTutor": "TUT002",
+  "fechaDerivacion": "2025-04-10",
+  "motivo": "Problemas de adaptación"
+},
+{
+  "_id": {
+    "$oid": "695c788708971c03167aa216"
+  },
+  "id": "DER004",
+  "idAlumno": "ALU004",
+  "idTutor": "TUT003",
+  "fechaDerivacion": "2025-04-15",
+  "motivo": "Estrés personal"
+}]

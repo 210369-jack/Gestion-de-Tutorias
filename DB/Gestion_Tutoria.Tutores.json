@@ -1,0 +1,21 @@
+[{
+  "_id": "TUT0001",
+  "usuario_id": "USR0009",
+  "nombres": "Ana",
+  "apellidos": "Gomez",
+  "facultad": "Ingeniería"
+},
+{
+  "_id": "TUT0002",
+  "usuario_id": "USR0010",
+  "nombres": "Carlos",
+  "apellidos": "Rivas",
+  "facultad": "Ingeniería"
+},
+{
+  "_id": "TUT0003",
+  "usuario_id": "USR0011",
+  "nombres": "Lucia",
+  "apellidos": "Morales",
+  "facultad": "Ciencias"
+}]
